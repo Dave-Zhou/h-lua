@@ -16,6 +16,7 @@ require "hSlkInit"
 
 --加载hJLua库
 require "lib.logic"
+require "lib.event"
 require "lib.message"
 require "lib.ttg"
 require "lib.is"

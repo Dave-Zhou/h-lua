@@ -79,8 +79,8 @@ hplayerInit = function()
         cj.DestroyGroup(g)
         hplayer.qty_current = hplayer.qty_current - 1
     end)
-    hevt.onSelectionDouble(null,function ()
-        hplayerData[hevt.getTriggerPlayer()].selection = hevt.getTriggerUnit()
+    hevent.onSelectionDouble(null,function ()
+        hplayerData[hevent.getTriggerPlayer()].selection = hevent.getTriggerUnit()
     end)
     cj.TriggerAddAction(triggerDeSelection, function()
         hplayerData[cj.GetTriggerPlayer()].selection = nil
