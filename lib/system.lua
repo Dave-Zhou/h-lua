@@ -33,6 +33,15 @@ hsystem = {
         end
         return isin
     end,
+    --删除数组一次某个值
+    rmArray = function(val, arr)
+        for k, v in pairs(arr) do
+            if (v == val) then
+                table.remove(arr, k)
+                break
+            end
+        end
+    end,
     --打印对象table
     print_r = function(t)
         local print_r_cache = {}

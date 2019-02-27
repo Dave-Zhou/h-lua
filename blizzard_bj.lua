@@ -134,5 +134,29 @@ bj.CustomVictoryBJ = function(whichPlayer, showDialog, showScores)
         end
     end
 end
+bi.AbortCinematicFadeBJ = function()
+    if cg.bj_cineFadeContinueTimer ~= nil then
+        cj.DestroyTimer(cg.bj_cineFadeContinueTimer)
+    end
+
+    if cg.bj_cineFadeFinishTimer ~= nil then
+        cj.DestroyTimer(cg.bj_cineFadeFinishTimer)
+    end
+end
+bi.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
+    cj.AbortCinematicFadeBJ()
+    cj.SetCineFilterTexture(tex)
+    cj.SetCineFilterBlendMode(bmode)
+    cj.SetCineFilterTexMapFlags(TEXMAP_FLAG_NONE)
+    cj.SetCineFilterStartUV(0, 0, 1, 1)
+    cj.SetCineFilterEndUV(0, 0, 1, 1)
+    cj.SetCineFilterStartColor(cj.PercentTo255(red0), cj.PercentTo255(green0), cj.PercentTo255(blue0), cj.PercentTo255(100 - trans0))
+    cj.SetCineFilterEndColor(cj.PercentTo255(red1), cj.PercentTo255(green1), cj.PercentTo255(blue1), cj.PercentTo255(100 - trans1))
+    cj.SetCineFilterDuration(duration)
+    cj.DisplayCineFilter(true)
+end
+bj.SetUnitVertexColorBJ = function(whichUnit, red, green, blue, transparency)
+    cj.SetUnitVertexColor(whichUnit, cj.PercentTo255(red), cj.PercentTo255(green), cj.PercentTo255(blue), cj.PercentTo255(100.0 - transparency))
+end
 
 return bj

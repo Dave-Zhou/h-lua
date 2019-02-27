@@ -33,5 +33,9 @@ require "lib.rect"
 require "lib.env"
 require "lib.lightning"
 require "lib.weather"
+require "lib.media"
+require "lib.award"
+require "lib.mark"
+require "lib.ability"
 
 

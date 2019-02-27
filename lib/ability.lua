@@ -1,465 +1,300 @@
-// 基础能力
+habilityCache = {}
+hability = {
+    ABILITY_TOKEN = hslk_global.unit_token,
+    ABILITY_BREAK = hslk_global.ability_break,
+    ABILITY_SWIM = hslk_global.ability_swim_unlimit,
+    ABILITY_AVOID_PLUS = hslk_global.attr.avoid.add,
+    ABILITY_AVOID_MIUNS = hslk_global.attr.avoid.sub,
+    BUFF_SWIM = hsystem.getObjId('BPSE'),
+}
 
-globals
+---打断
+-- ! 注意这个方法对中立被动无效
+hability.broken = function(u)
+    local cu = hunit.create({
+        id = hability.ABILITY_TOKEN,
+        whichPlayer = hplayer.player_passive,
+        x = cj.GetUnitX(u),
+        y = cj.GetUnitY(u),
+    })
+    cj.UnitAddAbility(cu, hability.ABILITY_BREAK)
+    cj.SetUnitAbilityLevel(cu, hability.ABILITY_BREAK, 1)
+    cj.IssueTargetOrder(cu, "thunderbolt", u)
+    hunit.del(cu, 0.3)
+end
 
-    hAbility hability
+---眩晕
+-- ! 注意这个方法对中立被动无效
+hability.swim = function(u, during)
+    if (habilityCache[u] == nil) then
+        habilityCache[u] = {}
+    end
+    local t = habilityCache[u].swimTimer
+    if (t ~= nil and cj.TimerGetRemaining(t) > 0) then
+        if (during <= cj.TimerGetRemaining(t)) then
+            return
+        else
+            htime.delTimer(t)
+            habilityCache[u].swimTimer = nil
+            cj.UnitRemoveAbility(u, hability.BUFF_SWIM)
+            httg.style(httg.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
+        end
+    end
+    local cu = hunit.create({
+        id = hability.ABILITY_TOKEN,
+        whichPlayer = hplayer.player_passive,
+        x = cj.GetUnitX(u),
+        y = cj.GetUnitY(u),
+    })
+    cj.UnitAddAbility(cu, hability.ABILITY_SWIM)
+    cj.SetUnitAbilityLevel(cu, hability.ABILITY_SWIM, 1)
+    cj.IssueTargetOrder(cu, "thunderbolt", u)
+    hunit.del(cu, 0.4)
+    habilityCache[u].swimTimer = htime.setTimeout(during, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        cj.UnitRemoveAbility(u, hability.BUFF_SWIM)
+    end)
+end
 
-	hashtable hash_ability = null
+---沉默
+hability.silent = function(u, during)
+    if (habilityCache[u] == nil) then
+        habilityCache[u] = {}
+    end
+    if (habilityCache.silentUnits == nil) then
+        habilityCache.silentUnits = {}
+    end
+    if (habilityCache.silentTrigger == nil) then
+        habilityCache.silentTrigger = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(habilityCache.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
+        cj.TriggerAddAction(habilityCache.silentTrigger, function()
+            local u1 = cj.GetTriggerUnit()
+            if (hsystem.inArray(u1, habilityCache.silentUnits)) then
+                cj.IssueImmediateOrder(u1, "stop")
+            end
+        end)
+    end
+    local level = habilityCache[u].silentLevel + 1
+    if (level <= 1) then
+        httg.style(httg.ttg2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
+    else
+        httg.style(httg.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
+    end
+    habilityCache[u].silentLevel = level
+    if (hsystem.inArray(u, habilityCache.silentUnits) == false) then
+        table.insert(habilityCache.silentUnits, u)
+        local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "head", -1)
+        habilityCache[u].silentEffect = eff
+    end
+    htime.setTimeout(during, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        habilityCache[u].silentLevel = habilityCache[u].silentLevel - 1
+        if (habilityCache[u].silentLevel <= 0) then
+            heffect.del(habilityCache[u].silentEffect)
+            if (hsystem.inArray(u, habilityCache.silentUnits)) then
+                hsystem.rmArray(u, habilityCache.silentUnits)
+            end
+        end
+    end)
+end
 
-	//超级马甲
-	integer ABILITY_TOKEN = 'h00J'
-	//马甲技能
-	integer ABILITY_BREAK 	= 'A09R'
-	integer ABILITY_SWIM = 'A09Q'
+---缴械
+hability.unarm = function(u, during)
+    if (habilityCache[u] == nil) then
+        habilityCache[u] = {}
+    end
+    if (habilityCache.unarmUnits == nil) then
+        habilityCache.unarmUnits = {}
+    end
+    if (habilityCache.unarmTrigger == nil) then
+        habilityCache.unarmTrigger = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(habilityCache.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
+        cj.TriggerAddAction(habilityCache.unarmTrigger, function()
+            local u1 = cj.GetTriggerUnit()
+            if (hsystem.inArray(u1, habilityCache.unarmUnits)) then
+                cj.IssueImmediateOrder(u1, "stop")
+            end
+        end)
+    end
+    local level = habilityCache[u].unarmLevel + 1
+    if (level <= 1) then
+        httg.style(httg.ttg2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
+    else
+        httg.style(httg.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
+    end
+    habilityCache[u].unarmLevel = level
+    if (hsystem.inArray(u, habilityCache.unarmUnits) == false) then
+        table.insert(habilityCache.unarmUnits, u)
+        local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "weapon", -1)
+        habilityCache[u].unarmEffect = eff
+    end
+    htime.setTimeout(during, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        habilityCache[u].unarmLevel = habilityCache[u].unarmLevel - 1
+        if (habilityCache[u].unarmLevel <= 0) then
+            heffect.del(habilityCache[u].unarmEffect)
+            if (hsystem.inArray(u, habilityCache.unarmUnits)) then
+                hsystem.rmArray(u, habilityCache.unarmUnits)
+            end
+        end
+    end)
+end
 
-	//硬直
-	integer PAUSE_TYPE_black = 1
-	integer PAUSE_TYPE_blue = 2	
+---回避
+hability.avoid = function(whichUnit)
+    cj.UnitAddAbility(whichUnit, hability.ABILITY_AVOID_PLUS)
+    cj.SetUnitAbilityLevel(whichUnit, hability.ABILITY_AVOID_PLUS, 2)
+    cj.UnitRemoveAbility(whichUnit, hability.ABILITY_AVOID_PLUS)
+    htime.setTimeout(0.00, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        cj.UnitAddAbility(whichUnit, hability.ABILITY_AVOID_MIUNS)
+        cj.SetUnitAbilityLevel(whichUnit, hability.ABILITY_AVOID_MIUNS, 2)
+        cj.UnitRemoveAbility(whichUnit, hability.ABILITY_AVOID_MIUNS)
+    end)
+end
 
-	//回避生命
-	integer ABILITY_AVOID_PLUS = 'A00B'
-	integer ABILITY_AVOID_MIUNS = 'A00C'
+---0秒无敌
+hability.invulnerableZero = function(whichUnit)
+    if (whichUnit == nil) then
+        return
+    end
+    cj.SetUnitInvulnerable(whichUnit, true)
+    htime.setTimeout(0.00, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        cj.SetUnitInvulnerable(whichUnit, false)
+    end)
+end
+---无敌
+hability.invulnerable = function(whichUnit, during)
+    if (whichUnit == nil) then
+        return
+    end
+    if (during < 0) then
+        during = 0.00  -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
+    end
+    cj.SetUnitInvulnerable(whichUnit, true)
+    htime.setTimeout(during, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        cj.SetUnitInvulnerable(whichUnit, false)
+    end)
+end
+---群体无敌
+hability.invulnerableGroup = function(whichGroup, during)
+    if (whichGroup == nil) then
+        return
+    end
+    if (during < 0) then
+        during = 0.00  -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
+    end
+    cj.ForGroup(whichGroup, function()
+        cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
+    end)
+    htime.setTimeout(during, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        cj.ForGroup(whichGroup, function()
+            cj.SetUnitInvulnerable(cj.GetEnumUnit(), false)
+        end)
+    end)
+end
+---暂停效果
+hability.pause = function(whichUnit, during, pauseColor)
+    if (whichUnit == nil) then
+        return
+    end
+    if (habilityCache[whichUnit] == nil) then
+        habilityCache[whichUnit] = {}
+    end
+    if (during < 0) then
+        during = 0.01  -- 假如没有设置时间，默认打断效果
+    end
+    local prevTimer = habilityCache[whichUnit].pauseTimer
+    local prevTimeRemaining = 0
+    if (prevTimer ~= nil) then
+        prevTimeRemaining = cj.TimerGetRemaining(prevTimer)
+        if (prevTimeRemaining > 0) then
+            htime.delTimer(prevTimer)
+            habilityCache[whichUnit].pauseTimer = nil
+        else
+            prevTimeRemaining = 0
+        end
+    end
+    if (pauseColor == "black") then
+        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 30, 0)
+    elseif (pauseColor == "blue") then
+        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 200, 0)
+    elseif (pauseColor == "red") then
+        bj.SetUnitVertexColorBJ(whichUnit, 200, 30, 30, 0)
+    elseif (pauseColor == "green") then
+        bj.SetUnitVertexColorBJ(whichUnit, 30, 200, 30, 0)
+    end
+    cj.SetUnitTimeScalePercent(whichUnit, 0.00)
+    cj.PauseUnit(whichUnit, true)
+    habilityCache[whichUnit].pauseTimer = htime.setTimeout(during + prevTimeRemaining, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        cj.PauseUnit(whichUnit, false)
+        if (string.len(pauseColor) ~= nil) then
+            cj.SetUnitVertexColorBJ(whichUnit, 100, 100, 100, 0)
+        end
+        cj.SetUnitTimeScalePercent(whichUnit, 100.00)
+    end)
+end
 
-	// 
-	trigger ABILITY_UNARM_TRG = null
-	group ABILITY_UNARM_GROUP = CreateGroup()
-	trigger ABILITY_SILENT_TRG = null
-	group ABILITY_SILENT_GROUP = CreateGroup()
+---为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
+hability.addAbilityEffect = function(whichUnit, whichAbility, abilityLevel, during)
+    if (whichUnit ~= nil and whichAbility ~= nil and during > 0.03) then
+        cj.UnitAddAbility(whichUnit, whichAbility)
+        cj.UnitMakeAbilityPermanent(whichUnit, true, whichAbility)
+        if (abilityLevel > 0) then
+            cj.SetUnitAbilityLevel(whichUnit, whichAbility, abilityLevel)
+        end
+        htime.setTimeout(during, function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.UnitRemoveAbility(whichUnit, whichAbility)
+        end)
+    end
+end
 
-endglobals
-
-struct hAbility
-
-	static method create takes nothing returns hAbility
-        local hAbility x = 0
-        set x = hAbility.allocate()
-        return x
-    endmethod
-
-	/**
-	 * 打断
-	 * ! 注意这个方法对中立被动无效
-	 */
-	public static method break takes unit u returns nothing
-	    local location loc = GetUnitLoc( u )
-	    local unit cu = hunit.createUnit( Player(PLAYER_NEUTRAL_PASSIVE) , ABILITY_TOKEN , loc)
-	    call RemoveLocation( loc )
-	    set loc = null
-	    call UnitAddAbility( cu, ABILITY_BREAK)
-	    call SetUnitAbilityLevel( cu , ABILITY_BREAK , 1 )
-	    call IssueTargetOrder( cu , "thunderbolt", u )
-	    call hunit.del(cu,0.3)
-		set cu = null
-	endmethod
-
-	/**
-	 * 眩晕回调
-	 */
-	private static method swimCall takes nothing returns nothing
-		local timer t = GetExpiredTimer()
-		call UnitRemoveAbility(htime.getUnit(t,1), 'BPSE' )
-		call htime.delTimer(t)
-		set t = null
-	endmethod
-
-	/**
-	 * 眩晕
-	 * ! 注意这个方法对中立被动无效
-	 */
-	public static method swim takes unit u,real during returns nothing
-	    local location loc = null
-	    local unit cu = null
-	    local timer t = LoadTimerHandle(hash_ability, GetHandleId(u), 5241)
-	    if(t!=null and TimerGetRemaining(t)>0)then
-	    	if(during <= TimerGetRemaining(t))then
-				return
-			else
-				call htime.delTimer(t)
-				call UnitRemoveAbility(u, 'BPSE' )
-				call hmsg.style(hmsg.ttg2Unit(u,"劲眩",6.00,"64e3f2",10,1.00,10.00)  ,"scale",0,0.05)
-	    	endif
-	    endif
-	    set loc = GetUnitLoc( u )
-	    set cu = hunit.createUnit( Player(PLAYER_NEUTRAL_PASSIVE) , ABILITY_TOKEN , loc)
-	    call RemoveLocation( loc )
-	    call UnitAddAbility( cu, ABILITY_SWIM)
-	    call SetUnitAbilityLevel( cu , ABILITY_SWIM , 1 )
-	    call IssueTargetOrder( cu , "thunderbolt", u )
-	    call hunit.del(cu,0.4)
-	    set t = htime.setTimeout(during,function thistype.swimCall)
-	    call htime.setUnit(t,1,u)
-	    call SaveTimerHandle(hash_ability, GetHandleId(u), 5241, t)
-		set loc = null
-		set cu = null
-		set t = null
-	endmethod
-
-	/**
-	 * 沉默回调
-	 */
-	private static method silentCall takes nothing returns nothing
-		local timer t = GetExpiredTimer()
-		local unit u = htime.getUnit(t,1)
-		local integer uid = GetHandleId(u)
-		local integer level = LoadInteger(hash_ability,uid, 54550)
-		set level = level-1
-		call SaveInteger(hash_ability,uid, 54550,level)
-		if(level <= 0)then
-			call heffect.del(LoadEffectHandle(hash_ability,uid, 54551))
-			if(IsUnitInGroup(u, ABILITY_SILENT_GROUP) == true)then
-				call GroupRemoveUnit(ABILITY_SILENT_GROUP,u)
-			endif
-		endif
-		call htime.delTimer(t)
-		set t = null
-		set u = null
-	endmethod
-	/**
-	 * 沉默执行
-	 */
-	private static method silentDo takes nothing returns nothing
-		local unit u = GetTriggerUnit()
-		if(IsUnitInGroup(u, ABILITY_SILENT_GROUP) == true)then
-			call IssueImmediateOrder( u , "stop" )
-		endif
-		set u = null
-	endmethod
-	/**
-	 * 沉默
-	 */
-	public static method silent takes unit u,real during returns nothing
-	    local timer t = null
-		local effect eff = null
-		local integer level = LoadInteger(hash_ability, GetHandleId(u), 54550)
-		if(ABILITY_SILENT_TRG == null)then
-			set ABILITY_SILENT_TRG = CreateTrigger()
-			call TriggerRegisterAnyUnitEventBJ( ABILITY_SILENT_TRG, EVENT_PLAYER_UNIT_SPELL_CHANNEL )
-			call TriggerAddAction(ABILITY_SILENT_TRG, function thistype.silentDo)
-		endif
-		set level = level+1
-		if(level <= 1)then
-			call hmsg.style(hmsg.ttg2Unit(u,"沉默",6.00,"ee82ee",10,1.00,10.00)  ,"scale",0,0.2)
-		else
-			call hmsg.style(hmsg.ttg2Unit(u,I2S(level)+"重沉默",6.00,"ee82ee",10,1.00,10.00)  ,"scale",0,0.2)
-		endif
-		call SaveInteger(hash_ability, GetHandleId(u), 54550, level)
-		if(IsUnitInGroup(u, ABILITY_SILENT_GROUP) == false)then
-			call GroupAddUnit(ABILITY_SILENT_GROUP,u)
-			set eff = heffect.toUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl",u,"head",-1)
-			call SaveEffectHandle(hash_ability, GetHandleId(u), 54551, eff)
-		endif
-	    set t = htime.setTimeout(during,function thistype.silentCall)
-	    call htime.setUnit(t,1,u)
-		set t = null
-		set eff = null
-	endmethod
-
-	/**
-	 * 缴械回调
-	 */
-	private static method unarmCall takes nothing returns nothing
-		local timer t = GetExpiredTimer()
-		local unit u = htime.getUnit(t,1)
-		local integer uid = GetHandleId(u)
-		local effect eff = null
-		local integer level = LoadInteger(hash_ability,uid, 55550)
-		set level = level-1
-		call SaveInteger(hash_ability,uid, 55550,level)
-		if(level <= 0)then
-			call heffect.del(LoadEffectHandle(hash_ability,uid, 55551))
-			if(IsUnitInGroup(u, ABILITY_UNARM_GROUP) == true)then
-				call GroupRemoveUnit(ABILITY_UNARM_GROUP,u)
-			endif
-		endif
-		call htime.delTimer(t)
-		set t = null
-		set u = null
-		set eff = null
-	endmethod
-	/**
-	 * 缴械执行
-	 */
-	private static method unarmDo takes nothing returns nothing
-		local unit u = GetAttacker()
-		if(IsUnitInGroup(u, ABILITY_UNARM_GROUP) == true)then
-			call IssueImmediateOrder( u , "stop" )
-		endif
-		set u = null
-	endmethod
-	/**
-	 * 缴械
-	 */
-	public static method unarm takes unit u,real during returns nothing
-	    local timer t = null
-		local effect eff = null
-		local integer level = LoadInteger(hash_ability, GetHandleId(u), 55550)
-		if(ABILITY_UNARM_TRG == null)then
-			set ABILITY_UNARM_TRG = CreateTrigger()
-			call TriggerRegisterAnyUnitEventBJ( ABILITY_UNARM_TRG, EVENT_PLAYER_UNIT_ATTACKED )
-			call TriggerAddAction(ABILITY_UNARM_TRG, function thistype.unarmDo)
-		endif
-		set level = level+1
-		if(level <= 1)then
-			call hmsg.style(hmsg.ttg2Unit(u,"缴械",6.00,"ffe4e1",10,1.00,10.00)  ,"scale",0,0.2)
-		else
-			call hmsg.style(hmsg.ttg2Unit(u,I2S(level)+"重缴械",6.00,"ffe4e1",10,1.00,10.00)  ,"scale",0,0.2)
-		endif
-		call SaveInteger(hash_ability, GetHandleId(u), 55550, level)
-		if(IsUnitInGroup(u, ABILITY_UNARM_GROUP) == false)then
-			call GroupAddUnit(ABILITY_UNARM_GROUP,u)
-			set eff = heffect.toUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl",u,"weapon",-1)
-			call SaveEffectHandle(hash_ability, GetHandleId(u), 55551, eff)
-		endif
-	    set t = htime.setTimeout(during,function thistype.unarmCall)
-	    call htime.setUnit(t,1,u)
-		set t = null
-		set eff = null
-	endmethod
-
-	/**
-	 * 回避回调
-	 */
-	private static method avoidCallBack takes nothing returns nothing
-	    local timer t = GetExpiredTimer()
-	    local unit whichUnit = htime.getUnit(t,1)
-	    call UnitAddAbility( whichUnit, ABILITY_AVOID_MIUNS )
-		call SetUnitAbilityLevel( whichUnit, ABILITY_AVOID_MIUNS, 2 )
-		call UnitRemoveAbility( whichUnit, ABILITY_AVOID_MIUNS )
-	    call htime.delTimer(t)
-		set t = null
-		set whichUnit = null
-	endmethod
-	/**
-	 * 回避
-	 */
-	public static method avoid takes unit whichUnit returns nothing
-	    local timer t = null
-	    if(whichUnit==null) then
-	        return
-	    endif
-	    call UnitAddAbility( whichUnit, ABILITY_AVOID_PLUS )
-		call SetUnitAbilityLevel( whichUnit, ABILITY_AVOID_PLUS, 2 )
-		call UnitRemoveAbility( whichUnit, ABILITY_AVOID_PLUS )
-	    set t = htime.setTimeout( 0.00 ,function thistype.avoidCallBack)
-	    call htime.setUnit(t,1,whichUnit)
-		set t = null
-	endmethod
-
-	/**
-	 * 0秒无敌回调
-	 */
-	private static method zeroInvulnerableCallBack takes nothing returns nothing
-	    local timer t = GetExpiredTimer()
-	    local unit whichUnit = htime.getUnit(t,1)
-	    call SetUnitInvulnerable( whichUnit , false )
-	    call htime.delTimer(t)
-		set t = null
-	endmethod
-	/**
-	 * 0秒无敌
-	 */
-	public static method zeroInvulnerable takes unit whichUnit returns nothing
-	    local timer t = null
-	    if(whichUnit==null) then
-	        return
-	    endif
-	    call SetUnitInvulnerable( whichUnit, true )
-	    set t = htime.setTimeout( 0.00 ,function thistype.zeroInvulnerableCallBack)
-	    call htime.setUnit(t,1,whichUnit)
-		set t = null
-	endmethod
-
-	/**
-	 * 无敌回调
-	 */
-	private static method invulnerableCallBack takes nothing returns nothing
-	    local timer t = GetExpiredTimer()
-	    local unit whichUnit = htime.getUnit(t,1)
-	    call SetUnitInvulnerable( whichUnit , false )
-	    call htime.delTimer(t)
-		set t = null
-		set whichUnit = null
-	endmethod
-	/**
-	 * 无敌
-	 */
-	public static method invulnerable takes unit whichUnit,real during returns nothing
-	    local timer t = null
-	    if(whichUnit==null) then
-	        return
-	    endif
-	    if( during < 0 ) then
-	        set during = 0.00       //如果设置持续时间错误，则0秒无敌，跟回避效果相同
-	    endif
-	    call SetUnitInvulnerable( whichUnit, true )
-	    set t = htime.setTimeout( during ,function thistype.invulnerableCallBack)
-	    call htime.setUnit(t,1,whichUnit)
-		set t = null
-	endmethod
-
-	/**
-	 * 群体无敌回调1
-	 */
-	private static method invulnerableGroupCallBack1 takes nothing returns nothing
-	    call SetUnitInvulnerable( GetEnumUnit() , true )
-	endmethod
-	/**
-	 * 群体无敌回调2
-	 */
-	private static method invulnerableGroupCallBack2 takes nothing returns nothing
-	    call SetUnitInvulnerable( GetEnumUnit() , false )
-	endmethod
-	 /**
-	 * 群体无敌回调T
-	 */
-	private static method invulnerableGroupCallBackT takes nothing returns nothing
-	    local timer t = GetExpiredTimer()
-	    local group whichGroup = htime.getGroup(t,1)
-		call htime.delTimer(t)
-	    call ForGroup(whichGroup, function thistype.invulnerableGroupCallBack2)
-	    call GroupClear(whichGroup)
-	    call DestroyGroup(whichGroup)
-		set t = null
-		set whichGroup = null
-	endmethod
-
-	/**
-	 * 群体无敌
-	 */
-	public static method invulnerableGroup takes group whichGroup ,real during returns nothing
-	    local timer t = null
-	    if( whichGroup == null ) then
-	        return
-	    endif
-	    call ForGroup(whichGroup, function thistype.invulnerableGroupCallBack1)
-	    set t = htime.setTimeout( during ,function thistype.invulnerableGroupCallBackT)
-	    call htime.setGroup(t,1,whichGroup)
-		set t = null
-	endmethod
-
-	/**
-	 * 暂停效果回调
-	 */
-	private static method pauseCall takes nothing returns nothing
-	    local timer t = GetExpiredTimer()
-	    local unit whichUnit = htime.getUnit(t,1)
-	    local integer pauseType = htime.getInteger(t,2)
-	    call PauseUnit( whichUnit , false )
-	    if( pauseType > 0 ) then
-	        call SetUnitVertexColorBJ( whichUnit , 100, 100, 100, 0 )
-	    endif
-	    call SetUnitTimeScalePercent( whichUnit , 100.00 )
-	    call htime.delTimer(t)
-		set t = null
-		set whichUnit = null
-	endmethod
-	/**
-	 * 暂停效果
-	 */
-	public static method pause takes unit whichUnit,real during,integer pauseType returns nothing
-	    local timer t = null
-	    local timer prevTimer = null
-	    local real prevTimeRemaining = 0
-	    if(whichUnit==null) then
-	        return
-	    endif
-	    if( during == null ) then
-	        set during = 0.01   //假如没有设置时间，默认打断效果
-	    endif
-	    set prevTimer = LoadTimerHandle( hash_ability , GetHandleId(whichUnit) , 3 )
-	    set prevTimeRemaining = TimerGetRemaining(prevTimer)
-	    if( prevTimeRemaining > 0 )then
-	        call htime.delTimer( prevTimer )
-	    else
-	        set prevTimeRemaining = 0
-	    endif
-	    if( pauseType == PAUSE_TYPE_black ) then
-	        call SetUnitVertexColorBJ( whichUnit , 30, 30, 30, 0 )
-	    elseif( pauseType == PAUSE_TYPE_blue ) then
-	        call SetUnitVertexColorBJ( whichUnit , 30, 30, 150 , 0 )
-	    endif
-	    call SetUnitTimeScalePercent( whichUnit, 0.00 )
-	    call PauseUnit( whichUnit, true )
-	    set t = htime.setTimeout( (during+prevTimeRemaining) ,function thistype.pauseCall )
-	    call htime.setUnit(t,1,whichUnit)
-	    call htime.setInteger(t,2, pauseType )
-	    call SaveTimerHandle( hash_ability , GetHandleId(whichUnit) , 3 , t )
-		set t = null
-		set prevTimer = null
-	endmethod
-
-	//为单位添加效果只限技能类一段时间 回调
-	private static method addAbilityEffectCall takes nothing returns nothing
-	    local timer t = GetExpiredTimer()
-	    local unit whichUnit = htime.getUnit(t,1)
-	    local integer whichAbility = htime.getInteger(t,2)
-	    call UnitRemoveAbility(whichUnit, whichAbility)
-	    call htime.delTimer(t)
-		set t = null
-		set whichUnit = null
-	endmethod
-	//为单位添加效果只限技能类一段时间
-	public static method addAbilityEffect takes unit whichUnit,integer whichAbility,integer abilityLevel,real during returns nothing
-	    local timer t = null
-	    if( whichUnit!=null and whichAbility!=null and during >0 )then
-	        call UnitAddAbility( whichUnit, whichAbility)
-	        call UnitMakeAbilityPermanent( whichUnit, true, whichAbility)
-	        if( abilityLevel>0 ) then
-	            call SetUnitAbilityLevel( whichUnit, whichAbility, abilityLevel )
-	        endif
-	        set t = htime.setTimeout( during,function thistype.addAbilityEffectCall )
-	        call htime.setUnit(t,1,whichUnit)
-	        call htime.setInteger(t,2,whichAbility)
-	    endif
-		set t = null
-	endmethod
-
-	/**
-	 * 自定义技能 - 对点
-	 * skillId 技能ID
-	 */
-	public static method diy2loc takes player owner,location loc,location targetLoc, integer skillId,string orderString returns nothing
-	    local unit token = CreateUnitAtLoc(owner,ABILITY_TOKEN , loc , bj_UNIT_FACING)
-	    call UnitAddAbility( token, skillId)
-	    call IssuePointOrderLoc( token , orderString , targetLoc )
-	    call hunit.del(token,2.00)
-		set token = null
-	endmethod
-
-	/**
-	 * 自定义技能 - 立即
-	 * skillId 技能ID
-	 */
-	public static method diy2once takes player owner,location loc, integer skillId,string orderString returns nothing
-	    local unit token = CreateUnitAtLoc(owner,ABILITY_TOKEN , loc , bj_UNIT_FACING)
-	    call UnitAddAbility( token, skillId)
-	    call IssueImmediateOrder( token , orderString )
-	    call hunit.del(token,2.00)
-		set token = null
-	endmethod
-
-	/**
-	 * 自定义技能 - 对单位
-	 * skillId 技能ID
-	 */
-	public static method diy2unit takes player owner,location loc, unit targetUnit, integer skillId,string orderString returns nothing
-	    local unit token = CreateUnitAtLoc(owner,ABILITY_TOKEN , loc , bj_UNIT_FACING)
-	    call UnitAddAbility( token, skillId)
-	    call IssueTargetOrder( token , orderString , targetUnit )
-	    call hunit.del(token,2.00)
-		set token = null
-	endmethod
-
-	/**
-	 * 自定义技能 - 对单位ByID
-	 * skillId 技能ID
-	 */
-	public static method diy2unitById takes player owner,location loc, unit targetUnit, integer skillId,integer orderId returns nothing
-	    local unit token = CreateUnitAtLoc(owner,ABILITY_TOKEN , loc , bj_UNIT_FACING)
-	    call UnitAddAbility( token, skillId)
-	    call IssueTargetOrderById( token , orderId , targetUnit )
-	    call hunit.del(token,2.00)
-		set token = null
-	endmethod
-
-endstruct
+--- 自定义技能 - 对点
+--[[
+    bean = {
+        whichPlayer,
+        skillId,
+        orderString,
+        x,y 创建位置
+        targetX,targetY 对XY时可选
+        targetLoc, 对点时可选
+        targetUnit, 对单位时可选
+    }
+]]
+hability.diy = function(bean, life)
+    if (bean.whichPlayer == nil or bean.skillId == nil or bean.orderString == nil) then
+        return
+    end
+    if (bean.x == nil or bean.y == nil) then
+        return
+    end
+    if (bean.life == nil or bean.life < 2.00) then
+        life = 2.00
+    end
+    local token = cj.CreateUnit(bean.whichPlayer, hability.ABILITY_TOKEN, x, y, bj_UNIT_FACING)
+    cj.UnitAddAbility(token, bean.skillId)
+    if (bean.targetUnit ~= nil) then
+        cj.IssueTargetOrderById(token, bean.orderId, bean.targetUnit)
+    elseif (bean.targetX ~= nil and bean.targetY ~= nil) then
+        cj.IssuePointOrder(token, bean.orderString, bean.targetX, bean.targetY)
+    elseif (bean.targetLoc ~= nil) then
+        cj.IssuePointOrderLoc(token, bean.orderString, bean.targetLoc)
+    else
+        cj.IssueImmediateOrder(token, bean.orderString)
+    end
+    hunit.del(token, life)
+end
