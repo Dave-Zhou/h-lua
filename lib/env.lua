@@ -1,3 +1,10 @@
+--[[
+地形贴图 8 个白杨谷 5个城邦 3个达拉然
+雪地 Agrs Xbtl Xblm
+火炎 Yblm Ywmb
+城砖 Arck Alvd Ybtl
+荒地 Adrt Adrd
+]]
 henvData = {
     doodad = {
         block = { 'LTba' },

@@ -322,22 +322,6 @@ hevent.getIsNoAvoid = function()
     return heventTgr[cj.GetTriggeringTrigger()].isNoAvoid or nil
 end
 
---- 模拟BJ函数 TriggerRegisterAnyUnitEventBJ
-hevent.TriggerRegisterAnyUnitEvent = function(trig, whichEvent)
-    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-        cj.TriggerRegisterPlayerUnitEvent(trig, cj.Player(i - 1), whichEvent, nil)
-    end
-end
---- 模拟BJ函数 TriggerRegisterPlayerSelectionEvent
-hevent.TriggerRegisterPlayerSelectionEvent = function(trig, whichPlayer, selected)
-    if (selected) then
-        return cj.TriggerRegisterPlayerUnitEvent(trig, whichPlayer, EVENT_PLAYER_UNIT_SELECTED, nil)
-    else
-        return cj.TriggerRegisterPlayerUnitEvent(trig, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
-    end
-end
-
-
 -- todo - 注意到攻击目标
 -- @getTriggerUnit 获取触发单位
 -- @getTargetUnit 获取被注意/目标单位
@@ -382,7 +366,7 @@ hevent.onAttackReadyAction = function(whichUnit, action)
     local evtKey = heventKeyMap.attackReady
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -402,7 +386,7 @@ hevent.onBeAttackReady = function(whichUnit, action)
     local evtKey = heventKeyMap.beAttackReady
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -444,7 +428,7 @@ hevent.onSkillStudy = function(whichUnit, action)
     local evtKey = heventKeyMap.skillStudy
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_HERO_SKILL)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_HERO_SKILL)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -464,7 +448,7 @@ hevent.onSkillReady = function(whichUnit, action)
     local evtKey = heventKeyMap.skillReady
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CHANNEL)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CHANNEL)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -486,7 +470,7 @@ hevent.onSkillStart = function(whichUnit, action)
     local evtKey = heventKeyMap.skillStart
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CAST)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CAST)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -506,7 +490,7 @@ hevent.onSkillStop = function(whichUnit, action)
     local evtKey = heventKeyMap.skillStop
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_ENDCAST)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_ENDCAST)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -526,7 +510,7 @@ hevent.onSkillHappen = function(whichUnit, action)
     local evtKey = heventKeyMap.skillHappen
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_EFFECT)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -546,7 +530,7 @@ hevent.onSkillOver = function(whichUnit, action)
     local evtKey = heventKeyMap.skillOver
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_FINISH)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_FINISH)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -866,7 +850,7 @@ hevent.onSummon = function(whichUnit, action)
     local evtKey = heventKeyMap.summon
     if (heventGlobalTgr[evtKey] == nil) then
         heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        hevent.TriggerRegisterAnyUnitEvent(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SUMMON)
+        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SUMMON)
         cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -1007,7 +991,7 @@ hevent.onSelectionBind = function(whichPlayer, action, evtKey)
             heventData[whichPlayer].clickQty = 0
         end
         local tg = cj.CreateTrigger()
-        hevent.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, true)
+        bj_TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, true)
         cj.TriggerAddAction(tg, function()
             local triggerPlayer = cj.GetTriggerPlayer()
             local triggerUnit = cj.GetTriggerUnit()
@@ -1054,12 +1038,12 @@ hevent.onUnSelection = function(whichPlayer, action)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            hevent.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
+            bj_TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
             hevent.onEventByHandle(evtKey, p, action)
         end
         return
     else
-        hevent.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
+        bj_TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
         return hevent.onEventByHandle(evtKey, p, action)
     end
 end

@@ -56,7 +56,7 @@ hgroup = {
         return g
     end,
     -- 创建单位组,以区域为范围选择
-    createByUnit = function(r, filterFunc)
+    createByRect = function(r, filterFunc)
         local bx = cj.Condition(filterFunc)
         local g = cj.CreateGroup()
         cj.GroupEnumUnitsInRect(g, r, bx)

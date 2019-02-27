@@ -161,6 +161,4 @@ hsystem = {
         return str
     end
 
-    --物品栏技能,默认物品栏技能（英雄6格那个）hJLua默认全部认定这个技能为物品栏，如有需要自行更改
-    --ITEM_SKILL = hsystem.getObjId('AInv'),
 }

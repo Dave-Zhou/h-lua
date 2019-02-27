@@ -331,6 +331,20 @@ bj_ELEVATOR_WALL_TYPE_WEST = 4
 bj_MELEE_MAX_TWINKED_HEROES = 0
 
 bj_slotControlReady = false
+bj_mapInitialPlayableArea = nil
+bj_mapInitialCameraBounds = nil
+
+bj_forLoopAIndex = 0
+bj_forLoopBIndex = 0
+bj_forLoopAIndexEnd = 0
+bj_forLoopBIndexEnd = 0
+
+bj_slotControlReady = false
+
+bj_gameStartedTimer = nil
+bj_gameStarted = false
+
+bj_isSinglePlayer = false
 bj_dncSoundsDay = nil
 bj_dncSoundsNight = nil
 bj_dayAmbientSound = nil

@@ -1,36 +1,43 @@
-//单位组
-globals
-hMedia hmedia
-endglobals
+hmedia = {
+    bgmDelay = 3.00
+}
+--- 播放音效
+hmedia.sound = function(s)
+    if (s ~= nil) then
+        cj.StartSound(s)
+    end
+end
+--- 播放音效对某个玩家
+hmedia.sound2Player = function(s, whichPlayer)
+    if (s ~= nil and cj.GetLocalPlayer() == whichPlayer) then
+        cj.StartSound(s)
+    end
+end
+--- 绑定单位音效
+hmedia.sound2Unit = function(s, volumePercent, u)
+    if (s ~= nil) then
+        cj.AttachSoundToUnit(s, u)
+        cj.SetSoundVolume(s, cj.PercentToInt(volumePercent, 127))
+        cj.StartSound(s)
+    end
+end
+--- 绑定坐标音效
+hmedia.sound2XYZ = function(s, x, y, z)
+    if (s ~= nil) then
+        cj.SetSoundPosition(s, x, y, z)
+    end
+end
+--- 绑定点音效
+hmedia.sound2Loc = function(s, loc)
+    hmedia.sound2XYZ(s, cj.GetLocationX(loc), cj.GetLocationY(loc), cj.GetLocationZ(loc))
+end
 
-struct hMedia
+--- 播放BGM
+hmedia.bgm = function(musicFileName)
+    
+end
 
-	private static real bgmDelay = 3.00
-	public static string array bgmCurrent
-
-	//播放音效
-	public static method soundPlay takes sound s returns nothing
-	    if (s != null) then
-	        call StartSound(s)
-	    endif
-	endmethod
-
-	//播放音效对某个玩家
-	public static method soundPlay2Player takes sound s,player whichPlayer returns nothing
-	    if (s != null and GetLocalPlayer()==whichPlayer) then
-	        call StartSound(s)
-	    endif
-	endmethod
-
-	//绑定单位音效
-	public static method soundPlay2Unit takes sound s,unit u returns nothing
-	    call PlaySoundOnUnitBJ( s, 100, u )
-	endmethod
-
-	//绑定点音效
-	public static method soundPlay2Loc takes sound s,real x,real y,real z returns nothing
-	    call SetSoundPosition( s, x, y, z )
-	endmethod
+--[[
 
 	private static method bgmCall takes nothing returns nothing
 		local timer t = GetExpiredTimer()
