@@ -35,7 +35,7 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
         hplayer.addGold(p, realGold)
         floatStr = floatStr .. " |cffffcc00" .. realGold .. "G" .. "|r"
         ttgColorLen = ttgColorLen + 13
-        hmedia.soundPlay2Unit(gg_snd_ReceiveGold, whichUnit)
+        hmedia.sound2Unit(gg_snd_ReceiveGold, whichUnit)
     end
     if (realLumber >= 1) then
         hplayer.addLumber(p, realLumber)
@@ -59,98 +59,77 @@ end
 haward.forUnitLumber = function(whichUnit, lumber)
     return haward.forUnit(whichUnit, 0, 0, lumber)
 end
---[[
-struct hAward
-    /**
-     * 平分奖励英雄组（经验黄金木头）
-     */
-    public method forGroup takes unit whichUnit,integer exp,integer gold,integer lumber returns nothing
-        local unit u = null
-        local group g = null
-        local integer gCount = 0
-        local integer cutExp = 0
-        local integer cutGold = 0
-        local integer cutLumber = 0
-        local hFilter filter = 0
-        set filter = hFilter.create()
-        call filter.isHero(true)
-        call filter.isAlly(true,whichUnit)
-        call filter.isAlive(true)
-        call filter.isBuilding(false)
-        set g = hgroup.createByUnit(whichUnit,hAwardRange,function hFilter.get)
-        call filter.destroy()
-        set gCount = CountUnitsInGroup( g )
-        if( gCount <=0 ) then
-            return
-        endif
-        set cutExp = R2I(I2R(exp) / I2R(gCount))
-        set cutGold = R2I(I2R(gold) / I2R(gCount))
-        set cutLumber = R2I(I2R(lumber) / I2R(gCount))
-        if(exp > 0 and cutExp<1)then
-            set cutExp = 1
-        endif
-        loop
-            exitwhen(IsUnitGroupEmptyBJ(g) == true)
-                //must do
-                set u = FirstOfGroup(g)
-                call GroupRemoveUnit( g , u )
-                //
-                call forUnit(u,cutExp,cutGold,cutLumber)
-                set u = null
-        endloop
-        call GroupClear(g)
-        call DestroyGroup(g)
-        set g = null
-    endmethod
 
-    /**
-     * 平分奖励玩家组（黄金木头）
-     */
-    public method forPlayer takes integer gold,integer lumber returns nothing
-        local integer i = 0
-        local integer cutGold = R2I(I2R(gold) / I2R(player_current_qty))
-        local integer cutLumber = R2I(I2R(lumber) / I2R(player_current_qty))
-        set i = player_max_qty
-        loop
-            exitwhen(i<=0)
-                if(hplayer.getStatus(players[i])==hplayer.default_status_gaming)then
-                    call hplayer.addGold(players[i],cutGold)
-                    call hplayer.addLumber(players[i],cutLumber)
-                endif
-            set i=i-1
-        endloop
-    endmethod
+-- 平分奖励英雄组（经验黄金木头）
+haward.forGroup = function(whichUnit, exp, gold, lumber)
+    local gCount = 0
+    local cutExp = 0
+    local cutGold = 0
+    local cutLumber = 0
+    local g = hgroup.createByUnit(whichUnit, hAwardRange, function()
+        local flag = true
+        if (his.hero(cj.GetFilterUnit()) == false) then
+            flag = false
+        end
+        if (his.ally(whichUnit, cj.GetFilterUnit()) == false) then
+            flag = false
+        end
+        if (his.alive(cj.GetFilterUnit()) == false) then
+            flag = false
+        end
+        if (his.building(cj.GetFilterUnit()) == true) then
+            flag = false
+        end
+        return flag
+    end)
+    if (cj.CountUnitsInGroup(g) <= 0) then
+        return
+    end
+    cutExp = cj.R2I(exp / gCount)
+    cutGold = cj.R2I(gold / gCount)
+    cutLumber = cj.R2I(lumber / gCount)
+    if (exp > 0 and cutExp < 1) then
+        cutExp = 1
+    end
+    cj.ForGroup(g, function()
+        local u = cj.GetEnumUnit()
+        haward.forUnit(u, cutExp, cutGold, cutLumber)
+    end)
+    cj.GroupClear(g)
+    cj.DestroyGroup(g)
+end
+-- 平分奖励英雄组（经验）
+haward.forGroupExp = function(whichUnit, exp)
+    haward.forGroup(whichUnit, exp, 0, 0)
+end
+-- 平分奖励英雄组（黄金）
+haward.forGroupGold = function(whichUnit, gold)
+    haward.forGroup(whichUnit, 0, gold, 0)
+end
+-- 平分奖励英雄组（木头）
+haward.forGroupLumber = function(whichUnit, lumber)
+    haward.forGroup(whichUnit, 0, 0, lumber)
+end
 
-    /**
-     * 平分奖励英雄组黄金
-     */
-    public method forGroupGold takes unit whichUnit,integer gold returns nothing
-        call forGroup(whichUnit,0,gold,0)
-    endmethod
-    /**
-     * 平分奖励英雄组木头
-     */
-    public method forGroupLumber takes unit whichUnit,integer lumber returns nothing
-        call forGroup(whichUnit,0,0,lumber)
-    endmethod
-    /**
-     * 平分奖励英雄组经验
-     */
-    public method forGroupExp takes unit whichUnit,integer exp returns nothing
-        call forGroup(whichUnit,exp,0,0)
-    endmethod
-
-    /**
-     * 平分奖励玩家组黄金
-     */
-    public method forPlayerGold takes unit whichUnit,integer gold returns nothing
-        call forPlayer(gold,0)
-    endmethod
-    /**
-     * 平分奖励玩家组木头
-     */
-    public method forPlayerLumber takes unit whichUnit,integer lumber returns nothing
-        call forPlayer(0,lumber)
-    endmethod
-
-endstruct
+-- 平分奖励玩家组（黄金木头）
+haward.forPlayer = function(gold, lumber)
+    if (hplayer.qty_current <= 0) then
+        return
+    end
+    local cutGold = cj.R2I(gold / hplayer.qty_current)
+    local cutLumber = cj.R2I(lumber / hplayer.qty_current)
+    for i = 1, hplayer.qty_max, 1 do
+        if (hplayer.getStatus(hplayer.players[i]) == hplayer.player_status.gaming) then
+            hplayer.addGold(hplayer.players[i], cutGold)
+            hplayer.addLumber(hplayer.players[i], cutLumber)
+        end
+    end
+end
+-- 平分奖励玩家组（黄金）
+haward.forPlayerGold = function(gold)
+    haward.forPlayer(gold, 0)
+end
+-- 平分奖励玩家组（木头）
+haward.forPlayerLumber = function(lumber)
+    haward.forPlayer(0, lumber)
+end

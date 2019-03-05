@@ -11,8 +11,8 @@ hslk_global = {
     ability_hero_tavern_selection = 0,
 
     unit_token = 0,
-    unit_hero_tavern = 0,
-    unit_hero_tavern_token = 0,
+    unit_hero_tavern = 0, -- 酒馆id
+    unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
 
     heroesLen = 0,
@@ -148,14 +148,4 @@ local sightArr = {50, 100, 200, 300, 400, 1000}
 for k, v in ipairs(sightArr) do
     hslk_global.attr.sight.add[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_add"), v)
     hslk_global.attr.sight.sub[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_sub"), v)
-end
-
---英雄SLK系统
-table.insert(hslk_global.heroes,cj.LoadStr(cg.hash_myslk, cj.StringHash("heros"), cj.StringHash("人类·全能骑士·格雷戈里")))
-hslk_global.heroesLen = #hslk_global.heroes
-for k, v in ipairs(hslk_global.heroes) do
-    local jv = json.parse(v)
-    hslk_global.heroes[k] = jv
-    hslk_global.heroesKV[jv.heroID] = jv
-    hslk_global.unitsKV[jv.heroID] = jv
 end

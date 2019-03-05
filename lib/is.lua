@@ -1,3 +1,4 @@
+hisCache = {}
 his = {
     --是否夜晚
     night = function()
@@ -63,7 +64,7 @@ his = {
     end,
     --是否英雄
     hero = function(whichUnit)
-        return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or hunitRealTime[whichUnit].isHero == true
+        return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or hisCache[whichUnit].isHero == true
     end,
     --是否建筑
     building = function(whichUnit)
