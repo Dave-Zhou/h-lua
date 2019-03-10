@@ -1,4 +1,4 @@
-hrectData = {}
+hrectCache = {}
 hrect = {
     --创建一个设定中心（x,y）创建一个长w宽h的矩形区域
     create = function(x, y, w, h, name)
@@ -7,7 +7,7 @@ hrect = {
         local endX = x + (w * 0.5)
         local endY = y + (h * 0.5)
         local r = cj.Rect(startX, startY, endX, endY)
-        hrectData[r] = {
+        hrectCache[r] = {
             name = name,
             x = x,
             y = y,
@@ -26,56 +26,56 @@ hrect = {
     end,
     --获取数据
     getName = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].name
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].name
         end
         return nil
     end,
     getX = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].x
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].x
         end
         return nil
     end,
     getY = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].y
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].y
         end
         return nil
     end,
     getWidth = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].width
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].width
         end
         return nil
     end,
     getHeight = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].height
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].height
         end
         return nil
     end,
     getStartX = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].startX
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].startX
         end
         return nil
     end,
     getStartY = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].startY
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].startY
         end
         return nil
     end,
     getEndX = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].endX
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].endX
         end
         return nil
     end,
     getEndY = function(whichRect)
-        if (hrectData[whichRect]) then
-            return hrectData[whichRect].endY
+        if (hrectCache[whichRect]) then
+            return hrectCache[whichRect].endY
         end
         return nil
     end,

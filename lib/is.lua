@@ -1,4 +1,10 @@
 hisCache = {}
+for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+    local p = cj.Player(i - 1)
+    hisCache[p] = {}
+    hisCache[p].isComputer = true
+    hisCache[p].isAutoConvertGoldLumber = true
+end
 his = {
     --是否夜晚
     night = function()
@@ -10,7 +16,11 @@ his = {
     end,
     --是否电脑
     computer = function(whichPlayer)
-        return hplayer.isComputer(whichPlayer)
+        return hisCache[whichPlayer].isComputer
+    end,
+    --是否自动换算黄金木头
+    autoConvertGoldLumber = function(whichPlayer)
+        return hisCache[whichPlayer].isAutoConvertGoldLumber
     end,
     --是否玩家位置(如果位置为真实玩家或为空，则为true；而如果选择了电脑玩家补充，则为false)
     playerSite = function(whichPlayer)
@@ -25,13 +35,13 @@ his = {
         local flag = false
         if (whichPlayer == nil) then
             flag = false
-        elseif (whichPlayer == hplayer.player_aggressive) then
+        elseif (whichPlayer == cj.Player(PLAYER_NEUTRAL_AGGRESSIVE)) then
             flag = true
-        elseif (whichPlayer == hplayer.player_victim) then
+        elseif (whichPlayer == cj.Player(bj_PLAYER_NEUTRAL_VICTIM)) then
             flag = true
-        elseif (whichPlayer == hplayer.player_extra) then
+        elseif (whichPlayer == cj.Player(bj_PLAYER_NEUTRAL_EXTRA)) then
             flag = true
-        elseif (whichPlayer == hplayer.player_passive) then
+        elseif (whichPlayer == cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
             flag = true
         end
         return flag

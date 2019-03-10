@@ -19,9 +19,9 @@ end
 --- 展示
 hmark.display = function(whichPlayer, path, through, startPercent, endPercent, during)
     if (whichPlayer == nil) then
-        bi.CinematicFilterGenericBJ(through, BLEND_MODE_ADDITIVE, path, startPercent, startPercent, startPercent, 90.00, endPercent, endPercent, endPercent, 0.00)
+        bj.CinematicFilterGenericBJ(through, BLEND_MODE_ADDITIVE, path, startPercent, startPercent, startPercent, 90.00, endPercent, endPercent, endPercent, 0.00)
     elseif (whichPlayer == cj.GetLocalPlayer()) then
-        bi.CinematicFilterGenericBJ(through, BLEND_MODE_ADDITIVE, path, startPercent, startPercent, startPercent, 90.00, endPercent, endPercent, endPercent, 0.00)
+        bj.CinematicFilterGenericBJ(through, BLEND_MODE_ADDITIVE, path, startPercent, startPercent, startPercent, 90.00, endPercent, endPercent, endPercent, 0.00)
     end
     if (during < through + 1) then
         during = through + 1

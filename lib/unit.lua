@@ -1,4 +1,4 @@
-hunitRealTime = {}
+hunitCache = {}
 hunit = {
 
     -- 获取单位的最大生命值
@@ -70,7 +70,7 @@ hunit = {
 
     --单位是否启用硬直（系统默认不启用）
     isOpenPunish = function(u)
-        return hunitRealTime[u].isOpenPunish
+        return hunitCache[u].isOpenPunish
     end,
 
     --[[
@@ -101,6 +101,7 @@ hunit = {
             isOpenPunish = false, --是否开启硬直系统，可选
             isShadow = false, --是否影子，可选
             isUnSelectable = false, --是否可鼠标选中，可选
+            isPause = false, -- 是否暂停
             isInvulnerable = false, --是否无敌，可选
         }
     ]]
@@ -138,6 +139,8 @@ hunit = {
             facing = hlogin.getDegBetweenXY(x, y, cj.GetLocationX(bean.facingLoc), cj.GetLocationY(bean.facingLoc))
         elseif (bean.facingUnit ~= nil) then
             facing = hlogin.getDegBetweenXY(x, y, cj.GetUnitX(bean.facingUnit), cj.GetUnitY(bean.facingUnit))
+        else
+            facing = bj_UNIT_FACING
         end
         if (bean.qty > 1) then
             g = cj.CreateGroup()
@@ -206,7 +209,7 @@ hunit = {
                 cj.SetUnitInvulnerable(u, true)
             end
             --记入realtime
-            hunitRealTime[u] = {
+            hunitCache[u] = {
                 id = bean.unitId,
                 whichPlayer = bean.whichPlayer,
                 x = x,

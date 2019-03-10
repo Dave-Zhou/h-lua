@@ -18,18 +18,20 @@ hslk_global = {
     heroesLen = 0,
     heroes = {},
     heroesKV = {},
+    heroesItems = {},
+    heroesItemsKV = {},
     unitsKV = {},
 
     attr = {
-        agi = {
+        agi_green = {
             add = {},
             sub = {},
         },
-        int = {
+        int_green = {
             add = {},
             sub = {},
         },
-        str = {
+        str_green = {
             add = {},
             sub = {},
         },
@@ -69,6 +71,7 @@ hslk_global = {
             add = {},
             sub = {},
         },
+        sightTotal = {},
     },
 
 }
@@ -118,13 +121,13 @@ end
 
 --属性系统
 for i = 1, 9 do
-    local val = math.floor(10^(i-1))
-    hslk_global.attr.agi.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_agi_add"), val)
-    hslk_global.attr.agi.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_agi_sub"), val)
-    hslk_global.attr.int.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_int_add"), val)
-    hslk_global.attr.int.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_int_sub"), val)
-    hslk_global.attr.str.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_str_add"), val)
-    hslk_global.attr.str.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_str_sub"), val)
+    local val = math.floor(10 ^ (i - 1))
+    hslk_global.attr.agi_green.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_agi_green_add"), val)
+    hslk_global.attr.agi_green.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_agi_green_sub"), val)
+    hslk_global.attr.int_green.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_int_green_add"), val)
+    hslk_global.attr.int_green.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_int_green_sub"), val)
+    hslk_global.attr.str_green.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_str_green_add"), val)
+    hslk_global.attr.str_green.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_str_green_sub"), val)
     hslk_global.attr.attack_green.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_green_add"), val)
     hslk_global.attr.attack_green.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_green_sub"), val)
     hslk_global.attr.attack_white.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_white_add"), val)
@@ -144,8 +147,17 @@ end
 hslk_global.attr.avoid.add = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_avoid_add"), val)
 hslk_global.attr.avoid.sub = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_avoid_sub"), val)
 --属性系统 视野
-local sightArr = {50, 100, 200, 300, 400, 1000}
-for k, v in ipairs(sightArr) do
-    hslk_global.attr.sight.add[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_add"), v)
-    hslk_global.attr.sight.sub[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_sub"), v)
+local sightBase = { 1, 2, 3, 4, 5 }
+local si = 1
+while (si <= 10000) do
+    for k, v in ipairs(sightBase) do
+        v = math.floor(v * si)
+        table.insert(hslk_global.sightTotal, v)
+        hslk_global.attr.sight.add[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_add"), v)
+        hslk_global.attr.sight.sub[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_sub"), v)
+    end
+    si = si * 10
 end
+table.sort(hslk_global.sightTotal, function(a, b)
+    return a > b
+end)

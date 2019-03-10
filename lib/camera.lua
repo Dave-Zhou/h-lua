@@ -1,8 +1,11 @@
-hcameraData = {}
-hcamera = {
-    -- 镜头模式
-    model = "normal",
-}
+hcameraCache = {}
+for i = 1, 12, 1 do
+    local p = cj.Player(i - 1)
+    hcameraCache[p] = {}
+    hcameraCache[p].model = "normal" -- 镜头模型
+    hcameraCache[p].isShocking = false
+end
+hcamera = {}
 
 -- 重置镜头
 hcamera.reset = function(whichPlayer, during)
@@ -27,13 +30,27 @@ hcamera.toLoc = function(whichPlayer, during, loc)
     hcamera.toXY(whichPlayer, during, cj.GetLocationX(loc), cj.GetLocationY(loc))
 end
 -- 锁定镜头
+-- whichUnit = {} 以玩家为key
 hcamera.lock = function(whichPlayer, whichUnit)
-    if (whichPlayer == nil or cj.GetLocalPlayer() == whichPlayer) then
-        cj.SetCameraTargetController(whichUnit, 0, 0, false)
+    if (whichPlayer ~= nil or cj.GetLocalPlayer() == whichPlayer) then
+        if (his.alive(whichUnit[whichPlayer]) == true) then
+            cj.SetCameraTargetController(whichUnit[whichPlayer], 0, 0, false)
+        else
+            hcamera.reset(whichPlayer, 0)
+        end
+    else
+        for i = 1, 12, 1 do
+            local p = cj.Player(i - 1)
+            if (his.alive(whichUnit[p]) == true) then
+                cj.SetCameraTargetController(whichUnit[p], 0, 0, false)
+            else
+                hcamera.reset(p, 0)
+            end
+        end
     end
 end
 -- 设定镜头距离
-hcamera.zoom = function(whichPlayer, distance)
+hcamera.distance = function(whichPlayer, distance)
     if (whichPlayer == nil or cj.GetLocalPlayer() == whichPlayer) then
         cj.SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, distance, 0)
     end
@@ -54,16 +71,16 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         scale = 5.00 -- 假如没有振幅，默认5.00意思意思一下
     end
     -- 镜头动作降噪
-    if (hcameraData[whichPlayer] == true) then
+    if (hcameraCache[whichPlayer].isShocking == true) then
         return
-    else
-        cameraData[whichPlayer] = true
     end
+    cameraData[whichPlayer].isShocking = true
     if (whichType == 'shake') then
         cj.CameraSetTargetNoiseForPlayer(whichPlayer, scale, 1.00)
         htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
+            cameraData[whichPlayer].isShocking = false
             if (cj.GetLocalPlayer() == whichPlayer) then
                 cj.CameraSetTargetNoise(0, 0)
             end
@@ -73,6 +90,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
+            cameraData[whichPlayer].isShocking = false
             if (cj.GetLocalPlayer() == whichPlayer) then
                 cj.CameraClearNoiseForPlayer(0, 0)
             end
@@ -80,40 +98,50 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
     end
 end
 
--- 设置镜头模式
-hcamera.setModel = function(model)
-    if (model == "normal") then
-        -- nothing
-    elseif (model == "lock") then
+--- 获取镜头模型
+hcamera.getModel = function(whichPlayer)
+    return hcameraCache[whichPlayer].model
+end
+--- 设置镜头模式
+--[[
+ bean = {
+    model = "normal" | "lock",
+    whichPlayer = nil, -- 锁定单位的玩家
+    lockUnit = {}, -- 锁定单位的绑定单位,与玩家对应
+ }
+]]
+hcamera.setModel = function(bean)
+    if (bean.model == nil) then
+        return
+    end
+    if (bean.model == "normal") then
+        hcamera.reset(bean.whichPlayer, 0)
+    elseif (bean.model == "lock") then
+        if (bean.lockUnit == nil or bean.whichPlayer == nil) then
+            return
+        end
         htime.setInterval(0.1, function()
-            local jmax = 0
-            local firstHero
-            for i = 1, hplayer.qty_max, 1 do
-                jmax = hhero.getPlayerUnitQty(hplayer.players[i])
-                local j = 1
-                while (j <= jmax or firstHero == nil) do
-                    firstHero = hhero.getPlayerUnit(hplayer.players[i], j)
-                    j = j + 1
-                end
-                if (firstHero ~= nil and his.alive(firstHero) == true and cj.GetLocalPlayer() == hplayer.players[i]) then
-                    hcamera.lock(hplayer.players[i], firstHero)
-                else
-                    hcamera.reset(hplayer.players[i], 0)
-                end
-                firstHero = nil
-            end
+            hcamera.lock(bean.whichPlayer, bean.lockUnit)
         end)
-    elseif (model == "zoomin") then
+    elseif (bean.model == "zoomin") then
         htime.setInterval(0.1, function()
-            cj.SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, 825, 0)
+            hcamera.distance(bean.whichPlayer, 825)
         end)
-        hattr.max_move_speed = hattr.max_move_speed * 2
-    elseif (model == "zoomout") then
+        -- hattr.max_move_speed = hattr.max_move_speed * 2
+    elseif (bean.model == "zoomout") then
         htime.setInterval(0.1, function()
-            cj.SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, 3300, 0)
+            hcamera.distance(bean.whichPlayer, 3000)
         end)
     else
         return
+    end
+    if (bean.whichPlayer ~= nil) then
+        hcameraCache[bean.whichPlayer].model = bean.model
+    else
+        for i = 1, 12, 1 do
+            local p = cj.Player(i - 1)
+            hcameraCache[p].model = bean.model
+        end
     end
 end
 

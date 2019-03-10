@@ -22,6 +22,32 @@ hsystem = {
         end
         return len
     end,
+    --随机在数组内取一个
+    randTable = function(arr)
+        local keys = {}
+        for k, v in pairs(arr) do
+            table.insert(keys, k)
+        end
+        local val = arr[math.random(1, #keys)]
+        keys = nil
+        return val
+    end,
+    --克隆table
+    cloneTable = function(org)
+        local function copy(org1, res)
+            for k, v in pairs(org1) do
+                if type(v) ~= "table" then
+                    res[k] = v;
+                else
+                    res[k] = {};
+                    copy(v, res[k])
+                end
+            end
+        end
+        local res = {}
+        copy(org, res)
+        return res
+    end,
     --在数组内
     inArray = function(val, arr)
         local isin = false
@@ -33,12 +59,17 @@ hsystem = {
         end
         return isin
     end,
-    --删除数组一次某个值
-    rmArray = function(val, arr)
+    --删除数组一次某个值(qty次,默认删除全部)
+    rmArray = function(val, arr, qty)
+        qty = qty or -1
+        local q = 0
         for k, v in pairs(arr) do
             if (v == val) then
+                q = q + 1
                 table.remove(arr, k)
-                break
+                if (qty ~= -1 and q >= qty) then
+                    break
+                end
             end
         end
     end,

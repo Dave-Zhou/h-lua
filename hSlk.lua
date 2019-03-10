@@ -146,7 +146,7 @@ local aid = obj:get_id()
 local obj = slk.unit.ntav:new("unit_hero_tavern")
 obj.EditorSuffix = "#hJLua"
 obj.Name = "英雄系统 酒馆"
-obj.abilList = "Avul,Asud,"..aid
+obj.abilList = "Avul,Asid,"..aid
 obj.Sellunits = ""
 obj.pathTex = ""
 obj.collision = ""
@@ -162,7 +162,7 @@ local obj = slk.unit.hfoo:new("unit_hero_tavern_token")
 obj.EditorSuffix = "#hJLua"
 obj.Name = "英雄系统 选英雄Token"
 obj.special = 1
-obj.abilList = "Avul,Alnv"
+obj.abilList = "Avul,AInv"
 obj.upgrade = ""
 obj.collision = 0.00
 obj.file = ".mdl"
@@ -328,7 +328,7 @@ obj.Cost1 = 0
 for i = 1, 9 do
 local val = math.floor(10^(i-1))
 -- #敏捷
-local obj = slk.ability.Aamk:new("attr_agi_add_" .. i)
+local obj = slk.ability.Aamk:new("attr_agi_green_add_" .. i)
 obj.EditorSuffix = "#hJLua"
 obj.Name = "属性系统#敏捷+" .. val
 obj.Art = ""
@@ -343,10 +343,10 @@ obj["DataC" .. (j+1)] = 0
 obj["DataD" .. (j+1)] = 1
 end
 ?>
-call SaveInteger(hash_hslk, StringHash("attr_agi_add"), <?=val?>, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("attr_agi_green_add"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #负敏捷
-local obj = slk.ability.Aamk:new("attr_agi_sub_" .. i)
+local obj = slk.ability.Aamk:new("attr_agi_green_sub_" .. i)
 obj.EditorSuffix = "#hJLua"
 obj.Name = "属性系统#敏捷-" .. val
 obj.Art = ""
@@ -361,10 +361,10 @@ obj["DataC" .. (j+1)] = 0
 obj["DataD" .. (j+1)] = 1
 end
 ?>
-call SaveInteger(hash_hslk, StringHash("attr_agi_sub"), <?=val?>, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("attr_agi_green_sub"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #智力
-local obj = slk.ability.Aamk:new("attr_int_add_" .. i)
+local obj = slk.ability.Aamk:new("attr_int_green_add_" .. i)
 obj.EditorSuffix = "#hJLua"
 obj.Name = "属性系统#智力+" .. val
 obj.Art = ""
@@ -379,10 +379,10 @@ obj["DataC" .. (j+1)] = 0
 obj["DataD" .. (j+1)] = 1
 end
 ?>
-call SaveInteger(hash_hslk, StringHash("attr_int_add"), <?=val?>, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("attr_int_green_add"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #负智力
-local obj = slk.ability.Aamk:new("attr_int_sub_" .. i)
+local obj = slk.ability.Aamk:new("attr_int_green_sub_" .. i)
 obj.EditorSuffix = "#hJLua"
 obj.Name = "属性系统#智力-" .. val
 obj.Art = ""
@@ -397,10 +397,10 @@ obj["DataC" .. (j+1)] = 0
 obj["DataD" .. (j+1)] = 1
 end
 ?>
-call SaveInteger(hash_hslk, StringHash("attr_int_sub"), <?=val?>, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("attr_int_green_sub"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #力量
-local obj = slk.ability.Aamk:new("attr_str_add_" .. i)
+local obj = slk.ability.Aamk:new("attr_str_green_add_" .. i)
 obj.EditorSuffix = "#hJLua"
 obj.Name = "属性系统#力量+" .. val
 obj.Art = ""
@@ -415,10 +415,10 @@ obj["DataC" .. (j+1)] = 1*val*j
 obj["DataD" .. (j+1)] = 1
 end
 ?>
-call SaveInteger(hash_hslk, StringHash("attr_str_add"), <?=val?>, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("attr_str_green_add"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #负力量
-local obj = slk.ability.Aamk:new("attr_str_sub_" .. i)
+local obj = slk.ability.Aamk:new("attr_str_green_sub_" .. i)
 obj.EditorSuffix = "#hJLua"
 obj.Name = "属性系统#力量-" .. val
 obj.Art = ""
@@ -433,7 +433,7 @@ obj["DataC" .. (j+1)] = -1*val*j
 obj["DataD" .. (j+1)] = 1
 end
 ?>
-call SaveInteger(hash_hslk, StringHash("attr_str_sub"), <?=val?>, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("attr_str_green_sub"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #绿攻击力
 local obj = slk.ability.AItg:new("attr_attack_green_add_" .. i)
@@ -651,27 +651,33 @@ obj.DataA2 = 10000000
 call SaveInteger(hash_hslk, StringHash("attr_avoid_sub"), 0, '<?=obj:get_id()?>')
 <?
 -- #视野
-local sightArr = {50, 100, 200, 300, 400, 1000}
-for k, v in ipairs(sightArr) do
-local obj = slk.ability.AIsi:new("attr_sight_add_" .. v)
-obj.EditorSuffix = "#hJLua"
-obj.Name = "属性系统#视野+" .. v
-obj.Art = ""
-obj.levels = 1
-obj["DataA1"] = 1*v
-?>
-call SaveInteger(hash_hslk, StringHash("attr_sight_add"), <?=v?>, '<?=obj:get_id()?>')
-<?
--- #负视野
-local obj = slk.ability.AIsi:new("attr_sight_sub_" .. v)
-obj.EditorSuffix = "#hJLua"
-obj.Name = "属性系统#视野-" .. v
-obj.Art = ""
-obj.levels = 1
-obj["DataA1"] = -1*v
-?>
-call SaveInteger(hash_hslk, StringHash("attr_sight_sub"), <?=v?>, '<?=obj:get_id()?>')
-<?
+local sightBase = {1, 2, 3, 4, 5}
+i = 1
+while(i <= 10000) do
+    for k, v in ipairs(sightBase) do
+        v = math.floor(v * i)
+        -- #正视野
+        local obj = slk.ability.AIsi:new("attr_sight_add_" .. v)
+        obj.EditorSuffix = "#hJLua"
+        obj.Name = "属性系统#视野+" .. v
+        obj.Art = ""
+        obj.levels = 1
+        obj["DataA1"] = 1*v
+        ?>
+        call SaveInteger(hash_hslk, StringHash("attr_sight_add"), <?=v?>, '<?=obj:get_id()?>')
+        <?
+        -- #负视野
+        local obj = slk.ability.AIsi:new("attr_sight_sub_" .. v)
+        obj.EditorSuffix = "#hJLua"
+        obj.Name = "属性系统#视野-" .. v
+        obj.Art = ""
+        obj.levels = 1
+        obj["DataA1"] = -1*v
+        ?>
+        call SaveInteger(hash_hslk, StringHash("attr_sight_sub"), <?=v?>, '<?=obj:get_id()?>')
+        <?
+    end
+    i = i * 10
 end
 
 -- #随机环境Env

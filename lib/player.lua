@@ -375,7 +375,7 @@ hplayerInit = function()
         local p = cj.GetTriggerPlayer()
         local g
         hplayerData[p].status = p, hplayer.player_status.leave
-        hmsg.echo(cj.GetPlayerName(p) + "离开了～")
+        hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
         g = hgroup.createByRect(cj.GetEntireMapRect(), function()
             local b = false
             if (cj.GetOwningPlayer(cj.GetFilterUnit()) == p) then
@@ -413,7 +413,7 @@ hplayerInit = function()
         cj.TriggerAddAction(tg, function()
             local dd = cj.GetClickedDialog()
             local bb = cj.GetClickedButton()
-            hmsg.echoTo(p, "已设定生命源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
+            hmessage.echoXY0(p, "已设定生命源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
             hplayerData[p].lifeSourceRatio = bValue[bb]
             cj.DialogClear(dd)
             cj.DialogDestroy(dd)
@@ -438,7 +438,7 @@ hplayerInit = function()
         cj.TriggerAddAction(tg, function()
             local dd = cj.GetClickedDialog()
             local bb = cj.GetClickedButton()
-            hmsg.echoTo(p, "已设定魔法源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
+            hmessage.echoXY0(p, "已设定魔法源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
             hplayerData[p].manaSourceRatio = bValue[bb]
             cj.DialogClear(dd)
             cj.DialogDestroy(dd)
@@ -450,12 +450,12 @@ hplayerInit = function()
     end)
     cj.TriggerAddAction(triggerConvert, function()
         local p = GetTriggerPlayer()
-        if (hplayerData[p].isAutoConvert == true) then
-            hplayerData[p].isAutoConvert = false
-            hmsg.echoTo(GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
+        if (his.autoConvertGoldLumber(p) == true) then
+            hisCache[p].isAutoConvertGoldLumber = false
+            hmessage.echoXY0(GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
         else
-            hplayerData[p].isAutoConvert = true
-            hmsg.echoTo(GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
+            hisCache[p].isAutoConvertGoldLumber = true
+            hmessage.echoXY0(GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
         end
     end)
     cj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
@@ -476,14 +476,15 @@ hplayerInit = function()
         hplayerData[hplayer.players[i]].sellRatio = 50.00
         hplayerData[hplayer.players[i]].lifeSourceRatio = 50.00
         hplayerData[hplayer.players[i]].manaSourceRatio = 50.00
-        hplayerData[hplayer.players[i]].isAutoConvert = true
         hplayerData[hplayer.players[i]].apm = 0
         hplayerData[hplayer.players[i]].damage = 0
         hplayerData[hplayer.players[i]].beDamage = 0
         hplayerData[hplayer.players[i]].kill = 0
         if ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)) then
+            --- his
+            hisCache[hplayer.players[i]].isComputer = false
+            --
             hplayer.qty_current = hplayer.qty_current + 1
-            hplayerData[hplayer.players[i]].isComputer = false
             hplayerData[hplayer.players[i]].status = hplayer.player_status.gaming
             cj.TriggerRegisterPlayerSelectionEventBJ(triggerApm, hplayer.players[i], true)
             cj.TriggerRegisterPlayerEventLeave(triggerLeave, hplayer.players[i])
@@ -496,7 +497,9 @@ hplayerInit = function()
             cj.TriggerRegisterPlayerChatEvent(triggerMSR, hplayer.players[i], "-msr", true)
             cj.TriggerRegisterPlayerChatEvent(triggerConvert, hplayer.players[i], "-apc", true)
         else
-            hplayerData[hplayer.players[i]].isComputer = true
+            --- his
+            hisCache[hplayer.players[i]].isComputer = true
+            --
             hplayerData[hplayer.players[i]].status = hplayer.player_status.none
         end
     end

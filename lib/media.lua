@@ -1,6 +1,11 @@
-hmedia = {
-    bgmDelay = 3.00
-}
+hmediaCache = {}
+for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+    local p = cj.Player(i - 1)
+    hmediaCache[p] = {}
+    hmediaCache[p].currentBgm = nil
+    hmediaCache[p].bgmDelay = 3.00
+end
+hmedia = {}
 --- 播放音效
 hmedia.sound = function(s)
     if (s ~= nil) then
@@ -33,39 +38,34 @@ hmedia.sound2Loc = function(s, loc)
 end
 
 ---播放BGM
+-- 当whichPlayer为nil时代表对全员操作
 -- 如果背景音乐无法循环播放，尝试格式工厂转wav再转回mp3
-hmedia.bgm = function(musicFileName)
+-- 由于音乐快速切换会卡顿，所以有3秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）
+-- 延时是每个玩家独立时间，当切换的BGM为同一首时，切换不会进行
+hmedia.bgm = function(musicFileName, whichPlayer)
     if (musicFileName ~= null and string.len(musicFileName) > 0) then
-        cj.StopMusic(true)
-        htime.setTimeout(hmedia.bgmDelay, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.PlayMusic(txt)
-            for i = 1, hplayer.qty_max, 1 do
-                hplayerData[hplayer.players[i]].currentBgm = musicFileName
+        if (whichPlayer ~= nil and hmediaCache[whichPlayer].currentBgm ~= musicFileName) then
+            return
+        end
+        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+            local p = cj.Player(i - 1)
+            if (whichPlayer == nil or (p == whichPlayer and cj.GetLocalPlayer() == whichPlayer)) then
+                if(hmediaCache[p].currentBgm ~= musicFileName)then
+                    hmediaCache[p].currentBgm = musicFileName
+                    cj.StopMusic(true)
+                    htime.setTimeout(hmediaCache[p].bgmDelay, function(t, td)
+                        htime.delDialog(td)
+                        htime.delTimer(t)
+                        cj.PlayMusic(txt)
+                        hmediaCache[p].bgmDelay = hmediaCache[p].bgmDelay - 3.00
+                    end)
+                    hmediaCache[p].bgmDelay = hmediaCache[p].bgmDelay + 3.00
+                end
             end
-            hmedia.bgmDelay = hmedia.bgmDelay - 1.50
-        end)
-        hmedia.bgmDelay = hmedia.bgmDelay + 1.50
-    end
-end
----对玩家播放BGM
--- 如果背景音乐无法循环播放，尝试格式工厂转wav再转回mp3
-hmedia.bgm2Player = function(musicFileName, whichPlayer)
-    if (musicFileName ~= null and string.len(musicFileName) > 0 and whichPlayer ~= nil and hplayerData[whichPlayer].currentBgm ~= musicFileName) then
-        if (cj.GetLocalPlayer() == whichPlayer) then
-            cj.StopMusic(true)
-            htime.setTimeout(hmedia.bgmDelay, function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                cj.PlayMusic(txt)
-                hplayerData[whichPlayer].currentBgm = musicFileName
-                hmedia.bgmDelay = hmedia.bgmDelay - 1.50
-            end)
-            hmedia.bgmDelay = hmedia.bgmDelay + 1.50
         end
     end
 end
+--- 停止BGM
 hmedia.bgmStop = function(whichPlayer)
     if (whichPlayer == nil) then
         cj.StopMusic(true)

@@ -978,21 +978,19 @@ hevent.onEsc = function(whichPlayer, action)
 end
 -- todo - 选择单位(基准)
 -- 单选evtKey=selection1，双击=selection2，如此类推
-hevent.onSelectionBind = function(whichPlayer, action, evtKey)
+hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
     if (heventData[whichPlayer].evtInit == nil) then
-        heventData[whichPlayer].evtInit = {}
+        heventData[whichPlayer].evtInit = {
+            selectionBind = false,
+            clickQty = 0,
+        }
     end
     if (whichPlayer == nil) then
         return
     end
-    if (heventData[whichPlayer].evtInit.selectionBind == nil) then
-        heventData[whichPlayer].evtInit.selectionBind = true
-        if (heventData[whichPlayer].clickQty == nil) then
-            heventData[whichPlayer].clickQty = 0
-        end
-        local tg = cj.CreateTrigger()
-        bj_TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, true)
-        cj.TriggerAddAction(tg, function()
+    if (heventGlobalTgr['selectionBind'] == nil) then
+        heventGlobalTgr['selectionBind'] = cj.CreateTrigger()
+        cj.TriggerAddAction(heventGlobalTgr['selectionBind'], function()
             local triggerPlayer = cj.GetTriggerPlayer()
             local triggerUnit = cj.GetTriggerUnit()
             local qty = 1 + heventData[whichPlayer].clickQty
@@ -1012,15 +1010,39 @@ hevent.onSelectionBind = function(whichPlayer, action, evtKey)
                 heventData[whichPlayer].clickQty = heventData[whichPlayer].clickQty - 1
             end)
         end)
+        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+            heventData[cj.Player(i - 1)].evtInit  = {
+                selectionBind = false,
+                clickQty = 0,
+            }
+        end
     end
-    return hevent.onEventByHandle(evtKey, whichPlayer, action)
+    if (heventData[whichPlayer].evtInit.selectionBind == false) then
+        heventData[whichPlayer].evtInit.selectionBind = true
+        bj.TriggerRegisterPlayerSelectionEvent(heventGlobalTgr['selectionBind'], whichPlayer, true)
+    end
+    return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, heventGlobalTgr['selectionBind'])
+end
+hevent.onSelectionBind = function(whichPlayer, action, evtKey)
+    if (whichPlayer ~= nil) then
+        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+            hevent.onSelectionBindPlayer(cj.Player(i - 1), action, evtKey)
+        end
+    else
+        hevent.onSelectionBindPlayer(whichPlayer, action, evtKey)
+    end
+    return heventGlobalTgr['selectionBind']
 end
 -- todo - 玩家 N 击选择单位
+-- whichPlayer 为nil时，指所有玩家
 -- qty 需要点击次数
 -- getTriggerPlayer 获取触发玩家
 -- getTriggerUnit 获取触发单位
 hevent.onSelection = function(whichPlayer, qty, action)
-    hevent.onSelectionBind(whichPlayer, action, heventKeyMap.selection .. qty)
+    return hevent.onSelectionBind(whichPlayer, action, heventKeyMap.selection .. qty)
+end
+hevent.onSelectionClear = function()
+    heventGlobalTgr['selectionBind'] = nil
 end
 -- todo - 玩家取消选择单位
 -- getTriggerPlayer 获取触发玩家
@@ -1038,12 +1060,12 @@ hevent.onUnSelection = function(whichPlayer, action)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            bj_TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
+            bj.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
             hevent.onEventByHandle(evtKey, p, action)
         end
         return
     else
-        bj_TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
+        bj.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
         return hevent.onEventByHandle(evtKey, p, action)
     end
 end
@@ -1177,6 +1199,7 @@ hevent.onRegister = function(action)
     return hevent.onEventByHandle(evtKey, hevent.defaultHandle, action)
 end
 -- todo - 任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
+-- @getTriggerPlayer 获取触发玩家
 -- @getTriggerUnit 获取触发单位
 hevent.onPickHero = function(action)
     local evtKey = heventKeyMap.pickHero

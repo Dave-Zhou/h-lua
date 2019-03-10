@@ -1,5 +1,5 @@
 --todo 敌人模块
-henemyRealTime = {}
+henemyCache = {}
 henemy = {
     players = {}, -- 充当敌人的玩家
     numbers = {}, -- 充当敌人的玩家调用次数，默认 0

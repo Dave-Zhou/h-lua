@@ -1,3 +1,4 @@
+henvCache = {}
 --[[
 地形贴图 8 个白杨谷 5个城邦 3个达拉然
 雪地 Agrs Xbtl Xblm
@@ -52,6 +53,15 @@ henv = {
         if (ground == nil or doodad == nil or units == nil) then
             return
         end
+        if (henvCache[whichRect] == nil) then
+            henvCache[whichRect] = {}
+        else
+            --清理装饰单位
+            for k, v in pairs(henvCache[whichRect]) do
+                cj.RemoveUnit(v)
+            end
+            henvCache[whichRect] = {}
+        end
         --清理装饰物
         cj.EnumDestructablesInRectAll(whichRect, function()
             cj.RemoveDestructable(cj.GetEnumDestructable())
@@ -102,7 +112,13 @@ henv = {
                 return
             end
             if (buildType == 1) then
-                cj.GroupAddUnit(env_u_group, hunit.createUnitXY(hplayer.player_passive, units[math.random(1, #units)], x, y))
+                local tempUnit = cj.CreateUnit(
+                        cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                        units[math.random(1, #units)],
+                        x, y,
+                        bj_UNIT_FACING
+                )
+                table.insert(henvCache[whichRect], tempUnit)
             elseif (buildType == 2) then
                 cj.SetDestructableInvulnerable(cj.CreateDestructable(doodads[math.random(1, #doodads)], x, y, cj.GetRandomDirectionDeg(), cj.GetRandomReal(0.5, 1.1), 0), true)
                 if (ground ~= nil) then

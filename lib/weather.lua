@@ -51,7 +51,7 @@ hweather = {
             return nil
         end
         local r = hrect.createLoc(bean.x, bean.y, bean.w, bean.h)
-        local w = AddWeatherEffect(r, bean.type)
+        local w = cj.AddWeatherEffect(r, bean.type)
         if (bean.during > 0) then
             htime.setTimeout(bean.during, nil, function(t, td)
                 htime.delDialog(td)

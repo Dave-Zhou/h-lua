@@ -134,7 +134,7 @@ bj.CustomVictoryBJ = function(whichPlayer, showDialog, showScores)
         end
     end
 end
-bi.AbortCinematicFadeBJ = function()
+bj.AbortCinematicFadeBJ = function()
     if cg.bj_cineFadeContinueTimer ~= nil then
         cj.DestroyTimer(cg.bj_cineFadeContinueTimer)
     end
@@ -143,8 +143,8 @@ bi.AbortCinematicFadeBJ = function()
         cj.DestroyTimer(cg.bj_cineFadeFinishTimer)
     end
 end
-bi.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
-    cj.AbortCinematicFadeBJ()
+bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
+    bj.AbortCinematicFadeBJ()
     cj.SetCineFilterTexture(tex)
     cj.SetCineFilterBlendMode(bmode)
     cj.SetCineFilterTexMapFlags(TEXMAP_FLAG_NONE)

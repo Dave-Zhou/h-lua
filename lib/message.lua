@@ -13,7 +13,7 @@ hmessage = {
         end
     end,
     -- 在屏幕(0.0)处打印信息给某玩家
-    echoXY0 = function(whichPlayer, msg, x, y, duration)
+    echoXY0 = function(whichPlayer, msg, duration)
         hmessage.echoXY(whichPlayer, msg, 0, 0, duration)
     end,
 }
