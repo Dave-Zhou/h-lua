@@ -1,3 +1,5 @@
+<a href="https://gitlab.com/h-w3x/h-lua">已全部转移到gitlab https://gitlab.com/h-w3x/h-lua</a>
+
 # hJLua
 hJLua是在hJass基础上更进一步的魔兽制图库
 
