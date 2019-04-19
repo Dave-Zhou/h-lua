@@ -5,10 +5,10 @@ hslk_global = {
     item_cooldown = {},
     env_model = {},
 
-    ability_item_separate = 0,
-    ability_break = 0,
-    ability_swim_unlimit = 0,
-    ability_hero_tavern_selection = 0,
+    skill_item_separate = 0,
+    skill_break = 0,
+    skill_swim_unlimit = 0,
+    skill_hero_tavern_selection = 0,
 
     unit_token = 0,
     unit_hero_tavern = 0, -- 酒馆id
@@ -76,14 +76,14 @@ hslk_global = {
 
 }
 
---ability_item_separate
-hslk_global.ability_item_separate = cj.LoadInteger(cg.hash_hslk, cj.StringHash("ability_item_separate"), 0)
---ability_break
-hslk_global.ability_break = cj.LoadInteger(cg.hash_hslk, cj.StringHash("ability_break"), 0)
---ability_swim_unlimit
-hslk_global.ability_swim_unlimit = cj.LoadInteger(cg.hash_hslk, cj.StringHash("ability_swim_unlimit"), 0)
---ability_hero_tavern_selection
-hslk_global.ability_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, cj.StringHash("ability_hero_tavern_selection"), 0)
+--skill_item_separate
+hslk_global.skill_item_separate = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_item_separate"), 0)
+--skill_break
+hslk_global.skill_break = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_break"), 0)
+--skill_swim_unlimit
+hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_swim_unlimit"), 0)
+--skill_hero_tavern_selection
+hslk_global.skill_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_hero_tavern_selection"), 0)
 
 --unit_token
 hslk_global.unit_token = cj.LoadInteger(cg.hash_hslk, cj.StringHash("unit_token"), 1)
@@ -152,12 +152,12 @@ local si = 1
 while (si <= 10000) do
     for k, v in ipairs(sightBase) do
         v = math.floor(v * si)
-        table.insert(hslk_global.sightTotal, v)
+        table.insert(hslk_global.attr.sightTotal, v)
         hslk_global.attr.sight.add[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_add"), v)
         hslk_global.attr.sight.sub[v] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_sight_sub"), v)
     end
     si = si * 10
 end
-table.sort(hslk_global.sightTotal, function(a, b)
+table.sort(hslk_global.attr.sightTotal, function(a, b)
     return a > b
 end)

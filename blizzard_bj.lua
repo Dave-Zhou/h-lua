@@ -158,5 +158,17 @@ end
 bj.SetUnitVertexColorBJ = function(whichUnit, red, green, blue, transparency)
     cj.SetUnitVertexColor(whichUnit, cj.PercentTo255(red), cj.PercentTo255(green), cj.PercentTo255(blue), cj.PercentTo255(100.0 - transparency))
 end
+bj.CreateQuestBJ = function(questType, title, description, iconPath)
+    local required = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_REQ_UNDISCOVERED
+    local discovered = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_OPT_DISCOVERED
+    local cq = cj.CreateQuest()
+    cj.QuestSetTitle(bj_lastCreatedQuest, title)
+    cj.QuestSetDescription(bj_lastCreatedQuest, description)
+    cj.QuestSetIconPath(bj_lastCreatedQuest, iconPath)
+    cj.QuestSetRequired(bj_lastCreatedQuest, required)
+    cj.QuestSetDiscovered(bj_lastCreatedQuest, discovered)
+    cj.QuestSetCompleted(bj_lastCreatedQuest, false)
+    return cq;
+end
 
 return bj

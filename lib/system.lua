@@ -199,6 +199,20 @@ hsystem = {
             str = string.sub(str, 1, string.len(str) - 1)
         end
         return str
-    end
+    end,
+    explode = function(delimeter, str)
+        local res = {}
+        local start, start_pos, end_pos = 1, 1, 1
+        while true do
+            start_pos, end_pos = string.find(str, delimeter, start, true)
+            if not start_pos then
+                break
+            end
+            table.insert(res, string.sub(str, start, start_pos - 1))
+            start = end_pos + 1
+        end
+        table.insert(res, string.sub(str, start))
+        return res
+    end,
 
 }

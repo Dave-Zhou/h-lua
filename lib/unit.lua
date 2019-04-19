@@ -343,7 +343,7 @@ hunit = {
                 cj.ReviveHero(u, x, y, true)
                 hattr.resetAttrGroups(u)
                 if (invulnerable > 0) then
-                    hability.invulnerable(u, invulnerable)
+                    hskill.invulnerable(u, invulnerable)
                 end
                 -- @触发复活事件
                 hevt.triggerEvent({
@@ -357,7 +357,7 @@ hunit = {
                     cj.ReviveHero(u, x, y, true)
                     hattr.resetAttrGroups(u)
                     if (invulnerable > 0) then
-                        hability.invulnerable(u, invulnerable)
+                        hskill.invulnerable(u, invulnerable)
                     end
                     -- @触发复活事件
                     hevt.triggerEvent({

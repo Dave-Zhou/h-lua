@@ -4713,7 +4713,7 @@ endif
 		local real weight = 0
 		if(it!=null and GetSpellAbilityId()==ITEM_ABILITY_SEPARATE )then
 			if(isFormat(GetItemTypeId(it))!=true)then
-				call hmsg.echoTo(GetOwningPlayer(u),"|cffff8080物品不在hJass系统内|r",0)
+				call hmsg.echoTo(GetOwningPlayer(u),"|cffff8080物品不在h-lua系统内|r",0)
                 set u = null
                 set it = null
 				return

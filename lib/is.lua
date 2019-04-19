@@ -112,21 +112,25 @@ his = {
     ancient = function(whichUnit)
         return cj.IsUnitType(whichUnit, UNIT_TYPE_ANCIENT)
     end,
+    --是否被眩晕
+    swim = function(whichUnit)
+        return (hisCache[whichUnit] and hisCache[whichUnit].isSwim == true) or false
+    end,
     --是否被硬直
     punish = function(whichUnit)
-        return hattr.isPunishing(whichUnit)
+        return (hisCache[whichUnit] and hisCache[whichUnit].isPunishing == true) or false
     end,
     --是否被沉默
     silent = function(whichUnit)
-        return cj.IsUnitInGroup(whichUnit, ABILITY_SILENT_GROUP)
+        return (hisCache[whichUnit] and hisCache[whichUnit].isSilent == true) or false
     end,
     --是否被缴械
     unarm = function(whichUnit)
-        return cj.IsUnitInGroup(whichUnit, ABILITY_UNARM_GROUP)
+        return (hisCache[whichUnit] and hisCache[whichUnit].isUnArm == true) or false
     end,
     --是否被击飞
     crackfly = function(whichUnit)
-        return hunitRealTime[whichUnit].isCrackfly == true
+        return (hisCache[whichUnit] and hisCache[whichUnit].isCrackFly == true) or false
     end,
     --判断是否处在水面
     water = function(whichUnit)

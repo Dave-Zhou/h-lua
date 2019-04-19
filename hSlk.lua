@@ -14,7 +14,7 @@ local slk = require 'slk'
 -- #地图等级奖励
 for i = 1, 50 do
 local obj = slk.upgrade.Rhde:new("dzapi_map_level_award_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "达到地图等级：" .. i .. "级"
 obj.Hotkey = ""
 obj.Tip = ""
@@ -30,7 +30,7 @@ end
 --单位
 -- #token
 local obj = slk.unit.hfoo:new("unit_token")
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "Token"
 obj.special = 1
 obj.abilList = "Avul,Aloc"
@@ -54,8 +54,8 @@ call SaveInteger(hash_hslk, StringHash("unit_token"), 1, '<?=obj:get_id()?>')
 
 --技能
 -- #拆分物品
-local obj = slk.ability.ANtm:new("ability_item_separate")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.ability.ANtm:new("skill_item_separate")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "拆分物品"
 obj.DataD1 = 0
 obj.DataA1 = 0
@@ -77,12 +77,12 @@ obj.targs1 = "item,nonhero"
 obj.Cost1 = 0
 obj.Rng1 = 30.00
 ?>
-call SaveInteger(hash_hslk,StringHash("ability_item_separate"), 0, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk,StringHash("skill_item_separate"), 0, '<?=obj:get_id()?>')
 <?
 
 -- #打断
-local obj = slk.ability.AHtb:new("ability_break")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.ability.AHtb:new("skill_break")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 打断"
 obj.DataA1 = 0.00
 obj.Tip = "打断"
@@ -101,12 +101,12 @@ obj.HeroDur1 = 0.100
 obj.Cost1 = 0
 obj.Rng1 = 9999.00
 ?>
-call SaveInteger(hash_hslk, StringHash("ability_break"), 0, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("skill_break"), 0, '<?=obj:get_id()?>')
 <?
 
 -- #无限眩晕
-local obj = slk.ability.AHtb:new("ability_swim_unlimit")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.ability.AHtb:new("skill_swim_unlimit")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 无限眩晕"
 obj.DataA1 = 0.00
 obj.Tip = "无限眩晕"
@@ -126,12 +126,12 @@ obj.HeroDur1 = 0.000
 obj.Cost1 = 0
 obj.Rng1 = 9999.00
 ?>
-call SaveInteger(hash_hslk, StringHash("ability_swim_unlimit"), 0, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("skill_swim_unlimit"), 0, '<?=obj:get_id()?>')
 <?
 
 -- #酒馆选英雄选择单位
-local obj = slk.ability.Aneu:new("ability_hero_tavern_selection")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.ability.Aneu:new("skill_hero_tavern_selection")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 酒馆选英雄选择单位"
 obj.DataA1 = 1000.00
 obj.DataB1 = 4
@@ -139,12 +139,12 @@ obj.DataC1 = 0
 obj.DataD1 = 0
 obj.Rng1 = 900.00
 ?>
-call SaveInteger(hash_hslk, StringHash("ability_hero_tavern_selection"), 0, '<?=obj:get_id()?>')
+call SaveInteger(hash_hslk, StringHash("skill_hero_tavern_selection"), 0, '<?=obj:get_id()?>')
 <?
 -- #酒馆演示 tavern
 local aid = obj:get_id()
 local obj = slk.unit.ntav:new("unit_hero_tavern")
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "英雄系统 酒馆"
 obj.abilList = "Avul,Asid,"..aid
 obj.Sellunits = ""
@@ -159,7 +159,7 @@ call SaveInteger(hash_hslk, StringHash("unit_hero_tavern"), 2, '<?=obj:get_id()?
 <?
 -- #token
 local obj = slk.unit.hfoo:new("unit_hero_tavern_token")
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "英雄系统 选英雄Token"
 obj.special = 1
 obj.abilList = "Avul,AInv"
@@ -183,7 +183,7 @@ call SaveInteger(hash_hslk, StringHash("unit_hero_tavern_token"), 3, '<?=obj:get
 <?
 -- #死亡标志
 local obj = slk.unit.nban:new("unit_hero_death_token")
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "英雄死亡时轮"
 obj.tilesets = "*"
 obj.special = 1
@@ -242,7 +242,7 @@ call SaveInteger(hash_hslk, StringHash("item_moment"), -1, <?=#item_moments?>)
 <?
 for k,v in ipairs(item_moments) do
 local obj = slk.unit.hfoo:new("item_moment_" .. v.Name)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "瞬逝物系统 " .. v.Name
 obj.special = 1
 obj.abilList = "Avul,Aloc"
@@ -267,8 +267,8 @@ call SaveInteger(hash_hslk, StringHash("item_moment"), <?=k?>, '<?=obj:get_id()?
 end
 
 -- #变身演示
-local obj = slk.unit.Edmm:new("ability_change_to_u")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.unit.Edmm:new("skill_change_to_u")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 变身To 演示单位"
 obj.special = 0
 obj.abilList = ""
@@ -280,8 +280,8 @@ obj.file = "units\\demon\\HeroChaosBladeMaster\\HeroChaosBladeMaster.mdl"
 obj.Art = "ReplaceableTextures\\CommandButtons\\BTNChaosBlademaster.blp"
 obj.race = "other"
 local toUnitid = obj:get_id()
-local obj = slk.unit.Hpal:new("ability_change_from_u")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.unit.Hpal:new("skill_change_from_u")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 变身From 演示单位"
 obj.abilList = ""
 obj.heroAbiList = ""
@@ -293,8 +293,8 @@ obj.file = "units\\orc\\HeroBladeMaster\\HeroBladeMaster.mdl"
 obj.Art = "ReplaceableTextures\\CommandButtons\\BTNHeroBlademaster.blp"
 obj.race = "other"
 local fromUnitid = obj:get_id()
-local obj = slk.ability.AEme:new("ability_change_to")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.ability.AEme:new("skill_change_to")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 变身To"
 obj.UnitD1 = fromUnitid
 obj.DataE1 = 0
@@ -308,8 +308,8 @@ obj.Cool1 = 0.00
 obj.Dur1 = 0.500
 obj.HeroDur1 = 0.001
 obj.Cost1 = 0
-local obj = slk.ability.AEme:new("ability_change_from")
-obj.EditorSuffix = "#hJLua"
+local obj = slk.ability.AEme:new("skill_change_from")
+obj.EditorSuffix = "#h-lua"
 obj.Name = "技能系统 变身From"
 obj.UnitD1 = toUnitid
 obj.DataE1 = 0
@@ -329,7 +329,7 @@ for i = 1, 9 do
 local val = math.floor(10^(i-1))
 -- #敏捷
 local obj = slk.ability.Aamk:new("attr_agi_green_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#敏捷+" .. val
 obj.Art = ""
 obj.hero = 0
@@ -347,7 +347,7 @@ call SaveInteger(hash_hslk, StringHash("attr_agi_green_add"), <?=val?>, '<?=obj:
 <?
 -- #负敏捷
 local obj = slk.ability.Aamk:new("attr_agi_green_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#敏捷-" .. val
 obj.Art = ""
 obj.hero = 0
@@ -365,7 +365,7 @@ call SaveInteger(hash_hslk, StringHash("attr_agi_green_sub"), <?=val?>, '<?=obj:
 <?
 -- #智力
 local obj = slk.ability.Aamk:new("attr_int_green_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#智力+" .. val
 obj.Art = ""
 obj.hero = 0
@@ -383,7 +383,7 @@ call SaveInteger(hash_hslk, StringHash("attr_int_green_add"), <?=val?>, '<?=obj:
 <?
 -- #负智力
 local obj = slk.ability.Aamk:new("attr_int_green_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#智力-" .. val
 obj.Art = ""
 obj.hero = 0
@@ -401,7 +401,7 @@ call SaveInteger(hash_hslk, StringHash("attr_int_green_sub"), <?=val?>, '<?=obj:
 <?
 -- #力量
 local obj = slk.ability.Aamk:new("attr_str_green_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#力量+" .. val
 obj.Art = ""
 obj.hero = 0
@@ -419,7 +419,7 @@ call SaveInteger(hash_hslk, StringHash("attr_str_green_add"), <?=val?>, '<?=obj:
 <?
 -- #负力量
 local obj = slk.ability.Aamk:new("attr_str_green_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#力量-" .. val
 obj.Art = ""
 obj.hero = 0
@@ -437,7 +437,7 @@ call SaveInteger(hash_hslk, StringHash("attr_str_green_sub"), <?=val?>, '<?=obj:
 <?
 -- #绿攻击力
 local obj = slk.ability.AItg:new("attr_attack_green_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#绿字攻击力+" .. val
 obj.Art = ""
 obj.levels = 10
@@ -449,7 +449,7 @@ call SaveInteger(hash_hslk, StringHash("attr_attack_green_add"), <?=val?>, '<?=o
 <?
 -- #负绿攻击力
 local obj = slk.ability.AItg:new("attr_attack_green_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#绿字攻击力-" .. val
 obj.Art = ""
 obj.levels = 10
@@ -461,7 +461,7 @@ call SaveInteger(hash_hslk, StringHash("attr_attack_green_sub"), <?=val?>, '<?=o
 <?
 -- #白攻击力
 local obj = slk.ability.AIaa:new("attr_attack_white_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#白字攻击力+" .. val
 obj.Art = ""
 obj.levels = 1
@@ -476,7 +476,7 @@ local iid = obj:get_id()
 local obj = slk.item.manh:new("attr_item_attack_white_add_" .. i)
 obj.abilList = iid
 obj.Name = "属性系统#白字攻击力+" .. val
-obj.Description = "#hJLua"
+obj.Description = "#h-lua"
 obj.Tip = ""
 obj.Ubertip = ""
 obj.Art = ""
@@ -490,7 +490,7 @@ call SaveInteger(hash_hslk, StringHash("attr_item_attack_white_add"), <?=val?>, 
 <?
 -- #负白攻击力
 local obj = slk.ability.AIaa:new("attr_attack_white_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#白字攻击力-" .. val
 obj.Art = ""
 obj.levels = 1
@@ -505,7 +505,7 @@ local iid = obj:get_id()
 local obj = slk.item.manh:new("attr_item_attack_white_sub_" .. i)
 obj.abilList = iid
 obj.Name = "属性系统#白字攻击力-" .. val
-obj.Description = "#hJLua"
+obj.Description = "#h-lua"
 obj.Tip = ""
 obj.Ubertip = ""
 obj.Art = ""
@@ -519,7 +519,7 @@ call SaveInteger(hash_hslk, StringHash("attr_item_attack_white_sub"), <?=val?>, 
 <?
 -- #攻击速度
 local obj = slk.ability.AIsx:new("attr_attack_speed_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#攻击速度+" .. val
 obj.Art = ""
 obj.levels = 10
@@ -531,7 +531,7 @@ call SaveInteger(hash_hslk, StringHash("attr_attack_speed_add"), <?=val?>, '<?=o
 <?
 -- #负攻击速度
 local obj = slk.ability.AIsx:new("attr_attack_speed_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#攻击速度-" .. val
 obj.Art = ""
 obj.levels = 10
@@ -543,7 +543,7 @@ call SaveInteger(hash_hslk, StringHash("attr_attack_speed_sub"), <?=val?>, '<?=o
 <?
 -- #护甲
 local obj = slk.ability.AIsx:new("attr_defend_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#护甲+" .. val
 obj.Art = ""
 obj.levels = 10
@@ -555,7 +555,7 @@ call SaveInteger(hash_hslk, StringHash("attr_defend_add"), <?=val?>, '<?=obj:get
 <?
 -- #负护甲
 local obj = slk.ability.AIsx:new("attr_defend_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#护甲-" .. val
 obj.Art = ""
 obj.levels = 10
@@ -567,7 +567,7 @@ call SaveInteger(hash_hslk, StringHash("attr_defend_sub"), <?=val?>, '<?=obj:get
 <?
 -- #魔法
 local obj = slk.ability.AImv:new("attr_mana_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#魔法+" .. val
 obj.Art = ""
 obj.levels = 2
@@ -578,7 +578,7 @@ call SaveInteger(hash_hslk, StringHash("attr_mana_add"), <?=val?>, '<?=obj:get_i
 <?
 -- #负魔法
 local obj = slk.ability.AImv:new("attr_mana_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#魔法-" .. val
 obj.Art = ""
 obj.levels = 2
@@ -589,7 +589,7 @@ call SaveInteger(hash_hslk, StringHash("attr_mana_sub"), <?=val?>, '<?=obj:get_i
 <?
 -- #生命
 local obj = slk.ability.AIlf:new("attr_life_add_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#生命+" .. val
 obj.Art = ""
 obj.levels = 2
@@ -600,7 +600,7 @@ call SaveInteger(hash_hslk, StringHash("attr_life_add"), <?=val?>, '<?=obj:get_i
 <?
 -- #负生命
 local obj = slk.ability.AIlf:new("attr_life_sub_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#生命-" .. val
 obj.Art = ""
 obj.levels = 2
@@ -619,7 +619,7 @@ call SaveInteger(hash_hslk, StringHash("item_cooldown"), -1, <?=qty?>)
 <?
 for i = 0, qty do
 local obj = slk.ability.AIsm:new("item_cooldown_" .. i)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "物品系统#冷却 " .. i .. "秒"
 obj.Art = ""
 obj.TargetArt = ""
@@ -631,7 +631,7 @@ call SaveInteger(hash_hslk, StringHash("item_cooldown"), <?=i?>, '<?=obj:get_id(
 end
 -- #回避
 local obj = slk.ability.AIlu:new("attr_avoid_add")
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#回避+"
 obj.Art = ""
 obj.levels = 2
@@ -641,7 +641,7 @@ obj.DataA2 = -10000000
 call SaveInteger(hash_hslk, StringHash("attr_avoid_add"), 0, '<?=obj:get_id()?>')
 <?
 local obj = slk.ability.AIlu:new("attr_avoid_sub")
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#回避-"
 obj.Art = ""
 obj.levels = 2
@@ -658,7 +658,7 @@ while(i <= 10000) do
         v = math.floor(v * i)
         -- #正视野
         local obj = slk.ability.AIsi:new("attr_sight_add_" .. v)
-        obj.EditorSuffix = "#hJLua"
+        obj.EditorSuffix = "#h-lua"
         obj.Name = "属性系统#视野+" .. v
         obj.Art = ""
         obj.levels = 1
@@ -668,7 +668,7 @@ while(i <= 10000) do
         <?
         -- #负视野
         local obj = slk.ability.AIsi:new("attr_sight_sub_" .. v)
-        obj.EditorSuffix = "#hJLua"
+        obj.EditorSuffix = "#h-lua"
         obj.Name = "属性系统#视野-" .. v
         obj.Art = ""
         obj.levels = 1
@@ -828,7 +828,7 @@ call SaveInteger(hash_hslk, StringHash("env_model_key"), -1, <?=#envs?>)
 <?
 for k,v in ipairs(envs) do
 local obj = slk.unit.nban:new("env_model_" .. v.Name)
-obj.EditorSuffix = "#hJLua"
+obj.EditorSuffix = "#h-lua"
 obj.Name = "环境系统 " .. v.Name
 obj.tilesets = 1
 obj.special = 1

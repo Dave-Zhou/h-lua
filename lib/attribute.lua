@@ -16,7 +16,7 @@ hattr = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    default_item_slot_ability = hsystem.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    default_skill_item_slot = hsystem.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
     threeBuff = {
         --- 每一点三围对属性的影响，默认会写一些，可以通过 setThreeBuff 方法来改变系统构成
         --- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
@@ -64,8 +64,8 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
     if (his.alive(u) == true) then
         local i = 1
         local it
-        if (cj.GetUnitAbilityLevel(u, hattr.default_item_slot_ability) < 1) then
-            cj.UnitAddAbility(u, hattr.default_item_slot_ability)
+        if (cj.GetUnitAbilityLevel(u, hattr.default_skill_item_slot) < 1) then
+            cj.UnitAddAbility(u, hattr.default_skill_item_slot)
         end
         while (i <= qty) do
             it = cj.CreateItem(itemId, 0, 0)
@@ -87,8 +87,8 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
                 htime.delTimer(t)
                 local i = 1
                 local it
-                if (cj.GetUnitAbilityLevel(u, hattr.default_item_slot_ability) < 1) then
-                    cj.UnitAddAbility(u, hattr.default_item_slot_ability)
+                if (cj.GetUnitAbilityLevel(u, hattr.default_skill_item_slot) < 1) then
+                    cj.UnitAddAbility(u, hattr.default_skill_item_slot)
                 end
                 while (i <= qty) do
                     it = cj.CreateItem(itemId, 0, 0)
@@ -154,9 +154,9 @@ hattr.regAllAttrAbility = function(whichUnit)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
     --物品栏
-    if (cj.GetUnitAbilityLevel(whichUnit, hattr.default_item_slot_ability) < 1) then
-        cj.UnitAddAbility(whichUnit, hattr.default_item_slot_ability)
-        cj.UnitRemoveAbility(whichUnit, hattr.default_item_slot_ability)
+    if (cj.GetUnitAbilityLevel(whichUnit, hattr.default_skill_item_slot) < 1) then
+        cj.UnitAddAbility(whichUnit, hattr.default_skill_item_slot)
+        cj.UnitRemoveAbility(whichUnit, hattr.default_skill_item_slot)
     end
     --绿字攻击
     for k, ability in pairs(hslk_global.attr.attack_green.add) do
@@ -238,184 +238,111 @@ hattr.regAllAttrAbility = function(whichUnit)
     end
     --物品拆分
     if (his.hero(whichUnit) == true) then
-        cj.UnitAddAbility(whichUnit, hslk_global.ability_item_separate)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, hslk_global.ability_item_separate)
-        cj.SetUnitAbilityLevel(whichUnit, hslk_global.ability_item_separate, 1)
+        cj.UnitAddAbility(whichUnit, hslk_global.skill_item_separate)
+        cj.UnitMakeAbilityPermanent(whichUnit, true, hslk_global.skill_item_separate)
+        cj.SetUnitAbilityLevel(whichUnit, hslk_global.skill_item_separate, 1)
     end
     --init
     local unitId = cj.GetUnitTypeId(whichUnit)
     hattrCache[whichUnit] = {
         primary = hslk_global.unitsKV[unitId].Primary,
-        attack_type = {},
-        common = {
-            life = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit),
-            mana = cj.GetUnitStateSwap(UNIT_STATE_MAX_MANA, whichUnit),
-            move = hslk_global.unitsKV[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
-            defend = hslk_global.unitsKV[unitId].def or 0.0,
-            attack_speed = 0.0,
-            attack_speed_space = hslk_global.unitsKV[unitId].cool1 or hattr.default_attack_speed_space,
-            attack_white = 0.0,
-            attack_green = 0.0,
-            attack_range = hslk_global.unitsKV[unitId].rangeN1 or 100.0,
-            sight = hslk_global.unitsKV[unitId].sight or 800,
-            str_green = 0.0,
-            agi_green = 0.0,
-            int_green = 0.0,
-            str_white = cj.GetHeroStr(whichUnit, false),
-            agi_white = cj.GetHeroAgi(whichUnit, false),
-            int_white = cj.GetHeroInt(whichUnit, false),
-            life_back = 0.0,
-            life_source = 0.0,
-            life_source_current = 0.0,
-            mana_back = 0.0,
-            mana_source = 0.0,
-            mana_source_current = 0.0,
-            resistance = 0.0,
-            toughness = 0.0,
-            avoid = 0.0,
-            aim = 0.0,
-            knocking = 0.0,
-            violence = 0.0,
-            punish = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit) / 2,
-            punish_current = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit) / 2,
-            meditative = 0.0,
-            help = 0.0,
-            hemophagia = 0.0,
-            hemophagia_skill = 0.0,
-            split = 0.0,
-            split_range = 0.0,
-            luck = 0.0,
-            invincible = 0.0,
-            weight = 0.0,
-            weight_current = 0.0,
-            hunt_amplitude = 0.0,
-            hunt_rebound = 0.0,
-            cure = 0.0,
-            knocking_oppose = 0.0,
-            violence_oppose = 0.0,
-            hemophagia_oppose = 0.0,
-            split_oppose = 0.0,
-            punish_oppose = 0.0,
-            hunt_rebound_oppose = 0.0,
-            swim_oppose = 0.0,
-            heavy_oppose = 0.0,
-            break_oppose = 0.0,
-            unluck_oppose = 0.0,
-            silent_oppose = 0.0,
-            unarm_oppose = 0.0,
-            fetter_oppose = 0.0,
-            bomb_oppose = 0.0,
-            lightning_chain_oppose = 0.0,
-            crack_fly_oppose = 0.0,
-        },
-        natural = {
-            fire = 0.0,
-            soil = 0.0,
-            water = 0.0,
-            ice = 0.0,
-            wind = 0.0,
-            light = 0.0,
-            dark = 0.0,
-            wood = 0.0,
-            thunder = 0.0,
-            poison = 0.0,
-            ghost = 0.0,
-            metal = 0.0,
-            dragon = 0.0,
-            fire_oppose = 0.0,
-            soil_oppose = 0.0,
-            water_oppose = 0.0,
-            ice_oppose = 0.0,
-            wind_oppose = 0.0,
-            light_oppose = 0.0,
-            dark_oppose = 0.0,
-            wood_oppose = 0.0,
-            thunder_oppose = 0.0,
-            poison_oppose = 0.0,
-            ghost_oppose = 0.0,
-            metal_oppose = 0.0,
-            dragon_oppose = 0.0,
-        },
-        effect = {
-            life = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            mana = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            life_back = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            mana_back = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            life_source = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            mana_source = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            attack_speed = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            attack_white = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            attack_green = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            attack_range = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            defend = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            sight = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            move = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            aim = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            resistance = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            toughness = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            str_green = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            agt_green = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            int_green = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            str_white = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            agt_white = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            int_white = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            knocking = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            violence = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            hemophagia = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            hemophagia_skill = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            split = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            luck = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            hunt_amplitude = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            hunt_rebound = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            fire = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            soil = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            water = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            ice = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            wind = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            light = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dark = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            wood = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            thunder = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            poison = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            ghost = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            metal = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dragon = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            fire_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            soil_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            water_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            ice_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            wind_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            light_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dark_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            wood_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            thunder_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            poison_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            ghost_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            metal_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dragon_oppose = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            toxic = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            burn = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dry = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            freeze = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            cold = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            blunt = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            myopia = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            muggle = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            blind = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            corrosion = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            chaos = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            twine = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            drunk = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            tortua = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            weak = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            astrict = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            foolish = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dull = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            dirt = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+        be_hunting = false,
+        --
+        life = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit),
+        mana = cj.GetUnitStateSwap(UNIT_STATE_MAX_MANA, whichUnit),
+        move = hslk_global.unitsKV[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
+        defend = hslk_global.unitsKV[unitId].def or 0.0,
+        attack_hunt_type = {}, --- sp
+        attack_speed = 0.0,
+        attack_speed_space = hslk_global.unitsKV[unitId].cool1 or hattr.default_attack_speed_space,
+        attack_white = 0.0,
+        attack_green = 0.0,
+        attack_range = hslk_global.unitsKV[unitId].rangeN1 or 100.0,
+        sight = hslk_global.unitsKV[unitId].sight or 800,
+        str_green = 0.0,
+        agi_green = 0.0,
+        int_green = 0.0,
+        str_white = cj.GetHeroStr(whichUnit, false),
+        agi_white = cj.GetHeroAgi(whichUnit, false),
+        int_white = cj.GetHeroInt(whichUnit, false),
+        life_back = 0.0,
+        life_source = 0.0,
+        life_source_current = 0.0,
+        mana_back = 0.0,
+        mana_source = 0.0,
+        mana_source_current = 0.0,
+        resistance = 0.0,
+        toughness = 0.0,
+        avoid = 0.0,
+        aim = 0.0,
+        knocking = 0.0,
+        violence = 0.0,
+        punish = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit) / 2,
+        punish_current = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit) / 2,
+        meditative = 0.0,
+        help = 0.0,
+        hemophagia = 0.0,
+        hemophagia_skill = 0.0,
+        split = 0.0,
+        split_range = 0.0,
+        luck = 0.0,
+        invincible = 0.0,
+        weight = 0.0,
+        weight_current = 0.0,
+        hunt_amplitude = 0.0,
+        hunt_rebound = 0.0,
+        cure = 0.0,
+        knocking_oppose = 0.0,
+        violence_oppose = 0.0,
+        hemophagia_oppose = 0.0,
+        split_oppose = 0.0,
+        punish_oppose = 0.0,
+        hunt_rebound_oppose = 0.0,
+        swim_oppose = 0.0,
+        heavy_oppose = 0.0,
+        break_oppose = 0.0,
+        unluck_oppose = 0.0,
+        silent_oppose = 0.0,
+        unarm_oppose = 0.0,
+        fetter_oppose = 0.0,
+        bomb_oppose = 0.0,
+        lightning_chain_oppose = 0.0,
+        crack_fly_oppose = 0.0,
+        natural_fire = 0.0,
+        natural_soil = 0.0,
+        natural_water = 0.0,
+        natural_ice = 0.0,
+        natural_wind = 0.0,
+        natural_light = 0.0,
+        natural_dark = 0.0,
+        natural_wood = 0.0,
+        natural_thunder = 0.0,
+        natural_poison = 0.0,
+        natural_ghost = 0.0,
+        natural_metal = 0.0,
+        natural_dragon = 0.0,
+        natural_fire_oppose = 0.0,
+        natural_soil_oppose = 0.0,
+        natural_water_oppose = 0.0,
+        natural_ice_oppose = 0.0,
+        natural_wind_oppose = 0.0,
+        natural_light_oppose = 0.0,
+        natural_dark_oppose = 0.0,
+        natural_wood_oppose = 0.0,
+        natural_thunder_oppose = 0.0,
+        natural_poison_oppose = 0.0,
+        natural_ghost_oppose = 0.0,
+        natural_metal_oppose = 0.0,
+        natural_dragon_oppose = 0.0,
+        -- todo
+        attack_buff = {}, -- array
+        attack_debuff = {}, -- array
+        skill_buff = {}, -- array
+        skill_debuff = {}, -- array
+        -- 特殊特效
+        attack_effect = {
             swim = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            heavy = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
             broken = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
-            unluck = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
             silent = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
             unarm = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
             fetter = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
@@ -423,46 +350,37 @@ hattr.regAllAttrAbility = function(whichUnit)
             lightning_chain = { odds = 0.0, val = 0.0, during = 0.0, model = nil, qty = 0, reduce = 0.0 },
             crack_fly = { odds = 0.0, val = 0.0, during = 0.0, model = nil, distance = 0, high = 0.0 },
         },
+        skill_effect = {
+            swim = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+            broken = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+            silent = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+            unarm = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+            fetter = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+            bomb = { odds = 0.0, val = 0.0, during = 0.0, model = nil, },
+            lightning_chain = { odds = 0.0, val = 0.0, during = 0.0, model = nil, qty = 0, reduce = 0.0 },
+            crack_fly = { odds = 0.0, val = 0.0, during = 0.0, model = nil, distance = 0, high = 0.0 },
+        },
+        --[[
+            buff/debuff例子
+            attack_buff = {
+                攻击伤害时buff=20%几率增加自身 1.5% 的攻击速度 3 秒
+                attack_speed = { odds = 20.0, val = 1.5, during = 3.0, model = nil },
+            }
+            skill_debuff = {
+                技能伤害时buff=13%几率减少目标 3.5% 的攻击速度 4.4 秒，特效是 war3mapImported\\ExplosionBIG.mdl
+                move = { odds = 13.0, val = 3.5, during = 4.4, model = 'war3mapImported\\ExplosionBIG.mdl' },
+            }
+        ]]
     }
     -- 智力英雄的攻击默认为魔法，力量敏捷为物理
     if (hattrCache[whichUnit].primary == 'INT') then
-        hattrCache[whichUnit].attack_type = { 'magic' }
+        hattrCache[whichUnit].attack_hunt_type = { 'magic' }
     else
-        hattrCache[whichUnit].attack_type = { 'physical' }
+        hattrCache[whichUnit].attack_hunt_type = { 'physical' }
     end
 end
----设定攻击类型
-hattr.setAttackType = function(whichUnit, attackType)
-    if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
-    end
-    if (type(attackType) ~= 'table') then
-        print('attackType必须为table类型')
-        return
-    end
-    hattrCache[whichUnit].attack_type = attackType
-end
-hattr.addAttackType = function(whichUnit, attackType)
-    if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
-    end
-    if (type(attackType) ~= 'string') then
-        print('attackType必须为string类型')
-        return
-    end
-    table.insert(hattrCache[whichUnit].attack_type, attackType)
-end
-hattr.subAttackType = function(whichUnit, attackType)
-    if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
-    end
-    if (type(attackType) ~= 'string') then
-        print('attackType必须为string类型')
-        return
-    end
-    hsystem.rmArray(attackType, hattrCache[whichUnit].attack_type, 1)
-end
----设定基本属性(延时请用set/add/sub)
+
+---设定属性
 --[[
     白字攻击 绿字攻击
     攻速 视野 射程
@@ -471,477 +389,1426 @@ end
     活力 魔法 +恢复
     硬直
     物暴 术暴 分裂 回避 移动力 力量 敏捷 智力 救助力 吸血 负重 各率
+    type(data) == table
+    data = { 支持 加/减/乘/除/等
+        life = '+100',
+        mana = '-100',
+        life_back = '*100',
+        mana_back = '/100',
+        move = '=100',
+    }
+    during = 0.0 大于0生效；小于等于0时无限持续时间
 ]]
-hattr.setCommon = function(flag, whichUnit, diff)
-    if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
-    end
-    if (hattrCache[whichUnit].common[flag] == nil) then
-        print('暂不支持common = ' .. flag)
-        return
-    end
-    if (flag ~= nil and whichUnit ~= nil and diff ~= 0) then
-        local currentVal = 0
-        local futureVal = 0
-        local level = 0
-        local tempVal = 0
-        --- 生命 | 魔法
-        if (flag == 'life' or mana) then
-            currentVal = hattrCache[whichUnit].common[flag]
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (futureVal >= hattr['max_' .. flag]) then
-                if (currentVal >= hattr['max_' .. flag]) then
-                    diff = 0
-                else
-                    diff = hattr['max_' .. flag] - currentVal
-                end
-            elseif (futureVal <= hattr['min_' .. flag]) then
-                if (currentVal <= hattr['min_' .. flag]) then
-                    diff = 0
-                else
-                    diff = hattr['min_' .. flag] - currentVal
+hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
+    if (type(val) == 'string') then
+        -- string
+        if (opr == '+') then
+            table.insert(params[attr], val)
+            if (dur > 0) then
+                htime.setTimeout(dur, nil, function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hattr.setHandle(params, whichUnit, attr, '-', val, 0)
+                end)
+            end
+        elseif (opr == '-') then
+            if (hsystem.inArray(val, params[attr])) then
+                hsystem.rmArray(val, params[attr], 1)
+                if (dur > 0) then
+                    htime.setTimeout(dur, nil, function(t, td)
+                        htime.delDialog(td)
+                        htime.delTimer(t)
+                        hattr.setHandle(params, whichUnit, attr, '+', val, 0)
+                    end)
                 end
             end
-            tempVal = math.floor(diff)
-            local max = 100000000
-            if (tempVal ~= 0) then
-                if (diff < 0) then
-                    tempVal = math.abs(tempVal);
-                end
-                while (max >= 1) do
-                    level = math.floor(tempVal / max)
-                    tempVal = math.floor(tempVal - level * max)
-                    if (diff > 0) then
-                        hattr.setLM(whichUnit, hslk_global.attr[flag].add[max], level)
-                    else
-                        hattr.setLM(whichUnit, hslk_global.attr[flag].sub[max], level)
-                    end
-                    max = math.floor(max / 10)
-                end
+        elseif (opr == '=') then
+            local old = hsystem.cloneTable(params[attr])
+            params[attr] = val
+            if (dur > 0) then
+                htime.setTimeout(dur, nil, function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hattr.setHandle(params, whichUnit, attr, '=', old, 0)
+                end)
             end
-            return
         end
-        --- 移动
-        if (flag == 'move') then
-            currentVal = hattrCache[whichUnit].common.move
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common.move = futureVal
-            if (futureVal < 0) then
-                cj.SetUnitMoveSpeed(whichUnit, 0)
-            else
+    elseif (type(val) == 'number') then
+        -- number
+        local diff = 0
+        if (opr == '+') then
+            diff = val
+        elseif (opr == '-') then
+            diff = -val
+        elseif (opr == '*') then
+            diff = params[attr] * val - params[attr]
+        elseif (opr == '/' and val ~= 0) then
+            diff = params[attr] / val - params[attr]
+        elseif (opr == '=') then
+            diff = val - params[attr]
+        end
+        if (diff ~= 0) then
+            local currentVal = params[attr]
+            local futureVal = params[attr] + diff
+            params[attr] = futureVal
+            if (dur > 0) then
+                htime.setTimeout(dur, nil, function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hattr.setHandle(params, whichUnit, attr, '-', diff, 0)
+                end)
+            end
+            -- ability
+            local tempVal = 0
+            local level = 0
+            --- 生命 | 魔法
+            if (attr == 'life' or attr == 'mana') then
+                if (futureVal >= hattr['max_' .. attr]) then
+                    if (currentVal >= hattr['max_' .. attr]) then
+                        diff = 0
+                    else
+                        diff = hattr['max_' .. attr] - currentVal
+                    end
+                elseif (futureVal <= hattr['min_' .. attr]) then
+                    if (currentVal <= hattr['min_' .. attr]) then
+                        diff = 0
+                    else
+                        diff = hattr['min_' .. attr] - currentVal
+                    end
+                end
+                tempVal = math.floor(diff)
+                local max = 100000000
+                if (tempVal ~= 0) then
+                    if (diff < 0) then
+                        tempVal = math.abs(tempVal);
+                    end
+                    while (max >= 1) do
+                        level = math.floor(tempVal / max)
+                        tempVal = math.floor(tempVal - level * max)
+                        if (diff > 0) then
+                            hattr.setLM(whichUnit, hslk_global.attr[attr].add[max], level)
+                        else
+                            hattr.setLM(whichUnit, hslk_global.attr[attr].sub[max], level)
+                        end
+                        max = math.floor(max / 10)
+                    end
+                end
+                --- 移动
+            elseif (attr == 'move') then
+                if (futureVal < 0) then
+                    cj.SetUnitMoveSpeed(whichUnit, 0)
+                else
+                    if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
+                        cj.SetUnitMoveSpeed(whichUnit, math.floor(futureVal * 0.5))
+                    else
+                        cj.SetUnitMoveSpeed(whichUnit, math.floor(futureVal))
+                    end
+                end
+                --- 白字攻击
+            elseif (attr == 'attack_white') then
+                if (futureVal > hattr.max_attack_white or futureVal < -hattr.max_attack_white) then
+                    diff = 0
+                end
+                tempVal = math.floor(diff)
+                local max = 100000000
+                if (tempVal ~= 0) then
+                    if (diff < 0) then
+                        tempVal = math.abs(tempVal);
+                    end
+                    while (max >= 1) do
+                        level = math.floor(tempVal / max)
+                        tempVal = math.floor(tempVal - level * max)
+                        if (diff > 0) then
+                            hattr.setAttackWhite(whichUnit, hslk_global.attr.item_attack_white.add[max], level)
+                        else
+                            hattr.setAttackWhite(whichUnit, hslk_global.attr.item_attack_white.sub[max], level)
+                        end
+                        max = math.floor(max / 10)
+                    end
+                end
+                --- 攻击范围
+            elseif (attr == 'attack_range') then
+                if (futureVal < hattr.min_attack_range) then
+                    futureVal = hattr.min_attack_range
+                elseif (futureVal > hattr.max_attack_range) then
+                    futureVal = hattr.max_attack_range
+                end
+                for k, ability in pairs(hslk_global.attr.attack_green.add) do
+                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                end
+                for k, ability in pairs(hslk_global.attr.attack_green.sub) do
+                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                end
                 if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
-                    cj.SetUnitMoveSpeed(whichUnit, math.floor(futureVal * 0.5))
-                else
-                    cj.SetUnitMoveSpeed(whichUnit, math.floor(futureVal))
+                    futureVal = futureVal * 0.5
                 end
-            end
-            return
-        end
-        --- 白字攻击
-        if (flag == 'attack_white') then
-            currentVal = hattrCache[whichUnit].common.attack_white
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common.attack_white = futureVal
-            if (futureVal > hattr.max_attack_white or futureVal < -hattr.max_attack_white) then
-                diff = 0
-            end
-            tempVal = math.floor(diff)
-            local max = 100000000
-            if (tempVal ~= 0) then
-                if (diff < 0) then
-                    tempVal = math.abs(tempVal);
+                cj.SetUnitAcquireRange(whichUnit, futureVal * 1.1)
+                --- 视野
+            elseif (attr == 'sight') then
+                if (futureVal < -hattr.max_sight) then
+                    futureVal = -hattr.max_sight
+                elseif (futureVal > hattr.max_sight) then
+                    futureVal = hattr.max_sight
                 end
-                while (max >= 1) do
-                    level = math.floor(tempVal / max)
-                    tempVal = math.floor(tempVal - level * max)
-                    if (diff > 0) then
-                        hattr.setAttackWhite(whichUnit, hslk_global.attr.item_attack_white.add[max], level)
-                    else
-                        hattr.setAttackWhite(whichUnit, hslk_global.attr.item_attack_white.sub[max], level)
+                for k, ability in pairs(hslk_global.attr.sight.add) do
+                    cj.UnitRemoveAbility(whichUnit, ability)
+                end
+                for k, ability in pairs(hslk_global.attr.sight.sub) do
+                    cj.UnitRemoveAbility(whichUnit, ability)
+                end
+                tempVal = math.floor(futureVal)
+                local sightTotal = hsystem.cloneTable(hslk_global.attr.sightTotal)
+                if (tempVal ~= 0) then
+                    if (diff < 0) then
+                        tempVal = math.abs(tempVal);
                     end
-                    max = math.floor(max / 10)
-                end
-            end
-            return
-        end
-        --- 攻击范围
-        if (flag == 'attack_range') then
-            currentVal = hattrCache[whichUnit].common.attack_range
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common.attack_range = futureVal
-            if (futureVal < hattr.min_attack_range) then
-                futureVal = hattr.min_attack_range
-            elseif (futureVal > hattr.max_attack_range) then
-                futureVal = hattr.max_attack_range
-            end
-            for k, ability in pairs(hslk_global.attr.attack_green.add) do
-                cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-            end
-            for k, ability in pairs(hslk_global.attr.attack_green.sub) do
-                cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-            end
-            if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
-                futureVal = futureVal * 0.5
-            end
-            cj.SetUnitAcquireRange(whichUnit, futureVal * 1.1)
-            return
-        end
-        --- 视野
-        if (flag == 'sight') then
-            currentVal = hattrCache[whichUnit].common.sight
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common.sight = futureVal
-            if (futureVal < -hattr.max_sight) then
-                futureVal = -hattr.max_sight
-            elseif (futureVal > hattr.max_sight) then
-                futureVal = hattr.max_sight
-            end
-            for k, ability in pairs(hslk_global.attr.sight.add) do
-                cj.UnitRemoveAbility(whichUnit, ability)
-            end
-            for k, ability in pairs(hslk_global.attr.sight.sub) do
-                cj.UnitRemoveAbility(whichUnit, ability)
-            end
-            tempVal = math.floor(futureVal)
-            local sightTotal = hsystem.cloneTable(hslk_global.attr.sightTotal)
-            if (tempVal ~= 0) then
-                if (diff < 0) then
-                    tempVal = math.abs(tempVal);
-                end
-                while (true) do
-                    local isFound = false
-                    for k, v in pairs(sightTotal) do
-                        if (tempVal >= v) then
-                            tempVal = math.floor(tempVal - v)
-                            hsystem.rmArray(v, sightTotal)
-                            if (diff > 0) then
-                                cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
-                            else
-                                cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.sub[v])
+                    while (true) do
+                        local isFound = false
+                        for k, v in pairs(sightTotal) do
+                            if (tempVal >= v) then
+                                tempVal = math.floor(tempVal - v)
+                                hsystem.rmArray(v, sightTotal)
+                                if (diff > 0) then
+                                    cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
+                                else
+                                    cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.sub[v])
+                                end
+                                isFound = true
+                                break
                             end
-                            isFound = true
+                        end
+                        if (isFound == false) then
                             break
                         end
                     end
-                    if (isFound == false) then
-                        break
+                end
+                --- 绿字攻击 攻击速度 护甲
+            elseif (hsystem.inArray(attr, { 'attack_green', 'attack_speed', 'defend' })) then
+                if (futureVal < -99999999) then
+                    futureVal = -99999999
+                elseif (futureVal > 99999999) then
+                    futureVal = 99999999
+                end
+                for k, ability in pairs(hslk_global.attr[attr].add) do
+                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                end
+                for k, ability in pairs(hslk_global.attr[attr].sub) do
+                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                end
+                tempVal = math.floor(futureVal)
+                local max = 100000000
+                if (tempVal ~= 0) then
+                    if (diff < 0) then
+                        tempVal = math.abs(tempVal);
+                    end
+                    while (max >= 1) do
+                        level = math.floor(tempVal / max)
+                        tempVal = math.floor(tempVal - level * max)
+                        if (diff > 0) then
+                            cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max], level + 1)
+                        else
+                            cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max], level + 1)
+                        end
+                        max = math.floor(max / 10)
+                    end
+                end
+                --- 绿字力量 绿字敏捷 绿字智力
+            elseif (his.hero(whichUnit) and hsystem.inArray(attr, { 'str_green', 'agi_green', 'int_green' })) then
+                if (futureVal < -99999999) then
+                    futureVal = -99999999
+                elseif (futureVal > 99999999) then
+                    futureVal = 99999999
+                end
+                for k, ability in pairs(hslk_global.attr[attr].add) do
+                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                end
+                for k, ability in pairs(hslk_global.attr[attr].sub) do
+                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                end
+                tempVal = math.floor(futureVal)
+                local max = 100000000
+                if (tempVal ~= 0) then
+                    if (diff < 0) then
+                        tempVal = math.abs(tempVal);
+                    end
+                    while (max >= 1) do
+                        level = math.floor(tempVal / max)
+                        tempVal = math.floor(tempVal - level * max)
+                        if (diff > 0) then
+                            cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max], level + 1)
+                        else
+                            cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max], level + 1)
+                        end
+                        max = math.floor(max / 10)
+                    end
+                end
+                local setting = {}
+                for k, v in pairs(hattr.threeBuff[string.gsub(attr, '_green')]) do
+                    setting[k] = '+' .. diff * v
+                end
+                hattr.set(whichUnit, 0, setting)
+                --- 白字力量 敏捷 智力
+            elseif (his.hero(whichUnit) and hsystem.inArray(attr, { 'str_white', 'agi_white', 'int_white' })) then
+                if (attr == 'str_white') then
+                    cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
+                elseif (attr == 'agi_white') then
+                    cj.SetHeroAgi(whichUnit, math.floor(futureVal), true)
+                elseif (attr == 'int_white') then
+                    cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
+                end
+                local setting = {}
+                for k, v in pairs(hattr.threeBuff[string.gsub(attr, '_white')]) do
+                    setting[k] = '+' .. diff * v
+                end
+                hattr.set(whichUnit, 0, setting)
+                --- 生命恢复 魔法恢复
+            elseif (attr == 'life_back' or attr == 'mana_back') then
+                if (math.abs(futureVal) > 0.02 and hsystem.inArray(whichUnit, hattrGroup[attr]) == false) then
+                    table.insert(hattrGroup[attr], whichUnit)
+                elseif (math.abs(futureVal) < 0.02) then
+                    hsystem.rmArray(whichUnit, hattrGroup[attr])
+                end
+                --- 生命源 魔法源(current)
+            elseif (attr == 'life_source_current' or attr == 'mana_source_current') then
+                local attrSource = string.gsub(attr, '_current', '', 1)
+                if (futureVal > hattrCache[whichUnit][attrSource]) then
+                    futureVal = hattrCache[whichUnit][attrSource]
+                    hattrCache[whichUnit][attr] = futureVal
+                end
+                if (math.abs(futureVal) > 1 and hsystem.inArray(whichUnit, hattrGroup[attrSource]) == false) then
+                    table.insert(hattrGroup[attrSource], whichUnit)
+                elseif (math.abs(futureVal) < 1) then
+                    hsystem.rmArray(whichUnit, hattrGroup[attrSource])
+                end
+                --- 硬直
+            elseif (attr == 'punish' and hunit.isOpenPunish(whichUnit)) then
+                if (currentVal > 0) then
+                    local tempPercent = futureVal / currentVal
+                    hattrCache[whichUnit].punish_current = tempPercent * hattrCache[whichUnit].punish_current
+                else
+                    hattrCache[whichUnit].punish_current = futureVal
+                end
+                --- 硬直(current)
+            elseif (attr == 'punish_current' and hunit.isOpenPunish(whichUnit)) then
+                if (futureVal > hattrCache[whichUnit].punish) then
+                    hattrCache[whichUnit].punish_current = hattrCache[whichUnit].punish
+                end
+            end
+        end
+    end
+end
+hattr.set = function(whichUnit, during, data)
+    if (hattrCache[whichUnit] == nil) then
+        hattr.regAllAttrAbility(whichUnit)
+    end
+    -- 处理data
+    if (type(data) ~= 'table') then
+        print('data必须为table')
+        return
+    end
+    for attr, v in pairs(data) do
+        if (hattrCache[whichUnit][attr] ~= nil) then
+            if (type(v) == 'string') then
+                local opr = string.sub(v, 1, 1)
+                v = string.sub(v, 2, string.len(v))
+                local val = tonumber(v)
+                if (val == nil) then
+                    val = v
+                end
+                hattr.setHandle(hattrCache[whichUnit], whichUnit, attr, opr, val, during)
+            elseif (type(v) == 'table') then
+                --todo 特效
+                if (attr == 'attack_buff' or attr == 'attack_debuff' or attr == 'skill_buff' or attr == 'skill_debuff' or attr == 'attack_effect' or attr == 'skill_effect') then
+                    for buff, bv in pairs(v) do
+                        if (hattrCache[whichUnit][attr][buff] == nil) then
+                            hattrCache[whichUnit][attr][buff] = {}
+                        end
+                        for effect, ev in pairs(bv) do
+                            if (hattrCache[whichUnit][attr][buff][effect] == nil) then
+                                hattrCache[whichUnit][attr][buff][effect] = {}
+                            end
+                            local opr = string.sub(ev, 1, 1)
+                            ev = string.sub(ev, 2, string.len(ev))
+                            local val = tonumber(ev)
+                            if (val == nil) then
+                                val = ev
+                            end
+                            hattr.setHandle(hattrCache[whichUnit][attr][buff], whichUnit, effect, opr, val, during)
+                        end
                     end
                 end
             end
-            return
         end
-        --- 绿字攻击 攻击速度 护甲
-        if (hsystem.inArray(flag, { 'attack_green', 'attack_speed', 'defend' })) then
-            currentVal = hattrCache[whichUnit].common[flag]
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (futureVal < -99999999) then
-                futureVal = -99999999
-            elseif (futureVal > 99999999) then
-                futureVal = 99999999
-            end
-            for k, ability in pairs(hslk_global.attr[flag].add) do
-                cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-            end
-            for k, ability in pairs(hslk_global.attr[flag].sub) do
-                cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-            end
-            tempVal = math.floor(futureVal)
-            local max = 100000000
-            if (tempVal ~= 0) then
-                if (diff < 0) then
-                    tempVal = math.abs(tempVal);
-                end
-                while (max >= 1) do
-                    level = math.floor(tempVal / max)
-                    tempVal = math.floor(tempVal - level * max)
-                    if (diff > 0) then
-                        cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[flag].add[max], level + 1)
-                    else
-                        cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[flag].sub[max], level + 1)
-                    end
-                    max = math.floor(max / 10)
-                end
-            end
-            return
-        end
-        --- 绿字力量 绿字敏捷 绿字智力
-        if (his.hero(whichUnit) and hsystem.inArray(flag, { 'str_green', 'agi_green', 'int_green' })) then
-            currentVal = hattrCache[whichUnit].common[flag]
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (futureVal < -99999999) then
-                futureVal = -99999999
-            elseif (futureVal > 99999999) then
-                futureVal = 99999999
-            end
-            for k, ability in pairs(hslk_global.attr[flag].add) do
-                cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-            end
-            for k, ability in pairs(hslk_global.attr[flag].sub) do
-                cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-            end
-            tempVal = math.floor(futureVal)
-            local max = 100000000
-            if (tempVal ~= 0) then
-                if (diff < 0) then
-                    tempVal = math.abs(tempVal);
-                end
-                while (max >= 1) do
-                    level = math.floor(tempVal / max)
-                    tempVal = math.floor(tempVal - level * max)
-                    if (diff > 0) then
-                        cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[flag].add[max], level + 1)
-                    else
-                        cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[flag].sub[max], level + 1)
-                    end
-                    max = math.floor(max / 10)
-                end
-            end
-            for k, v in pairs(hattr.threeBuff[string.gsub(flag, '_green')]) do
-                hattr.setCommon(k, whichUnit, diff * v)
-            end
-            return
-        end
-        --- 白字力量 敏捷 智力
-        if (his.hero(whichUnit) and hsystem.inArray(flag, { 'str_white', 'agi_white', 'int_white' })) then
-            currentVal = hattrCache[whichUnit].common[flag]
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (flag == 'str_white') then
-                cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
-            elseif (flag == 'agi_white') then
-                cj.SetHeroAgi(whichUnit, math.floor(futureVal), true)
-            elseif (flag == 'int_white') then
-                cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
-            end
-            for k, v in pairs(hattr.threeBuff[string.gsub(flag, '_white')]) do
-                hattr.setCommon(k, whichUnit, diff * v)
-            end
-            return
-        end
-        --- 生命恢复 魔法恢复
-        if (flag == 'life_back' or flag == 'mana_back') then
-            futureVal = hattrCache[whichUnit].common[flag] + diff
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (math.abs(futureVal) > 0.02 and hsystem.inArray(whichUnit, hattrGroup[flag]) == false) then
-                table.insert(hattrGroup[flag], whichUnit)
-            elseif (math.abs(futureVal) < 0.02) then
-                hsystem.rmArray(whichUnit, hattrGroup[flag])
-            end
-            return
-        end
-        --- 生命源 魔法源(current)
-        if (flag == 'life_source_current' or flag == 'mana_source_current') then
-            futureVal = hattrCache[whichUnit].common[flag] + diff
-            local flagSource = string.gsub(flag, '_current', '', 1)
-            if (futureVal > hattrCache[whichUnit].common[flagSource]) then
-                futureVal = hattrCache[whichUnit].common[flagSource]
-            end
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (math.abs(futureVal) > 1 and hsystem.inArray(whichUnit, hattrGroup[flagSource]) == false) then
-                table.insert(hattrGroup[flagSource], whichUnit)
-            elseif (math.abs(futureVal) < 1) then
-                hsystem.rmArray(whichUnit, hattrGroup[flagSource])
-            end
-            return
-        end
-        --- 硬直
-        if (flag == 'punish' and hunit.isOpenPunish(whichUnit)) then
-            currentVal = hattrCache[whichUnit].common[flag]
-            futureVal = currentVal + diff
-            hattrCache[whichUnit].common[flag] = futureVal
-            if (currentVal > 0) then
-                local tempPercent = futureVal / currentVal
-                hattrCache[whichUnit].common.punish_current = tempPercent * hattrCache[whichUnit].common.punish_current
-            else
-                hattrCache[whichUnit].common.punish_current = futureVal
-            end
-            --- 硬直(current)
-        elseif (flag == 'punish_current' and hunit.isOpenPunish(whichUnit)) then
+    end
+end
 
-        else
-            hattrCache[whichUnit].common[flag] = hattrCache[whichUnit].common[flag] + diff
-        end
-    end
-end
---- 自然(延时请用set/add/sub)
-hattr.setNatural = function(flag, whichUnit, diff)
-    if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
-    end
-    if (hattrCache[whichUnit].natural[flag] == nil) then
-        print('暂不支持natural = ' .. flag)
-        return
-    end
-    if (diff ~= 0) then
-        hattrCache[whichUnit].natural[flag] = hattrCache[whichUnit].natural[flag] + diff
-    end
-end
---- 伤害特效(延时请用set/add/sub)
---- data = { odds = 0.0, val = 0.0, during = 0.0, model = nil } example
-hattr.setEffect = function(flag, whichUnit, data)
-    if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
-    end
-    if (hattrCache[whichUnit].effect[flag] == nil) then
-        print('暂不支持effect = ' .. flag)
-        return
-    end
-    for k, v in pairs(data) do
-        if (type(hattrCache[whichUnit].effect[flag][k]) == 'number') then
-            hattrCache[whichUnit].effect[flag][k] = hattrCache[whichUnit].effect[flag][k] + v
-        else
-            hattrCache[whichUnit].effect[flag][k] = v
-        end
-    end
-end
 --- 通用get
-hattr.get = function(params)
-    if (type(params) ~= 'table' or params.type == nil or params.whichUnit == nil) then
+hattr.get = function(whichUnit, attr)
+    if (whichUnit == nil or attr == nil) then
         return nil
     end
-    if (hattrCache[params.whichUnit] == nil) then
-        hattr.regAllAttrAbility(params.whichUnit)
+    if (hattrCache[whichUnit] == nil) then
+        hattr.regAllAttrAbility(whichUnit)
     end
-    if (params.type == 'attack_type') then
-        return hattrCache[params.whichUnit].attack_type -- table
-    elseif (params.type == 'common') then
-        return hattrCache[params.whichUnit].common[params.flag] -- number
-    elseif (params.type == 'natural') then
-        return hattrCache[params.whichUnit].natural[params.flag] -- number
-    elseif (params.type == 'effect') then
-        return hattrCache[params.whichUnit].effect[params.flag] -- table
-    end
-    return nil
+    return hattrCache[whichUnit][attr]
 end
---- 通用set/add/sub
-hattr.set = function(params)
-    if (type(params) ~= 'table' or params.type == nil or params.flag == nil or params.whichUnit == nil or params.data == nil) then
+
+--- 伤害一个单位
+--[[
+     * -bean.effect 伤害特效
+     * -bean.huntKind伤害方式:
+        attack 攻击
+        skill 技能
+        item 物品
+        special 特殊（如眩晕、打断、分裂、爆炸、闪电链之类的）
+     * -bean.huntType伤害类型:
+        physical 物理伤害则无视护甲<享受物理暴击加成，受护甲影响>
+        magic 魔法<享受魔法暴击加成，受魔抗影响>
+        real 真实
+        absolute 绝对(无视无敌)
+        fire    火
+        soil    土
+        water   水
+        ice     冰
+        wind    风
+        light   光
+        dark    暗
+        wood    木
+        thunder 雷
+        poison  毒
+        ghost   鬼
+        metal   金
+        dragon  龙
+     * bean.breakArmorType 无视的类型：{ 'defend', 'resistance' }
+     * bean.breakAvoid 是否无视回避：true | false
+     * 沉默时，爆炸、闪电链、击飞会失效，其他不受影响
+]]
+hattr.huntUnit = function(bean)
+    local realDamage = 0
+    local realDamagePercent = 0.0
+    local realDamageString = ""
+    local realDamageStringColor = "d9d9d9"
+    local punishEffectRatio = 0
+    local punishEffect = 0
+    local fromUnitPunishHeavy = 1
+    local isAvoid = false
+    local isKnocking = false
+    local isViolence = false
+    if (bean.damage <= 0.125) then
+        print("伤害太小被忽略")
         return
     end
-    local diff
-    local oldData
-    if (params.type == 'attack_type' and type(params.data) == 'table') then
-        oldData = hattr.get(params)
-        hattr.setAttackType(params.whichUnit, params.data)
-    elseif (params.type == 'common' and type(params.data) == 'number') then
-        diff = params.data - hattr.get(params)
-        hattr.setCommon(params.flag, params.whichUnit, diff)
-    elseif (params.type == 'natural' and type(params.data) == 'number') then
-        diff = params.data - hattr.get(params)
-        hattr.setNatural(params.flag, params.whichUnit, diff)
-    elseif (params.type == 'effect' and type(params.data) == 'table') then
-        oldData = hattr.get(params)
-        diff = hsystem.cloneTable(params.data)
-        for k, v in pairs(oldData) do
-            if (diff[k] ~= nil and type(oldData[k]) == 'number') then
-                diff[k] = diff[k] - v
+    if (bean.fromUnit == nil) then
+        print("伤害源不存在")
+        return
+    end
+    if (bean.toUnit == nil) then
+        print("目标不存在")
+        return
+    end
+    if (his.alive(bean.toUnit) == false) then
+        print("目标已死亡")
+        return
+    end
+    -- 判断伤害方式
+    if (bean.huntKind == "attack") then
+        if (his.unarm(bean.fromUnit) == true) then
+            return
+        end
+        bean.huntType = hattr.get(bean.fromUnit, 'attack_hunt_type')
+    elseif (bean.huntKind == "skill") then
+        if (his.silent(bean.fromUnit) == true) then
+            return
+        end
+    elseif (bean.huntKind == "item") then
+    elseif (bean.huntKind == "special") then
+    else
+        print("伤害单位错误：huntKind")
+        return
+    end
+    -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
+    if (his.invincible(bean.toUnit) == true or math.random(1, 100) < hattr.get(bean.toUnit, 'invincible')) then
+        if (hsystem.inArray('absolute', bean.huntType) == false) then
+            return
+        end
+    end
+    if (type(bean.huntEff) == 'string' and string.len(bean.huntEff) > 0) then
+        heffect.toXY(bean.huntEff, cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), 0)
+    end
+    -- 计算硬直抵抗
+    punishEffectRatio = 0.99
+    if (hattr.get(bean.toUnit, 'punish_oppose') > 0) then
+        punishEffectRatio = punishEffectRatio - hattr.get(bean.toUnit, 'punish_oppose') * 0.01
+        if (punishEffectRatio < 0.100) then
+            punishEffectRatio = 0.100
+        end
+    end
+
+    local toUnitDefend = hattr.get(bean.toUnit, 'defend')
+    local toUnitResistance = hattr.get(bean.toUnit, 'resistance')
+    local toUnitAvoid = hattr.get(bean.toUnit, 'avoid')
+    local fromUnitKnocking = hattr.get(bean.fromUnit, 'knocking')
+    local fromUnitViolence = hattr.get(bean.fromUnit, 'violence')
+    local fromUnitAim = hattr.get(bean.fromUnit, 'aim')
+    local fromUnitHuntAmplitude = hattr.get(bean.fromUnit, 'hunt_amplitude')
+
+    local toUnitKnockingOppose = hattr.get(bean.toUnit, 'knocking_oppose')
+    local toUnitViolenceOppose = hattr.get(bean.toUnit, 'violence_oppose')
+
+    -- todo *重要* hjass必须设定护甲因子为0，这里为了修正魔兽负护甲依然因子保持0.06的bug
+    -- 当护甲x为负时，最大-20,公式2-(1-a)^abs(x)
+    if (toUnitDefend < 0 and toUnitDefend >= -20) then
+        bean.damage = bean.damage / (2 - cj.Pow(0.94, math.abs(toUnitDefend)))
+    elseif (toUnitDefend < 0 and toUnitDefend < -20) then
+        bean.damage = bean.damage / (2 - cj.Pow(0.94, 20))
+    end
+    -- 计算攻击者的攻击里物理攻击和魔法攻击的占比
+    local attackSum = hattr.get(bean.fromUnit, 'attack_white') + hattr.get(bean.fromUnit, 'attack_green')
+    local fromUnitHuntPercent = { physical = 0, magic = 0 }
+    if (attackSum > 0) then
+        fromUnitHuntPercent.physical = hattr.get(bean.fromUnit, 'attack_white') / attackSum
+        fromUnitHuntPercent.magic = hattr.get(bean.fromUnit, 'attack_green') / attackSum
+    end
+    -- 赋值伤害
+    realDamage = bean.damage
+    -- 计算暴击值，判断伤害类型将暴击归0
+    -- 判断无视装甲类型
+    if (bean.breakArmorType) then
+        realDamageString = realDamageString .. "无视"
+        if (hsystem.inArray('defend', bean.breakArmorType)) then
+            if (toUnitDefend > 0) then
+                toUnitDefend = 0
+            end
+            realDamageString = realDamageString .. "护甲"
+            realDamageStringColor = "f97373"
+        end
+        if (hsystem.inArray('resistance', bean.breakArmorType)) then
+            if (toUnitResistance > 0) then
+                toUnitResistance = 0
+            end
+            realDamageString = realDamageString .. "魔抗"
+            realDamageStringColor = "6fa8dc"
+        end
+        -- @触发无视护甲事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.breakArmor,
+            triggerUnit = bean.fromUnit,
+            targetUnit = bean.toUnit,
+            breakType = bean.breakArmorType,
+            value = toUnitDefend,
+        })
+        -- @触发被无视护甲事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.beBreakArmor,
+            triggerUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            breakType = bean.breakArmorType,
+            value = toUnitDefend,
+        })
+    end
+    -- 判断无视回避
+    if (bean.breakAvoid == true) then
+        toUnitAvoid = -100
+        realDamageString = realDamageString .. "无视回避"
+        realDamageStringColor = "76a5af"
+    end
+    -- 如果遇到真实伤害，无法回避
+    if (hsystem.inArray('real', bean.huntType) == true) then
+        toUnitAvoid = -100
+        realDamageString = realDamageString .. "真实"
+    end
+    -- 如果遇到绝对伤害，无法回避
+    if (hsystem.inArray('absolute', bean.huntType) == true) then
+        toUnitAvoid = -100
+        realDamageString = realDamageString .. "绝对"
+    end
+    -- 计算物理暴击,几率50000满100%，伤害每10000点增加5%
+    if (hsystem.inArray('physical', bean.huntType) == true and (fromUnitKnocking - toUnitKnockingOppose) > 0 and math.random(1, 1000) <= ((fromUnitKnocking - toUnitKnockingOppose) / 50)) then
+        realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * (fromUnitKnocking - toUnitKnockingOppose) * 0.0005
+        toUnitAvoid = -100 -- 触发暴击，无法回避
+        isKnocking = true
+    end
+    -- 计算魔法暴击,几率75000满100%，伤害每10000点增加7%
+    if (hsystem.inArray('magic', bean.huntType) == true and (fromUnitViolence - toUnitViolenceOppose) > 0 and math.random(1, 1000) <= ((fromUnitViolence - toUnitViolenceOppose) / 75)) then
+        realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * (fromUnitViolence - toUnitViolenceOppose) * 0.0007
+        toUnitAvoid = -100 -- 触发暴击，无法回避
+        isViolence = true
+    end
+    -- 计算回避 X 命中
+    if (bean.huntKind == "attack" and toUnitAvoid - fromUnitAim > 0 and math.random(1, 100) <= toUnitAvoid - fromUnitAim) then
+        isAvoid = true
+        realDamage = 0
+        httg.style(httg.ttg2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
+        -- @触发回避事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.avoid,
+            triggerUnit = bean.toUnit,
+            attacker = bean.fromUnit,
+        })
+        -- @触发被回避事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.beAvoid,
+            triggerUnit = bean.fromUnit,
+            attacker = bean.fromUnit,
+            targetUnit = bean.toUnit,
+        })
+    end
+    -- 计算自然属性
+    if (realDamage > 0) then
+        -- 自然属性
+        local fromUnitNaturalFire = hattr.get(bean.fromUnit, 'natural_fire') - hattr.get(bean.toUnit, 'natural_fire_oppose') + 10
+        local fromUnitNaturalSoil = hattr.get(bean.fromUnit, 'natural_soil') - hattr.get(bean.toUnit, 'natural_soi_loppose') + 10
+        local fromUnitNaturalWater = hattr.get(bean.fromUnit, 'natural_water') - hattr.get(bean.toUnit, 'natural_water_oppose') + 10
+        local fromUnitNaturalIce = hattr.get(bean.fromUnit, 'natural_ice') - hattr.get(bean.toUnit, 'natural_ice_oppose') + 10
+        local fromUnitNaturalWind = hattr.get(bean.fromUnit, 'natural_wind') - hattr.get(bean.toUnit, 'natural_wind_oppose') + 10
+        local fromUnitNaturalLight = hattr.get(bean.fromUnit, 'natural_light') - hattr.get(bean.toUnit, 'natural_light_oppose') + 10
+        local fromUnitNaturalDark = hattr.get(bean.fromUnit, 'natural_dark') - hattr.get(bean.toUnit, 'natural_dark_oppose') + 10
+        local fromUnitNaturalWood = hattr.get(bean.fromUnit, 'natural_wood') - hattr.get(bean.toUnit, 'natural_wood_oppose') + 10
+        local fromUnitNaturalThunder = hattr.get(bean.fromUnit, 'natural_thunder') - hattr.get(bean.toUnit, 'natural_thunder_oppose') + 10
+        local fromUnitNaturalPoison = hattr.get(bean.fromUnit, 'natural_poison') - hattr.get(bean.toUnit, 'natural_poison_oppose') + 10
+        local fromUnitNaturalGhost = hattr.get(bean.fromUnit, 'natural_ghost') - hattr.get(bean.toUnit, 'natural_ghost_oppose') + 10
+        local fromUnitNaturalMetal = hattr.get(bean.fromUnit, 'natural_metal') - hattr.get(bean.toUnit, 'natural_metal_oppose') + 10
+        local fromUnitNaturalDragon = hattr.get(bean.fromUnit, 'natural_dragon') - hattr.get(bean.toUnit, 'natural_dragon_oppose') + 10
+        if (fromUnitNaturalFire < -100) then
+            fromUnitNaturalFire = -100
+        end
+        if (fromUnitNaturalSoil < -100) then
+            fromUnitNaturalSoil = -100
+        end
+        if (fromUnitNaturalWater < -100) then
+            fromUnitNaturalWater = -100
+        end
+        if (fromUnitNaturalIce < -100) then
+            fromUnitNaturalIce = -100
+        end
+        if (fromUnitNaturalWind < -100) then
+            fromUnitNaturalWind = -100
+        end
+        if (fromUnitNaturalLight < -100) then
+            fromUnitNaturalLight = -100
+        end
+        if (fromUnitNaturalDark < -100) then
+            fromUnitNaturalDark = -100
+        end
+        if (fromUnitNaturalWood < -100) then
+            fromUnitNaturalWood = -100
+        end
+        if (fromUnitNaturalThunder < -100) then
+            fromUnitNaturalThunder = -100
+        end
+        if (fromUnitNaturalPoison < -100) then
+            fromUnitNaturalPoison = -100
+        end
+        if (fromUnitNaturalGhost < -100) then
+            fromUnitNaturalGhost = -100
+        end
+        if (fromUnitNaturalMetal < -100) then
+            fromUnitNaturalMetal = -100
+        end
+        if (fromUnitNaturalDragon < -100) then
+            fromUnitNaturalDragon = -100
+        end
+        if (hsystem.inArray('fire', bean.huntType) and fromUnitNaturalFire ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalFire * 0.01
+            realDamageString = realDamageString .. "火"
+            realDamageStringColor = "f45454"
+        end
+        if (hsystem.inArray('soil', bean.huntType) and fromUnitNaturalSoil ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalSoil * 0.01
+            realDamageString = realDamageString .. "土"
+            realDamageStringColor = "dbb745"
+        end
+        if (hsystem.inArray('water', bean.huntType) and fromUnitNaturalWater ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalWater * 0.01
+            realDamageString = realDamageString .. "水"
+            realDamageStringColor = "85adee"
+        end
+        if (hsystem.inArray('ice', bean.huntType) and fromUnitNaturalIce ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalIce * 0.01
+            realDamageString = realDamageString .. "冰"
+            realDamageStringColor = "85f4f4"
+        end
+        if (hsystem.inArray('wind', bean.huntType) and fromUnitNaturalWind ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalWind * 0.01
+            realDamageString = realDamageString .. "风"
+            realDamageStringColor = "b6d7a8"
+        end
+        if (hsystem.inArray('light', bean.huntType) and fromUnitNaturalLight ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalLight * 0.01
+            realDamageString = realDamageString .. "光"
+            realDamageStringColor = "f9f99c"
+        end
+        if (hsystem.inArray('dark', bean.huntType) and fromUnitNaturalDark ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalDark * 0.01
+            realDamageString = realDamageString .. "暗"
+            realDamageStringColor = "383434"
+        end
+        if (hsystem.inArray('wood', bean.huntType) and fromUnitNaturalWood ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalWood * 0.01
+            realDamageString = realDamageString .. "木"
+            realDamageStringColor = "7cbd60"
+        end
+        if (hsystem.inArray('thunder', bean.huntType) and fromUnitNaturalThunder ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalThunder * 0.01
+            realDamageString = realDamageString .. "雷"
+            realDamageStringColor = "7cbd60"
+        end
+        if (hsystem.inArray('poison', bean.huntType) and fromUnitNaturalPoison ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalPoison * 0.01
+            realDamageString = realDamageString .. "毒"
+            realDamageStringColor = "45f7f7"
+        end
+        if (hsystem.inArray('ghost', bean.huntType) and fromUnitNaturalGhost ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalGhost * 0.01
+            realDamageString = realDamageString .. "鬼"
+            realDamageStringColor = "383434"
+        end
+        if (hsystem.inArray('metal', bean.huntType) and fromUnitNaturalMetal ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalMetal * 0.01
+            realDamageString = realDamageString .. "金"
+            realDamageStringColor = "f9f99c"
+        end
+        if (hsystem.inArray('dragon', bean.huntType) and fromUnitNaturalDragon ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalDragon * 0.01
+            realDamageString = realDamageString .. "龙"
+            realDamageStringColor = "7cbd60"
+        end
+    end
+    -- 计算伤害增幅
+    if (realDamage > 0 and fromUnitHuntAmplitude ~= 0) then
+        realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
+    end
+    -- 计算混合了物理的杂乱伤害，护甲效果减弱
+    if (hsystem.inArray("physical", bean.huntType) and toUnitDefend > 0) then
+        toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
+        -- 计算护甲
+        if (toUnitDefend > 0) then
+            realDamagePercent = realDamagePercent - toUnitDefend / (toUnitDefend + 200)
+        else
+            realDamagePercent = realDamagePercent + -toUnitDefend / (-toUnitDefend + 100)
+        end
+    end
+    -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
+    if (hsystem.inArray("maigc", bean.huntType) and toUnitResistance > 0) then
+        toUnitResistance = toUnitResistance * fromUnitHuntPercent.magic
+        -- 计算魔抗
+        if (toUnitResistance ~= 0) then
+            if (toUnitResistance >= 100) then
+                realDamagePercent = realDamagePercent * fromUnitHuntPercent.physical
+            else
+                realDamagePercent = realDamagePercent - toUnitResistance * 0.01
             end
         end
-        hattr.setEffect(params.flag, params.whichUnit, diff)
     end
-    if (type(params.during) == 'number' and params.during > 0) then
-        htime.setTimeout(params.during, nil, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            if (params.type == 'attack_type' and type(params.data) == 'table') then
-                hattr.setAttackType(params.whichUnit, oldData)
-            elseif (params.type == 'common') then
-                hattr.setCommon(params.flag, params.whichUnit, -diff)
-            elseif (params.type == 'natural') then
-                hattr.setNatural(params.flag, params.whichUnit, -diff)
-            elseif (params.type == 'effect') then
-                diff = hsystem.cloneTable(params.data)
-                for k, v in pairs(oldData) do
-                    if (diff[k] ~= nil and type(oldData[k]) == 'number') then
-                        diff[k] = v - diff[k]
+
+    -- 合计 realDamagePercent
+    realDamage = realDamage * (1 + realDamagePercent)
+
+    -- 计算韧性
+    local toUnitToughness = hattr.get(bean.toUnit, 'toughness')
+    if (toUnitToughness > 0) then
+        if ((realDamage - toUnitToughness) < realDamage * 0.1) then
+            realDamage = realDamage * 0.1
+            --@触发极限韧性抵抗事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.limitToughness,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+            })
+        else
+            realDamage = realDamage - toUnitToughness
+        end
+    end
+    --TODO 上面都是先行计算 ------------------
+
+    -- 造成伤害
+    print("realDamage:" .. realDamage)
+    if (realDamage > 0.25) then
+        if (isKnocking) then
+            --@触发物理暴击事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.knocking,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage,
+                value = fromUnitKnocking / 500,
+                percent = fromUnitKnocking * 0.05,
+            })
+            --@触发被物理暴击事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beKnocking,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage,
+                value = fromUnitKnocking / 500,
+                percent = fromUnitKnocking * 0.05,
+            })
+        end
+        if (isViolence) then
+            --@触发魔法暴击事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.violence,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage,
+                value = fromUnitKnocking / 750,
+                percent = fromUnitKnocking * 0.07,
+            })
+            --@触发被魔法暴击事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beViolence,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage,
+                value = fromUnitKnocking / 750,
+                percent = fromUnitKnocking * 0.07,
+            })
+        end
+        -- 暴击文本加持
+        if (isKnocking and isViolence) then
+            realDamageString = realDamageString .. "双暴"
+            realDamageStringColor = "b054ee"
+        elseif (isKnocking) then
+            realDamageString = realDamageString .. "物暴"
+            realDamageStringColor = "ef3215"
+        elseif (isViolence) then
+            realDamageString = realDamageString .. "魔爆"
+            realDamageStringColor = "15bcef"
+        end
+        -- 文本显示
+        httg.style(httg.create2Unit(
+                bean.toUnit,
+                realDamageString + I2S(R2I(realDamage)),
+                6.00,
+                realDamageStringColor,
+                10,
+                1.1,
+                11.00
+        ), "toggle", -0.05, 0)
+        hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
+        hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), realDamage)
+        hplayer.addBeDamage(cj.GetOwningPlayer(bean.toUnit), realDamage)
+        hunit.subLife(bean.toUnit, realDamage)
+        if (bean.isNoAvoid == true) then
+            -- @触发造成无法回避伤害事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.noAvoid,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage,
+            })
+            -- @触发被无法回避伤害事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beNoAvoid,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage,
+            })
+        end
+        if (bean.huntKind == "attack") then
+            -- @触发攻击事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.attack,
+                triggerUnit = bean.fromUnit,
+                attacker = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = bean.damage,
+                realDamage = realDamage,
+                damageKind = bean.huntKind,
+                damageType = bean.huntType,
+            })
+            -- @触发被攻击事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beAttack,
+                triggerUnit = bean.fromUnit,
+                attacker = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = bean.damage,
+                realDamage = realDamage,
+                damageKind = bean.huntKind,
+                damageType = bean.huntType,
+            })
+        end
+        -- @触发伤害事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.damage,
+            triggerUnit = bean.fromUnit,
+            targetUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            damage = bean.damage,
+            realDamage = realDamage,
+            damageKind = bean.huntKind,
+            damageType = bean.huntType,
+        })
+        -- @触发被伤害事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.beDamage,
+            triggerUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            damage = bean.damage,
+            realDamage = realDamage,
+            damageKind = bean.huntKind,
+            damageType = bean.huntType,
+        })
+        -- 分裂
+        local split = hattr.get(bean.fromUnit, 'split') - hattr.get(bean.toUnit, 'split_oppose')
+        local split_range = hattr.get(bean.fromUnit, 'split_range')
+        if (bean.huntKind == "attack" and split > 0) then
+            local g = hgroup.createByUnit(bean.toUnit, split_range, function()
+                local flag = true
+                if (his.death(bean.toUnit)) then
+                    flag = false
+                end
+                if (his.ally(bean.toUnit, bean.fromUnit)) then
+                    flag = false
+                end
+                if (his.isBuilding(bean.toUnit)) then
+                    flag = false
+                end
+                return flag
+            end)
+            heffect.toUnit("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", bean.toUnit, 0)
+            cj.ForGroup(g, function()
+                local u = cj.GetEnumUnit()
+                if (u ~= bean.toUnit) then
+                    huntBean = hAttrHuntBean.create()
+                    hattr.huntUnit({
+                        fromUnit = bean.fromUnit,
+                        toUnit = u,
+                        damage = realDamage * split * 0.01,
+                        huntKind = "special",
+                        huntType = { "real" },
+                        isBreak = "defend",
+                    })
+                    heffect.toUnit("Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdl", u, 0)
+                end
+            end)
+            cj.GroupClear(g)
+            cj.DestroyGroup(g)
+            -- @触发分裂事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.split,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage * split * 0.01,
+                range = split_range,
+                percent = split,
+            })
+            -- @触发被分裂事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beSpilt,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage * split * 0.01,
+                range = split_range,
+                percent = split,
+            })
+        end
+        -- 吸血
+        local hemophagia = hattr.get(bean.toUnit, 'hemophagia') - hattr.get(bean.toUnit, 'hemophagia_oppose')
+        if (bean.huntKind == "attack" and hemophagia > 0) then
+            hunit.addLife(bean.fromUnit, realDamage * hemophagia * 0.01)
+            heffect.toUnit("Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl", bean.fromUnit, "origin", 1.00)
+            -- @触发吸血事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.hemophagia,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage * hemophagia * 0.01,
+                percent = hemophagia
+            })
+            -- @触发被吸血事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beHemophagia,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage * hemophagia * 0.01,
+                percent = hemophagia
+            })
+        end
+        -- 技能吸血
+        local hemophagia_skill = hattr.get(bean.toUnit, 'hemophagia_skill') - hattr.get(bean.toUnit, 'hemophagia_oppose')
+        if (bean.huntKind == "skill" and hemophagia_skill > 0) then
+            hunit.addLife(bean.fromUnit, realDamage * hemophagia_skill * 0.01)
+            heffect.toUnit("Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl", bean.fromUnit, "origin", 1.80)
+            -- @触发技能吸血事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.skillHemophagia,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage * hemophagia_skill * 0.01,
+                percent = hemophagia_skill
+            })
+            -- @触发被技能吸血事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beSkillHemophagia,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage * hemophagia_skill * 0.01,
+                percent = hemophagia_skill
+            })
+        end
+        -- 硬直
+        local punish_during = 5.00
+        if (realDamage > 3 and his.alive(bean.toUnit) and his.punish(bean.toUnit) == false and hunit.isOpenPunish(bean.toUnit)) then
+            hattr.set(bean.toUnit, 0, {
+                punish_current = '-' .. realDamage
+            })
+            if (hattr.get(bean.toUnit, 'punish_current') <= 0) then
+                hisCache[bean.toUnit].isPunishing = true
+                htime.setTimeout(punish_during + 1.00, nil, function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hisCache[bean.toUnit].isPunishing = false
+                end)
+            end
+            local punishEffectAttackSpeed = (100 + hattr.get(bean.toUnit, 'attack_speed')) * punishEffectRatio
+            local punishEffectMove = hattr.get(bean.toUnit, 'move') * punishEffectRatio
+            if (punishEffectAttackSpeed < 1) then
+                punishEffectAttackSpeed = 1.00
+            end
+            if (punishEffectMove < 1) then
+                punishEffectMove = 1.00
+            end
+            hattr.set(bean.toUnit, punish_during, {
+                attack_speed = '-' .. punishEffectAttackSpeed,
+                move = '-' .. punishEffectMove,
+            })
+            httg.style(httg.create2Unit(bean.toUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00), "scale", 0, 0)
+            -- @触发硬直事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.heavy,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                percent = punishEffectRatio * 100,
+                during = punish_during,
+            })
+        end
+        -- 反射
+        local toUnitHuntRebound = hattr.get(bean.toUnit, 'hunt_rebound') - hattr.get(bean.fromUnit, 'hunt_rebound_oppose')
+        if (toUnitHuntRebound > 0) then
+            hunit.subLife(bean.fromUnit, realDamage * toUnitHuntRebound * 0.01)
+            httg.style(httg.create2Unit(bean.fromUnit, "反伤" .. (realDamage * toUnitHuntRebound * 0.01), 10.00, "f8aaeb", 10, 1.00, 10.00), "shrink", -0.05, 0)
+            -- @触发反伤事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.rebound,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = realDamage * toUnitHuntRebound * 0.01,
+            })
+        end
+        -- 特殊效果,需要非无敌并处于效果启动状态下
+        -- buff/debuff
+        local attackBuff = hattr.get(bean.fromUnit, 'attack_buff')
+        local attackDebuff = hattr.get(bean.fromUnit, 'attack_debuff')
+        local skillBuff = hattr.get(bean.fromUnit, 'skill_buff')
+        local skillDebuff = hattr.get(bean.fromUnit, 'skill_debuff')
+        if (bean.huntKind == 'attack') then
+            for k, b in pairs(attackBuff) do
+                if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
+                    hattr.set(bean.fromUnit, b.during, { k = '+' .. b.val })
+                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
+                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
                 end
-                hattr.setEffect(params.flag, params.whichUnit, diff)
             end
-        end)
-    end
-end
-hattr.add = function(params)
-    if (type(params) ~= 'table' or params.type == nil or params.flag == nil or params.whichUnit == nil or params.data == nil) then
-        return
-    end
-    local oldData
-    if (params.type == 'attack_type' and type(params.data) == 'string') then
-        hattr.addAttackType(params.whichUnit, params.data)
-    elseif (params.type == 'common' and type(params.data) == 'number') then
-        hattr.setCommon(params.flag, params.whichUnit, params.data)
-    elseif (params.type == 'natural' and type(params.data) == 'number') then
-        hattr.setNatural(params.flag, params.whichUnit, params.data)
-    elseif (params.type == 'effect' and type(params.data) == 'table') then
-        oldData = hattr.get(params)
-        hattr.setEffect(params.flag, params.whichUnit, params.data)
-    end
-    if (type(params.during) == 'number' and params.during > 0) then
-        htime.setTimeout(params.during, nil, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            if (params.type == 'attack_type' and type(params.data) == 'string') then
-                hattr.subAttackType(params.whichUnit, params.data)
-            elseif (params.type == 'common') then
-                hattr.setCommon(params.flag, params.whichUnit, -params.data)
-            elseif (params.type == 'natural') then
-                hattr.setNatural(params.flag, params.whichUnit, -params.data)
-            elseif (params.type == 'effect') then
-                for k, v in pairs(params.data) do
-                    if (params.data[k] ~= nil and type(params.data[k]) == 'number') then
-                        params.data[k] = -v
-                    else
-                        params.data[k] = oldData[k]
+            for k, b in pairs(attackDebuff) do
+                if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
+                    hattr.set(bean.fromUnit, b.during, { k = '-' .. b.val })
+                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
+                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
                 end
-                hattr.setEffect(params.flag, params.whichUnit, params.data)
-            end
-        end)
-    end
-end
-hattr.sub = function(params)
-    if (type(params) ~= 'table' or params.type == nil or params.flag == nil or params.whichUnit == nil or params.data == nil) then
-        return
-    end
-    local diff
-    local oldData
-    if (params.type == 'attack_type' and type(params.data) == 'string') then
-        hattr.subAttackType(params.whichUnit, params.data)
-    elseif (params.type == 'common' and type(params.data) == 'number') then
-        hattr.setCommon(params.flag, params.whichUnit, -params.data)
-    elseif (params.type == 'natural' and type(params.data) == 'number') then
-        hattr.setNatural(params.flag, params.whichUnit, -params.data)
-    elseif (params.type == 'effect' and type(params.data) == 'table') then
-        oldData = hattr.get(params)
-        for k, v in pairs(params.data) do
-            if (params.data[k] ~= nil and type(params.data[k]) == 'number') then
-                diff[k] = -v
             end
         end
-        hattr.setEffect(params.flag, params.whichUnit, diff)
-    end
-    if (type(params.during) == 'number' and params.during > 0) then
-        htime.setTimeout(params.during, nil, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            if (params.type == 'attack_type' and type(params.data) == 'string') then
-                hattr.subAttackType(params.whichUnit, params.data)
-            elseif (params.type == 'common') then
-                hattr.setCommon(params.flag, params.whichUnit, -params.data)
-            elseif (params.type == 'natural') then
-                hattr.setNatural(params.flag, params.whichUnit, -params.data)
-            elseif (params.type == 'effect') then
-                for k, v in pairs(params.data) do
-                    if (params.data[k] ~= nil and type(params.data[k]) ~= 'number') then
-                        params.data[k] = oldData[k]
+        if (bean.huntKind == 'skill') then
+            for k, b in pairs(skillBuff) do
+                if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
+                    hattr.set(bean.fromUnit, b.during, { k = '+' .. b.val })
+                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
+                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
                 end
-                hattr.setEffect(params.flag, params.whichUnit, params.data)
             end
-        end)
+            for k, b in pairs(skillDebuff) do
+                if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
+                    hattr.set(bean.fromUnit, b.during, { k = '-' .. b.val })
+                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
+                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
+                    end
+                end
+            end
+        end
+        -- effect
+        local attackEffect = hattr.get(bean.fromUnit, 'attack_effect')
+        local skillEffect = hattr.get(bean.fromUnit, 'skill_effect')
+        -- 眩晕 swim
+        -- flag
+        local isSwim = false
+        local isBroken = false
+        local isSilent = false
+        local isUnarm = false
+        local isFetter = false
+        local isBomb = false
+        local isLightningChain = false
+        local isCrackFly = false
+        -- data
+        local swimEffect = {
+            attack = hsystem.cloneTable(attackEffect.swim),
+            skill = hsystem.cloneTable(skillEffect.swim),
+        }
+        local brokenEffect = {
+            attack = hsystem.cloneTable(attackEffect.broken),
+            skill = hsystem.cloneTable(skillEffect.broken),
+        }
+        local silentEffect = {
+            attack = hsystem.cloneTable(attackEffect.silent),
+            skill = hsystem.cloneTable(skillEffect.silent),
+        }
+        local unarmEffect = {
+            attack = hsystem.cloneTable(attackEffect.unarm),
+            skill = hsystem.cloneTable(skillEffect.unarm),
+        }
+        local fetterEffect = {
+            attack = hsystem.cloneTable(attackEffect.fetter),
+            skill = hsystem.cloneTable(skillEffect.fetter),
+        }
+        local bombEffect = {
+            attack = hsystem.cloneTable(attackEffect.bomb),
+            skill = hsystem.cloneTable(skillEffect.bomb),
+        }
+        local lightningChainEffect = {
+            attack = hsystem.cloneTable(attackEffect.lightning_chain),
+            skill = hsystem.cloneTable(skillEffect.lightning_chain),
+        }
+        local crackFlyEffect = {
+            attack = hsystem.cloneTable(attackEffect.lightning_chain),
+            skill = hsystem.cloneTable(skillEffect.lightning_chain),
+        }
+        -- oppose
+        local swimOppose = hattr.get(bean.toUnit, 'swim_oppose')
+        local brokenOppose = hattr.get(bean.toUnit, 'broken_oppose')
+        local silentOppose = hattr.get(bean.toUnit, 'silent_oppose')
+        local unarmOppose = hattr.get(bean.toUnit, 'unarm_oppose')
+        local fetterOppose = hattr.get(bean.toUnit, 'fetter_oppose')
+        local bombOppose = hattr.get(bean.toUnit, 'bomb_oppose')
+        local lightningChainOppose = hattr.get(bean.toUnit, 'lightning_chain_oppose')
+        local crackFlyOppose = hattr.get(bean.toUnit, 'crack_fly')
+
+        if (bean.huntKind == 'attack') then
+            swimEffect.attack.odds = swimEffect.attack.odds * (1 - swimOppose * 0.01)
+            swimEffect.attack.during = swimEffect.attack.during * (1 - swimOppose * 0.01)
+            swimEffect.attack.val = swimEffect.attack.val * (1 - swimOppose * 0.01)
+            brokenEffect.attack.odds = brokenEffect.attack.odds * (1 - brokenOppose * 0.01)
+            brokenEffect.attack.val = brokenEffect.attack.val * (1 - brokenOppose * 0.01)
+            silentEffect.attack.odds = silentEffect.attack.odds * (1 - silentOppose * 0.01)
+            silentEffect.attack.during = silentEffect.attack.during * (1 - silentOppose * 0.01)
+            silentEffect.attack.val = silentEffect.attack.val * (1 - silentOppose * 0.01)
+            unarmEffect.attack.odds = unarmEffect.attack.odds * (1 - unarmOppose * 0.01)
+            unarmEffect.attack.during = unarmEffect.attack.during * (1 - unarmOppose * 0.01)
+            unarmEffect.attack.val = unarmEffect.attack.val * (1 - unarmOppose * 0.01)
+            fetterEffect.attack.odds = fetterEffect.attack.odds * (1 - fetterOppose * 0.01)
+            fetterEffect.attack.during = fetterEffect.attack.during * (1 - fetterOppose * 0.01)
+            fetterEffect.attack.val = fetterEffect.attack.val * (1 - fetterOppose * 0.01)
+            bombEffect.attack.odds = bombEffect.attack.odds * (1 - bombOppose * 0.01)
+            bombEffect.attack.val = bombEffect.attack.val * (1 - bombOppose * 0.01)
+            lightningChainEffect.attack.odds = lightningChainEffect.attack.odds * (1 - lightningChainOppose * 0.01)
+            lightningChainEffect.attack.val = lightningChainEffect.attack.val * (1 - lightningChainOppose * 0.01)
+            crackFlyEffect.attack.odds = crackFlyEffect.attack.odds * (1 - crackFlyOppose * 0.01)
+            crackFlyEffect.attack.val = crackFlyEffect.attack.val * (1 - crackFlyOppose * 0.01)
+            --
+            if (swimEffect.attack.odds > 0 and swimEffect.attack.during >= 0.01 and Math.random(1, 100) <= swimEffect.attack.odds) then
+                isSwim = true
+            end
+            if (brokenEffect.attack.odds > 0 and Math.random(1, 100) <= brokenEffect.attack.odds) then
+                isBroken = true
+            end
+            if (silentEffect.attack.odds > 0 and silentEffect.attack.during >= 0.01 and Math.random(1, 100) <= silentEffect.attack.odds) then
+                isSilent = true
+            end
+            if (unarmEffect.attack.odds > 0 and unarmEffect.attack.during >= 0.01 and Math.random(1, 100) <= unarmEffect.attack.odds) then
+                isUnarm = true
+            end
+            if (fetterEffect.attack.odds > 0 and fetterEffect.attack.during >= 0.01 and Math.random(1, 100) <= fetterEffect.attack.odds) then
+                isFetter = true
+            end
+            if (bombEffect.attack.odds > 0 and Math.random(1, 100) <= bombEffect.attack.odds) then
+                isBomb = true
+            end
+            if (lightningChainEffect.attack.odds > 0 and lightningChainEffect.attack.qty > 0 and Math.random(1, 100) <= lightningChainEffect.attack.odds) then
+                isLightningChain = true
+            end
+            if (crackFlyEffect.attack.odds > 0 and (crackFlyEffect.attack.distance > 0 or crackFlyEffect.attack.high > 0) and Math.random(1, 100) <= crackFlyEffect.attack.odds) then
+                isCrackFly = true
+            end
+        end
+        if (bean.huntKind == 'skill') then
+            swimEffect.skill.odds = swimEffect.skill.odds * (1 - swimOppose * 0.01)
+            swimEffect.skill.during = swimEffect.skill.during * (1 - swimOppose * 0.01)
+            swimEffect.skill.val = swimEffect.skill.val * (1 - swimOppose * 0.01)
+            brokenEffect.skill.odds = brokenEffect.skill.odds * (1 - brokenOppose * 0.01)
+            brokenEffect.skill.val = brokenEffect.skill.val * (1 - brokenOppose * 0.01)
+            silentEffect.skill.odds = silentEffect.skill.odds * (1 - silentOppose * 0.01)
+            silentEffect.skill.during = silentEffect.skill.during * (1 - silentOppose * 0.01)
+            silentEffect.skill.val = silentEffect.skill.val * (1 - silentOppose * 0.01)
+            unarmEffect.skill.odds = unarmEffect.skill.odds * (1 - unarmOppose * 0.01)
+            unarmEffect.skill.during = unarmEffect.skill.during * (1 - unarmOppose * 0.01)
+            unarmEffect.skill.val = unarmEffect.skill.val * (1 - unarmOppose * 0.01)
+            fetterEffect.skill.odds = fetterEffect.skill.odds * (1 - fetterOppose * 0.01)
+            fetterEffect.skill.during = fetterEffect.skill.during * (1 - fetterOppose * 0.01)
+            fetterEffect.skill.val = fetterEffect.skill.val * (1 - fetterOppose * 0.01)
+            bombEffect.skill.odds = bombEffect.skill.odds * (1 - bombOppose * 0.01)
+            bombEffect.skill.val = bombEffect.skill.val * (1 - bombOppose * 0.01)
+            lightningChainEffect.skill.odds = lightningChainEffect.skill.odds * (1 - lightningChainOppose * 0.01)
+            lightningChainEffect.skill.val = lightningChainEffect.skill.val * (1 - lightningChainOppose * 0.01)
+            crackFlyEffect.skill.odds = crackFlyEffect.skill.odds * (1 - crackFlyOppose * 0.01)
+            crackFlyEffect.skill.val = crackFlyEffect.skill.val * (1 - crackFlyOppose * 0.01)
+            --
+            if (swimEffect.skill.odds > 0 and swimEffect.skill.during >= 0.01 and Math.random(1, 100) <= swimEffect.skill.odds) then
+                isSwim = true
+            end
+            if (brokenEffect.skill.odds > 0 and Math.random(1, 100) <= brokenEffect.skill.odds) then
+                isBroken = true
+            end
+            if (silentEffect.skill.odds > 0 and silentEffect.skill.during >= 0.01 and Math.random(1, 100) <= silentEffect.skill.odds) then
+                isSilent = true
+            end
+            if (unarmEffect.skill.odds > 0 and unarmEffect.skill.during >= 0.01 and Math.random(1, 100) <= unarmEffect.skill.odds) then
+                isUnarm = true
+            end
+            if (fetterEffect.skill.odds > 0 and fetterEffect.skill.during >= 0.01 and Math.random(1, 100) <= fetterEffect.skill.odds) then
+                isFetter = true
+            end
+            if (bombEffect.skill.odds > 0 and Math.random(1, 100) <= bombEffect.skill.odds) then
+                isBomb = true
+            end
+            if (lightningChainEffect.skill.odds > 0 and lightningChainEffect.skill.qty > 0 and Math.random(1, 100) <= lightningChainEffect.skill.odds) then
+                isLightningChain = true
+            end
+            if (crackFlyEffect.skill.odds > 0 and (crackFlyEffect.skill.distance > 0 or crackFlyEffect.skill.high > 0) and Math.random(1, 100) <= crackFlyEffect.skill.odds) then
+                isCrackFly = true
+            end
+        end
+        -- TODO 眩晕
+        if (isSwim) then
+            hskill.swim(bean.toUnit, swimEffect.during, bean.fromUnit, swimEffect.val, swimEffect.odds)
+            if (swimEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = swimEffect.val,
+                    huntKind = "special",
+                    huntType = { "real" },
+                })
+            end
+            if (swimEffect.model ~= nil) then
+                heffect.toUnit(swimEffect.model, bean.toUnit, "origin", 0.5)
+            end
+        end
+        -- TODO 打断
+        if (isBroken) then
+            hskill.broken(bean.toUnit, bean.fromUnit, brokenEffect.val, brokenEffect.odds)
+            if (brokenEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = brokenEffect.val,
+                    huntKind = "special",
+                    huntType = { "real" },
+                })
+            end
+            if (brokenEffect.model ~= nil) then
+                heffect.toUnit(brokenEffect.model, bean.toUnit, "origin", 0.5)
+            end
+        end
+        -- TODO 沉默
+        if (isSilent) then
+            hskill.silent(bean.toUnit, silentEffect.during, bean.fromUnit, silentEffect.val, silentEffect.odds)
+            if (silentEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = silentEffect.val,
+                    huntKind = "special",
+                    huntType = { "magic" },
+                })
+            end
+            if (silentEffect.model ~= nil) then
+                heffect.toUnit(silentEffect.model, bean.toUnit, "origin", 0.5)
+            end
+        end
+        -- TODO 缴械
+        if (isUnarm) then
+            hskill.unarm(bean.toUnit, unarmEffect.during, bean.fromUnit, unarmEffect.val, unarmEffect.odds)
+            if (unarmEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = unarmEffect.val,
+                    huntKind = "special",
+                    huntType = { "magic" },
+                })
+            end
+            if (unarmEffect.model ~= nil) then
+                heffect.toUnit(unarmEffect.model, bean.toUnit, "origin", 0.5)
+            end
+        end
+        -- TODO 缚足
+        if (isFetter) then
+            hattr.set(bean.toUnit, fetterEffect.during, {
+                move = '-1000'
+            })
+            if (fetterEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = fetterEffect.val,
+                    huntKind = "special",
+                    huntType = { "magic" },
+                })
+            end
+            if (fetterEffect.model ~= nil) then
+                heffect.toUnit(fetterEffect.model, bean.toUnit, "origin", 0.5)
+            end
+            -- @触发缚足事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.fetter,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = fetterEffect.val,
+                percent = fetterEffect.odds,
+                during = fetterEffect.during,
+            })
+            -- @触发被缚足事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beFetter,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = fetterEffect.val,
+                percent = fetterEffect.odds,
+                during = fetterEffect.during,
+            })
+        end
+        -- TODO 爆破
+        if (isBomb) then
+            if (bombEffect.val > 0) then
+                local tempGroup = hgroup.createByUnit(bean.toUnit, bombEffect.range, function()
+                    local flag = true
+                    if (his.ally(whichUnit, cj.GetFilterUnit())) then
+                        flag = false
+                    end
+                    if (his.death(cj.GetFilterUnit())) then
+                        flag = false
+                    end
+                    if (his.building(cj.GetFilterUnit())) then
+                        flag = false
+                    end
+                    return flag
+                end)
+                -- @触发爆破事件
+                hevent.triggerEvent({
+                    triggerKey = heventKeyMap.bomb,
+                    triggerUnit = bean.fromUnit,
+                    targetUnit = bean.toUnit,
+                    damage = bombEffect.val,
+                    percent = bombEffect.odds,
+                    range = bombEffect.range,
+                })
+                cj.ForGroup(tempGroup, function()
+                    hattr.huntUnit({
+                        fromUnit = bean.fromUnit,
+                        toUnit = cj.GetEnumUnit(),
+                        damage = bombEffect.val,
+                        huntKind = "special",
+                        huntType = { "real" },
+                    })
+                    -- @触发被爆破事件
+                    hevent.triggerEvent({
+                        triggerKey = heventKeyMap.beBomb,
+                        triggerUnit = cj.GetEnumUnit(),
+                        sourceUnit = bean.fromUnit,
+                        damage = bombEffect.val,
+                        percent = bombEffect.odds,
+                        range = bombEffect.range,
+                    })
+                end)
+                cj.GroupClear(tempGroup)
+                cj.DestroyGroup(tempGroup)
+            end
+            if (bombEffect.model ~= nil) then
+                heffect.toUnit(bombEffect.model, bean.toUnit, "origin", 0.5)
+            end
+        end
+        -- TODO 闪电链
+        if (isLightningChain) then
+            hskill.unarm(bean.toUnit, lightningChainEffect.during)
+            if (lightningChainEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = lightningChainEffect.val,
+                    huntKind = "special",
+                    huntType = { "magic", "thunder" },
+                })
+            end
+            if (lightningChainEffect.model ~= nil) then
+                heffect.toUnit(lightningChainEffect.model, bean.toUnit, "origin", 0.5)
+            end
+            -- @触发闪电链事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.lightningChain,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = lightningChainEffect.val,
+                percent = lightningChainEffect.odds,
+                range = lightningChainEffect.range,
+            })
+            -- @触发被闪电链事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beLightningChain,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = lightningChainEffect.val,
+                percent = lightningChainEffect.odds,
+                range = lightningChainEffect.range,
+            })
+        end
+        -- TODO 击飞
+        if (isCrackFly) then
+            hskill.unarm(bean.toUnit, crackFlyEffect.during)
+            if (crackFlyEffect.val > 0) then
+                hattr.huntUnit({
+                    fromUnit = bean.fromUnit,
+                    toUnit = bean.toUnit,
+                    damage = crackFlyEffect.val,
+                    huntKind = "special",
+                    huntType = { "physical" },
+                })
+            end
+            if (crackFlyEffect.model ~= nil) then
+                heffect.toUnit(crackFlyEffect.model, bean.toUnit, "origin", 0.5)
+            end
+            -- @触发击飞事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.crackFly,
+                triggerUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = crackFlyEffect.val,
+                percent = crackFlyEffect.odds,
+                high = crackFlyEffect.high,
+                distance = crackFlyEffect.distance,
+            })
+            -- @触发被击飞事件
+            hevent.triggerEvent({
+                triggerKey = heventKeyMap.beCrackFly,
+                triggerUnit = bean.toUnit,
+                sourceUnit = bean.fromUnit,
+                damage = crackFlyEffect.val,
+                percent = crackFlyEffect.odds,
+                high = crackFlyEffect.high,
+                distance = crackFlyEffect.distance,
+            })
+        end
     end
 end
 
@@ -949,12 +1816,45 @@ end
 -- 单位受伤
 local triggerBeHunt = cj.CreateTrigger()
 cj.TriggerAddAction(triggerBeHunt, function()
-
+    local fromUnit = cj.GetEventDamageSource()
+    local toUnit = cj.GetTriggerUnit()
+    local damage = cj.GetEventDamage()
+    local oldLife = hunit.getLife(toUnit)
+    if (damage > 0.125) then
+        hattr.set(toUnit, 0, { life = '+' .. damage })
+        htime.setTimeout(0, nil, function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            hattr.set(toUnit, 0, { life = '-' .. damage })
+            hunit.setLife(toUnit, oldLife)
+            hattr.huntUnit({
+                fromUnit = fromUnit,
+                toUnit = toUnit,
+                damage = damage,
+                huntKind = "attack",
+            })
+        end)
+    end
 end)
 -- 单位死亡
 local triggerDeath = cj.CreateTrigger()
 cj.TriggerAddAction(triggerDeath, function()
-
+    local u = cj.GetTriggerUnit()
+    local killer = hevent.getLastDamageUnit(u)
+    hplayer.addKill(GetOwningPlayer(killer), 1)
+    -- @触发死亡事件
+    hevent.triggerEvent({
+        triggerKey = heventKeyMap.dead,
+        triggerUnit = u,
+        killer = killer
+    })
+    -- @触发击杀事件
+    hevent.triggerEvent({
+        triggerKey = heventKeyMap.kill,
+        killer = killer,
+        triggerUnit = killer,
+        targetUnit = u
+    })
 end)
 -- 单位进入区域注册
 local triggerRegIn = cj.CreateTrigger()
@@ -979,28 +1879,97 @@ cj.TriggerAddAction(triggerRegIn, function()
         hattr.regAllAttrAbility(u)
         cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
         cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)
-        punishTtg(u)
         -- 拥有物品栏的单位绑定物品处理
         if (his.hasSlot(u)) then
             hitem.initUnit(u)
         end
         -- 触发注册事件(全局)
         hevent.triggerEvent({
-            triggerKey = 'register',
+            triggerKey = heventKeyMap.register,
             triggerHandle = hevent.defaultHandle,
             triggerUnit = u,
         })
     end
 end)
 -- 生命魔法恢复
-htime.setInterval(0.50, nil, function(t,td)
-
+htime.setInterval(0.50, nil, function(t, td)
+    local period = cj.TimerGetTimeout(t)
+    for k, u in pairs(hattrGroup.life_back) do
+        if (his.alive(u)) then
+            if (hattr.get(u, 'life_back') ~= 0) then
+                hunit.addLife(u, hattr.get(u, 'life_back') * period)
+            end
+        end
+    end
+    for k, u in pairs(hattrGroup.mana_back) do
+        if (his.alive(u)) then
+            if (hattr.get(u, 'mana_back') ~= 0) then
+                hunit.addMana(u, hattr.get(u, 'mana_back') * period)
+            end
+        end
+    end
+    --- 源力只有在没受伤判定的情况下才会有效
+    for k, u in pairs(hattrGroup.life_source) do
+        if (his.alive(u) and hunit.getLifePercent(u) < hplayer.getLifeSourceRatio(cj.GetOwningPlayer(u))) then
+            if (hattr.get(u, 'be_hunting') == false) then
+                if (hattr.get(u, 'life_source_current') > 0) then
+                    local fill = hunit.getMaxLife(u) - hunit.getCurLife(u)
+                    if (fill > hattr.get(u, 'life_source_current')) then
+                        fill = hattr.get(u, 'life_source_current')
+                    end
+                    hattr.set(u, 0, { life_source_current = '-' .. fill })
+                    hunit.addLife(u, fill)
+                    httg.style(
+                            httg.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
+                            "scale",
+                            0,
+                            0.2
+                    )
+                end
+            end
+        end
+    end
+    for k, u in pairs(hattrGroup.mana_source) do
+        if (his.alive(u) and hunit.getManaPercent(u) < hplayer.getManaSourceRatio(cj.GetOwningPlayer(u))) then
+            if (hattr.get(u, 'be_hunting') == false) then
+                if (hattr.get(u, 'mana_source_current') > 0) then
+                    local fill = hunit.getMaxLife(u) - hunit.getCurMana(u)
+                    if (fill > hattr.get(u, 'mana_source_current')) then
+                        fill = hattr.get(u, 'mana_source_current')
+                    end
+                    hattr.set(u, 0, { mana_source_current = '-' .. fill })
+                    hunit.addMana(u, fill)
+                    httg.style(
+                            httg.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
+                            "scale",
+                            0,
+                            0.2
+                    )
+                end
+            end
+        end
+    end
 end)
--- 硬直恢复
-htime.setInterval(5.00, nil, function(t,td)
-
+-- 硬直恢复(3秒内没收到伤害后,每1秒恢复1%)
+htime.setInterval(1.00, nil, function(t, td)
+    for k, u in pairs(hattrGroup.punish_current) do
+        if (his.alive(u) and hattr.get(u, 'punish') > 0 and hattr.get(u, 'punish_current') < hattr.get(u, 'punish')) then
+            if (hattr.get(u, 'be_hunting') == false) then
+                hattr.set(u, 0, { punish_current = '+' .. (hattr.get(u, 'punish') * 0.01) })
+            end
+        end
+    end
 end)
 -- 源恢复
-htime.setInterval(25.00, nil, function(t,td)
-
+htime.setInterval(15.00, nil, function(t, td)
+    for k, u in pairs(hattrGroup.life_source) do
+        if (his.alive(u)) then
+            hattr.set(u, 0, { life_source_current = '+100' })
+        end
+    end
+    for k, u in pairs(hattrGroup.mana_source) do
+        if (his.alive(u)) then
+            hattr.set(u, 0, { mana_source_current = '+100' })
+        end
+    end
 end)

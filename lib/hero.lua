@@ -14,10 +14,11 @@ hhero = {
     build_params = { id = hslk_global.unit_hero_tavern, x = 0, y = 0, distance = 128.0, per_row = 2, allow_qty = 11 },
     hero_born_params = { x = 250, y = 250 }
 }
-for i = 1, #hplayer.qty_max, 1 do
-    hhero.player_allow_qty[hplayer.players[i]] = 1
-    hhero.player_current_qty[hplayer.players[i]] = 0
-    hhero.player_units[hplayer.players[i]] = {}
+for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+    local p = cj.Player(i - 1)
+    hhero.player_allow_qty[p] = 1
+    hhero.player_current_qty[p] = 0
+    hhero.player_units[p] = {}
 end
 --- 初始化英雄升级触发器
 hhero.trigger_hero_lvup = cj.CreateTrigger()
@@ -118,7 +119,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         cj.SetUnitInvulnerable(u, false)
         -- 触发英雄被选择事件(全局)
         hevent.triggerEvent({
-            triggerKey = "pickHero",
+            triggerKey = heventKeyMap.pickHero,
             triggerHandle = hevent.defaultHandle,
             triggerPlayer = whichPlayer,
             triggerUnit = u,
@@ -137,7 +138,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         hheroBuildSelectionCache[u] = nil
         hunit.del(u, 0)
         local u_new = hunit.create({
-            whichPlayer = hplayer.player_passive,
+            whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
             unitId = heroId,
             x = x,
             y = y,
@@ -200,7 +201,7 @@ hhero.buildClick = function(during, clickQty)
                 x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
             end
             local u = hunit.create({
-                whichPlayer = hplayer.player_passive,
+                whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                 unitId = heroId,
                 x = x,
                 y = y,
@@ -229,7 +230,7 @@ hhero.buildClick = function(during, clickQty)
         if (hheroBuildSelectionCache[u].canSelect == false) then
             return
         end
-        if (cj.GetOwningPlayer(u) ~= hplayer.player_passive) then
+        if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
             return
         end
         if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
@@ -430,7 +431,7 @@ hhero.buildTavern = function(during)
                     x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
                 end
                 tavern = hunit.create({
-                    whichPlayer = hplayer.player_passive,
+                    whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     unitId = hhero.build_params.id,
                     x = x,
                     y = y,
