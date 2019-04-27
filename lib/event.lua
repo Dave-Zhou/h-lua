@@ -818,6 +818,7 @@ end
 --- getTargetUnit 获取被闪电链单位
 --- getPercent 获取闪电链几率百分比
 --- getDamage 获取闪电链伤害
+--- getRange 获取闪电链范围
 --- getQty 获取闪电链数量
 hevent.onLightningChain = function(whichUnit, action)
     local evtKey = heventKeyMap.lightningChain
@@ -826,9 +827,8 @@ end
 -- todo - 被闪电链
 --- getTriggerUnit 获取被闪电链单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取闪电链几率百分比
 --- getDamage 获取闪电链伤害
---- getQty 获取闪电链数量
+--- getRange 获取闪电链范围
 --- getIndex 获取单位是第几个被电到的
 hevent.onBeLightningChain = function(whichUnit, action)
     local evtKey = heventKeyMap.beLightningChain
@@ -848,7 +848,6 @@ end
 -- todo - 被击飞
 --- getTriggerUnit 获取被击飞单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取击飞几率百分比
 --- getDamage 获取击飞伤害
 --- getHigh 获取击飞高度
 --- getDistance 获取击飞距离

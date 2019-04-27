@@ -135,7 +135,7 @@ hattr.setThreeBuff = function(buff)
 end
 --- 为单位注册属性系统所需要的基础技能
 --- hslk_global.attr
-hattr.regAllAttrAbility = function(whichUnit)
+hattr.regAllAbility = function(whichUnit)
     --生命魔法
     for k, ability in pairs(hslk_global.attr.life.add) do
         cj.UnitAddAbility(whichUnit, ability)
@@ -242,6 +242,11 @@ hattr.regAllAttrAbility = function(whichUnit)
         cj.UnitMakeAbilityPermanent(whichUnit, true, hslk_global.skill_item_separate)
         cj.SetUnitAbilityLevel(whichUnit, hslk_global.skill_item_separate, 1)
     end
+end
+--- 为单位注册属性系统所需要的基础技能
+--- hslk_global.attr
+hattr.registerAll = function(whichUnit)
+    hattr.regAllAbility(whichUnit)
     --init
     local unitId = cj.GetUnitTypeId(whichUnit)
     hattrCache[whichUnit] = {
@@ -699,7 +704,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
 end
 hattr.set = function(whichUnit, during, data)
     if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
+        hattr.registerAll(whichUnit)
     end
     -- 处理data
     if (type(data) ~= 'table') then
@@ -748,9 +753,61 @@ hattr.get = function(whichUnit, attr)
         return nil
     end
     if (hattrCache[whichUnit] == nil) then
-        hattr.regAllAttrAbility(whichUnit)
+        hattr.registerAll(whichUnit)
     end
     return hattrCache[whichUnit][attr]
+end
+
+---重置注册
+hattr.reRegister = function(whichUnit)
+    local life = hattrCache[whichUnit].life
+    local mana = hattrCache[whichUnit].mana
+    local move = hattrCache[whichUnit].move
+    local strGreen = hattrCache[whichUnit].str_green
+    local agiGreen = hattrCache[whichUnit].agi_green
+    local intGreen = hattrCache[whichUnit].int_green
+    local strWhite = hattrCache[whichUnit].str_white
+    local agiWhite = hattrCache[whichUnit].agi_white
+    local intWhite = hattrCache[whichUnit].int_white
+    local attackWhite = hattrCache[whichUnit].attack_white
+    local attackGreen = hattrCache[whichUnit].attack_green
+    local attackSpeed = hattrCache[whichUnit].attack_speed
+    local defend = hattrCache[whichUnit].defend
+    -- 注册技能
+    registerAll(whichUnit)
+    -- 弥补属性
+    cj.SetHeroStr(whichUnit,cj.R2I(strWhite),true)
+    cj.SetHeroAgi(whichUnit,cj.R2I(agiWhite),true)
+    cj.SetHeroInt(whichUnit,cj.R2I(intWhite),true)
+    if( move < 0 ) then
+        cj.SetUnitMoveSpeed( whichUnit , 0 )
+    else
+        if(hcamera.model=="zoomin")then
+            cj.SetUnitMoveSpeed( whichUnit , cj.R2I(move*0.5) )
+        else
+            cj.SetUnitMoveSpeed( whichUnit , cj.R2I(move) )
+        end
+    end
+    hattrCache[whichUnit].life = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit);
+    hattrCache[whichUnit].mana = cj.GetUnitStateSwap(UNIT_STATE_MAX_MANA, whichUnit);
+    hattrCache[whichUnit].defend = hslk_global.unitsKV[unitId].def or 0.0;
+    hattrCache[whichUnit].attack_speed = 0;
+    hattrCache[whichUnit].attack_white = 0;
+    hattrCache[whichUnit].attack_green = 0;
+    hattrCache[whichUnit].str_green = 0;
+    hattrCache[whichUnit].agi_green = 0;
+    hattrCache[whichUnit].int_green = 0;
+    hattr.set(whichUnit,0,{
+        life = '+'..(life-cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit)),
+        mana = '+'..(mana-cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit)),
+        str_green = '+'..strGreen,
+        agi_green = '+'..agiGreen,
+        int_green = '+'..intGreen,
+        attack_white = '+'..attackWhite,
+        attack_green = '+'..attackGreen,
+        attack_speed = '+'..attackSpeed,
+        defend = '+'..defend,
+    })
 end
 
 --- 伤害一个单位
@@ -779,8 +836,7 @@ end
         ghost   鬼
         metal   金
         dragon  龙
-     * bean.breakArmorType 无视的类型：{ 'defend', 'resistance' }
-     * bean.breakAvoid 是否无视回避：true | false
+     * bean.breakArmorType 无视的类型：{ 'defend', 'resistance', 'avoid' }
      * 沉默时，爆炸、闪电链、击飞会失效，其他不受影响
 ]]
 hattr.huntUnit = function(bean)
@@ -789,8 +845,6 @@ hattr.huntUnit = function(bean)
     local realDamageString = ""
     local realDamageStringColor = "d9d9d9"
     local punishEffectRatio = 0
-    local punishEffect = 0
-    local fromUnitPunishHeavy = 1
     local isAvoid = false
     local isKnocking = false
     local isViolence = false
@@ -889,28 +943,25 @@ hattr.huntUnit = function(bean)
             realDamageString = realDamageString .. "魔抗"
             realDamageStringColor = "6fa8dc"
         end
-        -- @触发无视护甲事件
+        if (hsystem.inArray('avoid', bean.breakArmorType)) then
+            toUnitAvoid = -100
+            realDamageString = realDamageString .. "回避"
+            realDamageStringColor = "76a5af"
+        end
+        -- @触发无视防御事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.breakArmor,
             triggerUnit = bean.fromUnit,
             targetUnit = bean.toUnit,
             breakType = bean.breakArmorType,
-            value = toUnitDefend,
         })
-        -- @触发被无视护甲事件
+        -- @触发被无视防御事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.beBreakArmor,
             triggerUnit = bean.toUnit,
             sourceUnit = bean.fromUnit,
             breakType = bean.breakArmorType,
-            value = toUnitDefend,
         })
-    end
-    -- 判断无视回避
-    if (bean.breakAvoid == true) then
-        toUnitAvoid = -100
-        realDamageString = realDamageString .. "无视回避"
-        realDamageStringColor = "76a5af"
     end
     -- 如果遇到真实伤害，无法回避
     if (hsystem.inArray('real', bean.huntType) == true) then
@@ -1175,80 +1226,16 @@ hattr.huntUnit = function(bean)
             realDamageString = realDamageString .. "魔爆"
             realDamageStringColor = "15bcef"
         end
-        -- 文本显示
-        httg.style(httg.create2Unit(
-                bean.toUnit,
-                realDamageString + I2S(R2I(realDamage)),
-                6.00,
-                realDamageStringColor,
-                10,
-                1.1,
-                11.00
-        ), "toggle", -0.05, 0)
-        hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
-        hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), realDamage)
-        hplayer.addBeDamage(cj.GetOwningPlayer(bean.toUnit), realDamage)
-        hunit.subLife(bean.toUnit, realDamage)
-        if (bean.isNoAvoid == true) then
-            -- @触发造成无法回避伤害事件
-            hevent.triggerEvent({
-                triggerKey = heventKeyMap.noAvoid,
-                triggerUnit = bean.fromUnit,
-                targetUnit = bean.toUnit,
-                damage = realDamage,
-            })
-            -- @触发被无法回避伤害事件
-            hevent.triggerEvent({
-                triggerKey = heventKeyMap.beNoAvoid,
-                triggerUnit = bean.toUnit,
-                sourceUnit = bean.fromUnit,
-                damage = realDamage,
-            })
-        end
-        if (bean.huntKind == "attack") then
-            -- @触发攻击事件
-            hevent.triggerEvent({
-                triggerKey = heventKeyMap.attack,
-                triggerUnit = bean.fromUnit,
-                attacker = bean.fromUnit,
-                targetUnit = bean.toUnit,
-                damage = bean.damage,
-                realDamage = realDamage,
-                damageKind = bean.huntKind,
-                damageType = bean.huntType,
-            })
-            -- @触发被攻击事件
-            hevent.triggerEvent({
-                triggerKey = heventKeyMap.beAttack,
-                triggerUnit = bean.fromUnit,
-                attacker = bean.fromUnit,
-                targetUnit = bean.toUnit,
-                damage = bean.damage,
-                realDamage = realDamage,
-                damageKind = bean.huntKind,
-                damageType = bean.huntType,
-            })
-        end
-        -- @触发伤害事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.damage,
-            triggerUnit = bean.fromUnit,
-            targetUnit = bean.toUnit,
-            sourceUnit = bean.fromUnit,
-            damage = bean.damage,
-            realDamage = realDamage,
-            damageKind = bean.huntKind,
-            damageType = bean.huntType,
-        })
-        -- @触发被伤害事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.beDamage,
-            triggerUnit = bean.toUnit,
-            sourceUnit = bean.fromUnit,
-            damage = bean.damage,
-            realDamage = realDamage,
-            damageKind = bean.huntKind,
-            damageType = bean.huntType,
+        -- 造成伤害
+        hskill.damage({
+            fromUnit = bean.fromUnit,
+            toUnit = bean.toUnit,
+            huntKind = bean.huntKind,
+            huntType = bean.huntType,
+            damage = realDamage,
+            realDamage = bean.realDamage,
+            realDamageString = realDamageString,
+            realDamageStringColor = realDamageStringColor,
         })
         -- 分裂
         local split = hattr.get(bean.fromUnit, 'split') - hattr.get(bean.toUnit, 'split_oppose')
@@ -1256,13 +1243,13 @@ hattr.huntUnit = function(bean)
         if (bean.huntKind == "attack" and split > 0) then
             local g = hgroup.createByUnit(bean.toUnit, split_range, function()
                 local flag = true
-                if (his.death(bean.toUnit)) then
+                if (his.death(cj.GetFilterUnit())) then
                     flag = false
                 end
-                if (his.ally(bean.toUnit, bean.fromUnit)) then
+                if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
                     flag = false
                 end
-                if (his.isBuilding(bean.toUnit)) then
+                if (his.isBuilding(cj.GetFilterUnit())) then
                     flag = false
                 end
                 return flag
@@ -1271,14 +1258,16 @@ hattr.huntUnit = function(bean)
             cj.ForGroup(g, function()
                 local u = cj.GetEnumUnit()
                 if (u ~= bean.toUnit) then
-                    huntBean = hAttrHuntBean.create()
-                    hattr.huntUnit({
+                    -- 造成伤害
+                    hskill.damage({
                         fromUnit = bean.fromUnit,
                         toUnit = u,
-                        damage = realDamage * split * 0.01,
-                        huntKind = "special",
+                        huntKind = 'special',
                         huntType = { "real" },
-                        isBreak = "defend",
+                        damage = realDamage * split * 0.01,
+                        realDamage = realDamage * split * 0.01,
+                        realDamageString = '分裂',
+                        realDamageStringColor = 'e25746',
                     })
                     heffect.toUnit("Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdl", u, 0)
                 end
@@ -1593,10 +1582,12 @@ hattr.huntUnit = function(bean)
         if (isSwim) then
             hskill.swim(bean.toUnit, swimEffect.during, bean.fromUnit, swimEffect.val, swimEffect.odds)
             if (swimEffect.val > 0) then
-                hattr.huntUnit({
+                hskill.damage({
                     fromUnit = bean.fromUnit,
                     toUnit = bean.toUnit,
                     damage = swimEffect.val,
+                    realDamage = swimEffect.val,
+                    realDamageString = '眩晕',
                     huntKind = "special",
                     huntType = { "real" },
                 })
@@ -1609,10 +1600,12 @@ hattr.huntUnit = function(bean)
         if (isBroken) then
             hskill.broken(bean.toUnit, bean.fromUnit, brokenEffect.val, brokenEffect.odds)
             if (brokenEffect.val > 0) then
-                hattr.huntUnit({
+                hskill.damage({
                     fromUnit = bean.fromUnit,
                     toUnit = bean.toUnit,
                     damage = brokenEffect.val,
+                    realDamage = brokenEffect.val,
+                    realDamageString = '打断',
                     huntKind = "special",
                     huntType = { "real" },
                 })
@@ -1625,10 +1618,12 @@ hattr.huntUnit = function(bean)
         if (isSilent) then
             hskill.silent(bean.toUnit, silentEffect.during, bean.fromUnit, silentEffect.val, silentEffect.odds)
             if (silentEffect.val > 0) then
-                hattr.huntUnit({
+                hskill.damage({
                     fromUnit = bean.fromUnit,
                     toUnit = bean.toUnit,
                     damage = silentEffect.val,
+                    realDamage = silentEffect.val,
+                    realDamageString = '沉默',
                     huntKind = "special",
                     huntType = { "magic" },
                 })
@@ -1641,10 +1636,12 @@ hattr.huntUnit = function(bean)
         if (isUnarm) then
             hskill.unarm(bean.toUnit, unarmEffect.during, bean.fromUnit, unarmEffect.val, unarmEffect.odds)
             if (unarmEffect.val > 0) then
-                hattr.huntUnit({
+                hskill.damage({
                     fromUnit = bean.fromUnit,
                     toUnit = bean.toUnit,
                     damage = unarmEffect.val,
+                    realDamage = unarmEffect.val,
+                    realDamageString = '缴械',
                     huntKind = "special",
                     huntType = { "magic" },
                 })
@@ -1659,10 +1656,12 @@ hattr.huntUnit = function(bean)
                 move = '-1000'
             })
             if (fetterEffect.val > 0) then
-                hattr.huntUnit({
+                hskill.damage({
                     fromUnit = bean.fromUnit,
                     toUnit = bean.toUnit,
                     damage = fetterEffect.val,
+                    realDamage = fetterEffect.val,
+                    realDamageString = '缚足',
                     huntKind = "special",
                     huntType = { "magic" },
                 })
@@ -1715,10 +1714,11 @@ hattr.huntUnit = function(bean)
                     range = bombEffect.range,
                 })
                 cj.ForGroup(tempGroup, function()
-                    hattr.huntUnit({
+                    hskill.damage({
                         fromUnit = bean.fromUnit,
                         toUnit = cj.GetEnumUnit(),
                         damage = bombEffect.val,
+                        realDamage = bombEffect.val,
                         huntKind = "special",
                         huntType = { "real" },
                     })
@@ -1741,19 +1741,11 @@ hattr.huntUnit = function(bean)
         end
         -- TODO 闪电链
         if (isLightningChain) then
-            hskill.unarm(bean.toUnit, lightningChainEffect.during)
-            if (lightningChainEffect.val > 0) then
-                hattr.huntUnit({
-                    fromUnit = bean.fromUnit,
-                    toUnit = bean.toUnit,
-                    damage = lightningChainEffect.val,
-                    huntKind = "special",
-                    huntType = { "magic", "thunder" },
-                })
-            end
-            if (lightningChainEffect.model ~= nil) then
-                heffect.toUnit(lightningChainEffect.model, bean.toUnit, "origin", 0.5)
-            end
+            hskill.lightningChain(bean.model, lightningChainEffect.qty, lightningChainEffect.reduce, lightningChainEffect.range, false, {
+                fromUnit = bean.fromUnit,
+                toUnit = bean.toUnit,
+                damage = lightningChainEffect.val,
+            })
             -- @触发闪电链事件
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.lightningChain,
@@ -1762,29 +1754,19 @@ hattr.huntUnit = function(bean)
                 damage = lightningChainEffect.val,
                 percent = lightningChainEffect.odds,
                 range = lightningChainEffect.range,
-            })
-            -- @触发被闪电链事件
-            hevent.triggerEvent({
-                triggerKey = heventKeyMap.beLightningChain,
-                triggerUnit = bean.toUnit,
-                sourceUnit = bean.fromUnit,
-                damage = lightningChainEffect.val,
-                percent = lightningChainEffect.odds,
-                range = lightningChainEffect.range,
+                qty = lightningChainEffect.qty,
             })
         end
         -- TODO 击飞
         if (isCrackFly) then
-            hskill.unarm(bean.toUnit, crackFlyEffect.during)
-            if (crackFlyEffect.val > 0) then
-                hattr.huntUnit({
-                    fromUnit = bean.fromUnit,
-                    toUnit = bean.toUnit,
-                    damage = crackFlyEffect.val,
-                    huntKind = "special",
-                    huntType = { "physical" },
-                })
-            end
+            hskill.crackFly(crackFlyEffect.distance, crackFlyEffect.high, crackFlyEffect.during, {
+                fromUnit = bean.fromUnit,
+                toUnit = bean.toUnit,
+                damage = crackFlyEffect.val,
+                huntEff = crackFlyEffect.model,
+                huntKind = "special",
+                huntType = { "physical" },
+            });
             if (crackFlyEffect.model ~= nil) then
                 heffect.toUnit(crackFlyEffect.model, bean.toUnit, "origin", 0.5)
             end
@@ -1793,16 +1775,6 @@ hattr.huntUnit = function(bean)
                 triggerKey = heventKeyMap.crackFly,
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
-                damage = crackFlyEffect.val,
-                percent = crackFlyEffect.odds,
-                high = crackFlyEffect.high,
-                distance = crackFlyEffect.distance,
-            })
-            -- @触发被击飞事件
-            hevent.triggerEvent({
-                triggerKey = heventKeyMap.beCrackFly,
-                triggerUnit = bean.toUnit,
-                sourceUnit = bean.fromUnit,
                 damage = crackFlyEffect.val,
                 percent = crackFlyEffect.odds,
                 high = crackFlyEffect.high,
@@ -1876,7 +1848,7 @@ cj.TriggerAddAction(triggerRegIn, function()
     end
     -- 注册事件
     if (hattrCache[u] == nil) then
-        hattr.regAllAttrAbility(u)
+        hattr.registerAll(u)
         cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
         cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)
         -- 拥有物品栏的单位绑定物品处理

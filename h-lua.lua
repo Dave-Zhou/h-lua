@@ -39,6 +39,7 @@ require "lib.unit"
 require "lib.enemy"
 require "lib.group"
 require "lib.hero"
-require "lib.ability"
+require "lib.skill"
+require "lib.attribute"
 
 

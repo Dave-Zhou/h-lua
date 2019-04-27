@@ -8,6 +8,74 @@ hskill = {
     BUFF_SWIM = hsystem.getObjId('BPSE'),
 }
 
+--- 造成伤害
+hskill.damage = function(bean)
+    -- 文本显示
+    bean.realDamageString = bean.realDamageString or ''
+    bean.realDamageStringColor = bean.realDamageStringColor or nil
+    httg.style(httg.create2Unit(
+            bean.toUnit,
+            bean.realDamageString .. math.floor(bean.realDamage),
+            6.00,
+            bean.realDamageStringColor,
+            10,
+            1.1,
+            11.00
+    ), "toggle", -0.05, 0)
+    hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
+    hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), bean.realDamage)
+    hplayer.addBeDamage(cj.GetOwningPlayer(bean.toUnit), bean.realDamage)
+    hunit.subLife(bean.toUnit, bean.realDamage)
+    if (type(bean.huntEff) == 'string' and string.len(bean.huntEff) > 0) then
+        heffect.toXY(bean.huntEff, cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), 0)
+    end
+    -- @触发伤害事件
+    hevent.triggerEvent({
+        triggerKey = heventKeyMap.damage,
+        triggerUnit = bean.fromUnit,
+        targetUnit = bean.toUnit,
+        sourceUnit = bean.fromUnit,
+        damage = bean.damage,
+        realDamage = bean.realDamage,
+        damageKind = bean.huntKind,
+        damageType = bean.huntType,
+    })
+    -- @触发被伤害事件
+    hevent.triggerEvent({
+        triggerKey = heventKeyMap.beDamage,
+        triggerUnit = bean.toUnit,
+        sourceUnit = bean.fromUnit,
+        damage = bean.damage,
+        realDamage = bean.realDamage,
+        damageKind = bean.huntKind,
+        damageType = bean.huntType,
+    })
+    if (bean.huntKind == "attack") then
+        -- @触发攻击事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.attack,
+            triggerUnit = bean.fromUnit,
+            attacker = bean.fromUnit,
+            targetUnit = bean.toUnit,
+            damage = bean.damage,
+            realDamage = bean.realDamage,
+            damageKind = bean.huntKind,
+            damageType = bean.huntType,
+        })
+        -- @触发被攻击事件
+        hevent.triggerEvent({
+            triggerKey = heventKeyMap.beAttack,
+            triggerUnit = bean.fromUnit,
+            attacker = bean.fromUnit,
+            targetUnit = bean.toUnit,
+            damage = bean.damage,
+            realDamage = bean.realDamage,
+            damageKind = bean.huntKind,
+            damageType = bean.huntType,
+        })
+    end
+end
+
 ---打断
 -- ! 注意这个方法对中立被动无效
 hskill.broken = function(u, sourceUnit, damage, percent)
@@ -24,7 +92,7 @@ hskill.broken = function(u, sourceUnit, damage, percent)
     cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK, 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.3)
-    if(sourceUnit ~= nil)then
+    if (sourceUnit ~= nil) then
         -- @触发打断事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.broken,
@@ -75,7 +143,7 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.4)
     hisCache[cu].isSwim = true
-    if(sourceUnit ~= nil)then
+    if (sourceUnit ~= nil) then
         -- @触发眩晕事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.swim,
@@ -137,7 +205,7 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
         hskillCache[u].silentEffect = eff
     end
     hisCache[u].isSilent = true
-    if(sourceUnit ~= nil)then
+    if (sourceUnit ~= nil) then
         -- @触发沉默事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.silent,
@@ -205,7 +273,7 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
         hskillCache[u].unarmEffect = eff
     end
     hisCache[u].isUnArm = true
-    if(sourceUnit ~= nil)then
+    if (sourceUnit ~= nil) then
         -- @触发缴械事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.unarm,
@@ -344,7 +412,7 @@ hskill.pause = function(whichUnit, during, pauseColor)
 end
 
 ---为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
-hskill.addAbilityEffect = function(whichUnit, whichAbility, abilityLevel, during)
+hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
     if (whichUnit ~= nil and whichAbility ~= nil and during > 0.03) then
         cj.UnitAddAbility(whichUnit, whichAbility)
         cj.UnitMakeAbilityPermanent(whichUnit, true, whichAbility)
@@ -394,3 +462,293 @@ hskill.diy = function(bean, life)
     end
     hunit.del(token, life)
 end
+
+--[[
+    闪电链
+    codename 闪电效果类型 详情查看 hlightning
+    qty 传递单位数
+    change 增减率 大于 -1 小于 1
+    isRepeat 是否允许同一个单位重复打击（临近2次不会同一个）
+    bean bean
+]]
+hskill.lightningChain = function(codename, qty, change, range, isRepeat, bean)
+    qty = qty - 1
+    range = range or 400
+    if (qty < 0) then
+        qty = 0
+    end
+    if (bean.index == nil) then
+        bean.index = 1
+    else
+        bean.index = bean.index + 1
+    end
+    hlightning.unit2unit(codename, bean.fromUnit, bean.toUnit, 0.2 * qty)
+    if (bean.model ~= nil) then
+        heffect.toUnit(bean.model, bean.toUnit, "origin", 0.5)
+    end
+    hskill.damage({
+        fromUnit = bean.fromUnit,
+        toUnit = bean.toUnit,
+        damage = bean.damage,
+        realDamage = bean.realDamage,
+        huntKind = "special",
+        huntType = { "magic", "thunder" },
+    })
+    -- @触发被闪电链事件
+    hevent.triggerEvent({
+        triggerKey = heventKeyMap.beLightningChain,
+        triggerUnit = bean.toUnit,
+        sourceUnit = bean.fromUnit,
+        damage = bean.damage,
+        range = range,
+        index = bean.index,
+    })
+    if (qty > 0) then
+        if (isRepeat ~= true) then
+            if (bean.repeatGroup == nil) then
+                bean.repeatGroup = cj.CreateGroup()
+            end
+            cj.GroupAddUnit(bean.repeatGroup, bean.toUnit)
+        end
+        local g = hgroup.createByUnit(bean.toUnit, range, function()
+            local flag = true
+            if (his.death(cj.GetFilterUnit())) then
+                flag = false
+            end
+            if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
+                flag = false
+            end
+            if (his.isBuilding(cj.GetFilterUnit())) then
+                flag = false
+            end
+            if (bean.toUnit == cj.GetFilterUnit()) then
+                flag = false
+            end
+            if (isRepeat ~= true and hgroup.isIn(bean.repeatGroup, cj.GetFilterUnit())) then
+                flag = false
+            end
+            return flag
+        end)
+        if (hgroup.isEmpty(g)) then
+            return
+        end
+        bean.toUnit = cj.FirstOfGroup(g)
+        bean.damage = bean.damage * (1 + change)
+        cj.GroupClear(g)
+        cj.DestroyGroup(g)
+        htime.setTimeout(0.35, nil, function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            hskill.lightningChain(codename, qty, change, range, isRepeat, bean)
+        end)
+    else
+        if (bean.repeatGroup ~= nil) then
+            cj.GroupClear(bean.repeatGroup)
+            cj.DestroyGroup(bean.repeatGroup)
+        end
+    end
+end
+
+--[[
+    变身[参考 h-lua变身技能模板]
+    * modelFrom 技能模板 参考 h-lua SLK
+    * modelTo 技能模板 参考 h-lua SLK
+]]
+hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
+    heffect.toUnit(eff, u, 1.5)
+    UnitAddAbility(u, modelTo)
+    UnitRemoveAbility(u, modelTo)
+    hattr.reRegister(u)
+    htime.setTimeout(during, nil, function(t, td)
+        htime.delDialog(td)
+        htime.delTimer(t)
+        heffect.toUnit(eff, u, 1.5)
+        UnitAddAbility(u, modelFrom)
+        UnitRemoveAbility(u, modelFrom)
+        hattr.reRegister(u)
+    end)
+    -- 根据data影响属性
+    hattr.set(u, during, attrData)
+end
+
+--[[
+    击飞
+    distance 击退距离
+    high 击飞高度
+]]
+hskill.crackFly = function(distance, high, during, bean)
+    if (bean.fromUnit == nil or bean.toUnit == nil) then
+        return
+    end
+    -- 不二次击飞
+    if (hisCache[bean.toUnit].isCrackFly == true) then
+        return
+    end
+    hisCache[bean.toUnit].isCrackFly = true
+    if (during < 0.5) then
+        during = 0.5
+    end
+    -- 镜头放大模式下，距离缩小一半
+    if (hcamera.getModel(cj.GetOwningPlayer(bean.toUnit)) == "zoomin") then
+        distance = distance * 0.5
+        high = high * 0.5
+    end
+    hskill.unarm(bean.toUnit, during, nil, 0, 0)
+    hskill.silent(bean.toUnit, during, nil, 0, 0)
+    hattr.set(bean.toUnit, during, {
+        move = '-1044'
+    })
+    hunit.setCanFly(bean.toUnit)
+    cj.SetUnitPathing(bean.toUnit, false)
+    local originHigh = cj.GetUnitFlyHeight(bean.toUnit)
+    local originFacing = hunit.getFacing(bean.toUnit)
+    local originDeg = hlogic.getDegBetweenUnit(bean.fromUnit, bean.toUnit)
+    local cost = 0
+    -- @触发被击飞事件
+    hevent.triggerEvent({
+        triggerKey = heventKeyMap.beCrackFly,
+        triggerUnit = bean.toUnit,
+        sourceUnit = bean.fromUnit,
+        damage = bean.damage,
+        high = high,
+        distance = distance,
+    })
+    htime.setInterval(0.05, nil, function(t, td)
+        local xy = 0
+        local z = 0
+        local timerSetTime = htime.getSetTime(t)
+        if (cost > during) then
+            hskill.damage({
+                fromUnit = bean.fromUnit,
+                toUnit = bean.toUnit,
+                damage = bean.damage,
+                realDamage = bean.damage,
+                huntEff = bean.huntEff,
+                huntKind = bean.huntKind,
+                huntType = bean.huntType,
+            })
+            cj.SetUnitFlyHeight(bean.toUnit, originHigh, 10000)
+            cj.SetUnitPathing(bean.toUnit, true)
+            hisCache[bean.toUnit].isCrackFly = false
+            if (his.water(bean.toUnit) == true) then
+                -- 如果是水面，创建水花
+                heffect.toUnit("Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl", bean.toUnit, 0)
+            else
+                -- 如果是地面，创建沙尘
+                heffect.toUnit("Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl", bean.toUnit, 0)
+            end
+            htime.delDialog(td)
+            htime.delTimer(t)
+            return
+        end
+        cost = cost + timerSetTime
+        if (cost < during * 0.35) then
+            xy = distance / (during * 0.5 / timerSetTime)
+            z = high / (during * 0.35 / timerSetTime)
+            if (xy > 0) then
+                local pxy = hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
+                cj.SetUnitFacing(bean.toUnit, originFacing)
+                cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
+            end
+            if (z > 0) then
+                cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) + z, z / timerSetTime)
+            end
+        else
+            xy = distance / (during * 0.5 / timerSetTime)
+            z = high / (during * 0.65 / timerSetTime)
+            if (xy > 0) then
+                local pxy = hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
+                cj.SetUnitFacing(bean.toUnit, originFacing)
+                cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
+            end
+            if (z > 0) then
+                cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) - z, z / timerSetTime)
+            end
+        end
+    end)
+end
+
+--[[
+    剃
+    mover, 移动的单位
+    x, y, 目标XY坐标
+    speed, 速度
+    meff, 移动特效
+    range, 伤害范围
+    isRepeat, 是否允许重复伤害
+    bean 伤害bean
+]]
+hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, bean)
+    local lock_var_period = 0.02
+    local repeatGroup
+    if (mover == nil or targetX == nil or targetY == nil) then
+        return
+    end
+    if (isRepeat == false) then
+        repeatGroup = cj.CreateGroup()
+    else
+        repeatGroup = nil
+    end
+    if (speed > 150) then
+        speed = 150 -- 最大速度
+    elseif (speed <= 1) then
+        speed = 1 -- 最小速度
+    end
+    cj.SetUnitInvulnerable(mover, true)
+    cj.SetUnitPathing(mover, false)
+    local duringInc = 0
+    htime.setInterval(lock_var_period, nil, function(t, td)
+        duringInc = duringInc + cj.TimerGetTimeout(t)
+        local x = cj.GetUnitX(mover)
+        local y = cj.GetUnitY(mover)
+        local hxy = hlogic.polarProjection(x, y, speed, hlogic.getDegBetweenXY(x, y, targetX, targetY))
+        cj.SetUnitPosition(mover, hxy.x, hxy.y)
+        if (meff ~= nil) then
+            heffect.toXY(meff, x, y, 0.5)
+        end
+        if (bean.damage > 0) then
+            local g = hgroup.createByUnit(mover, range, function()
+                local flag = true
+                if (his.death(cj.GetFilterUnit())) then
+                    flag = false
+                end
+                if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
+                    flag = false
+                end
+                if (his.isBuilding(cj.GetFilterUnit())) then
+                    flag = false
+                end
+                if (isRepeat ~= true and hgroup.isIn(repeatGroup, cj.GetFilterUnit())) then
+                    flag = false
+                end
+                return flag
+            end)
+            cj.ForGroup(g, function()
+                hskill.damage({
+                    damage = bean.damage,
+                    fromUnit = bean.fromUnit,
+                    toUnit = cj.GetEnumUnit(),
+                    huntEff = bean.huntEff,
+                    huntKind = bean.huntKind,
+                    huntType = bean.huntType,
+                })
+            end)
+            cj.GroupClear(g)
+            cj.DestroyGroup(g)
+        end
+        local distance = hlogic.getDegBetweenXY(x, y, targetX, targetY)
+        if (distance < speed or distance <= 0 or speed <= 0 or his.death(mover) == true or duringInc > 6) then
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.SetUnitInvulnerable(mover, false)
+            cj.SetUnitPathing(mover, true)
+            cj.SetUnitPosition(mover, targetX, targetY)
+            cj.SetUnitVertexColorBJ(mover, 100, 100, 100, 0)
+            if (repeatGroup ~= nil) then
+                cj.GroupClear(repeatGroup)
+                cj.DestroyGroup(repeatGroup)
+            end
+        end
+    end)
+end
+

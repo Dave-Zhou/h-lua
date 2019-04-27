@@ -13,7 +13,7 @@ httg = {
             return nil
         end
         local ttg = cj.CreateTextTag()
-        if (string.len(color) == 6) then
+        if (color ~= nil and string.len(color) == 6) then
             msg = "|cff" + color + msg + "|r"
         end
         httgData[ttg] = {
