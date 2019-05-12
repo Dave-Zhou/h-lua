@@ -1,13 +1,6 @@
 -- 属性系统
-hattrCache = {}
-hattrGroup = {
-    life_back = {},
-    mana_back = {},
-    life_source = {},
-    mana_source = {},
-    punish = {},
-}
-hattr = {
+
+local hattr = {
     max_move_speed = 522,
     max_life = 999999999,
     max_mana = 999999999,
@@ -248,13 +241,16 @@ end
 hattr.registerAll = function(whichUnit)
     hattr.regAllAbility(whichUnit)
     --init
-    local unitId = cj.GetUnitTypeId(whichUnit)
-    hattrCache[whichUnit] = {
+    hsystem.print_r(hslk_global.unitsKV)
+    local unitId = hsystem.getObjChar(cj.GetUnitTypeId(whichUnit))
+    print(cj.GetUnitTypeId(whichUnit))
+    print(unitId)
+    hRuntime.attribute[whichUnit] = {
         primary = hslk_global.unitsKV[unitId].Primary,
         be_hunting = false,
         --
-        life = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit),
-        mana = cj.GetUnitStateSwap(UNIT_STATE_MAX_MANA, whichUnit),
+        life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE),
+        mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA),
         move = hslk_global.unitsKV[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
         defend = hslk_global.unitsKV[unitId].def or 0.0,
         attack_hunt_type = {}, --- sp
@@ -282,8 +278,8 @@ hattr.registerAll = function(whichUnit)
         aim = 0.0,
         knocking = 0.0,
         violence = 0.0,
-        punish = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit) / 2,
-        punish_current = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit) / 2,
+        punish = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
+        punish_current = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
         meditative = 0.0,
         help = 0.0,
         hemophagia = 0.0,
@@ -378,10 +374,10 @@ hattr.registerAll = function(whichUnit)
         ]]
     }
     -- 智力英雄的攻击默认为魔法，力量敏捷为物理
-    if (hattrCache[whichUnit].primary == 'INT') then
-        hattrCache[whichUnit].attack_hunt_type = { 'magic' }
+    if (hRuntime.attribute[whichUnit].primary == 'INT') then
+        hRuntime.attribute[whichUnit].attack_hunt_type = { 'magic' }
     else
-        hattrCache[whichUnit].attack_hunt_type = { 'physical' }
+        hRuntime.attribute[whichUnit].attack_hunt_type = { 'physical' }
     end
 end
 
@@ -668,42 +664,42 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 hattr.set(whichUnit, 0, setting)
                 --- 生命恢复 魔法恢复
             elseif (attr == 'life_back' or attr == 'mana_back') then
-                if (math.abs(futureVal) > 0.02 and hsystem.inArray(whichUnit, hattrGroup[attr]) == false) then
-                    table.insert(hattrGroup[attr], whichUnit)
+                if (math.abs(futureVal) > 0.02 and hsystem.inArray(whichUnit, hRuntime.attributeGroup[attr]) == false) then
+                    table.insert(hRuntime.attributeGroup[attr], whichUnit)
                 elseif (math.abs(futureVal) < 0.02) then
-                    hsystem.rmArray(whichUnit, hattrGroup[attr])
+                    hsystem.rmArray(whichUnit, hRuntime.attributeGroup[attr])
                 end
                 --- 生命源 魔法源(current)
             elseif (attr == 'life_source_current' or attr == 'mana_source_current') then
                 local attrSource = string.gsub(attr, '_current', '', 1)
-                if (futureVal > hattrCache[whichUnit][attrSource]) then
-                    futureVal = hattrCache[whichUnit][attrSource]
-                    hattrCache[whichUnit][attr] = futureVal
+                if (futureVal > hRuntime.attribute[whichUnit][attrSource]) then
+                    futureVal = hRuntime.attribute[whichUnit][attrSource]
+                    hRuntime.attribute[whichUnit][attr] = futureVal
                 end
-                if (math.abs(futureVal) > 1 and hsystem.inArray(whichUnit, hattrGroup[attrSource]) == false) then
-                    table.insert(hattrGroup[attrSource], whichUnit)
+                if (math.abs(futureVal) > 1 and hsystem.inArray(whichUnit, hRuntime.attributeGroup[attrSource]) == false) then
+                    table.insert(hRuntime.attributeGroup[attrSource], whichUnit)
                 elseif (math.abs(futureVal) < 1) then
-                    hsystem.rmArray(whichUnit, hattrGroup[attrSource])
+                    hsystem.rmArray(whichUnit, hRuntime.attributeGroup[attrSource])
                 end
                 --- 硬直
             elseif (attr == 'punish' and hunit.isOpenPunish(whichUnit)) then
                 if (currentVal > 0) then
                     local tempPercent = futureVal / currentVal
-                    hattrCache[whichUnit].punish_current = tempPercent * hattrCache[whichUnit].punish_current
+                    hRuntime.attribute[whichUnit].punish_current = tempPercent * hRuntime.attribute[whichUnit].punish_current
                 else
-                    hattrCache[whichUnit].punish_current = futureVal
+                    hRuntime.attribute[whichUnit].punish_current = futureVal
                 end
                 --- 硬直(current)
             elseif (attr == 'punish_current' and hunit.isOpenPunish(whichUnit)) then
-                if (futureVal > hattrCache[whichUnit].punish) then
-                    hattrCache[whichUnit].punish_current = hattrCache[whichUnit].punish
+                if (futureVal > hRuntime.attribute[whichUnit].punish) then
+                    hRuntime.attribute[whichUnit].punish_current = hRuntime.attribute[whichUnit].punish
                 end
             end
         end
     end
 end
 hattr.set = function(whichUnit, during, data)
-    if (hattrCache[whichUnit] == nil) then
+    if (hRuntime.attribute[whichUnit] == nil) then
         hattr.registerAll(whichUnit)
     end
     -- 处理data
@@ -712,7 +708,7 @@ hattr.set = function(whichUnit, during, data)
         return
     end
     for attr, v in pairs(data) do
-        if (hattrCache[whichUnit][attr] ~= nil) then
+        if (hRuntime.attribute[whichUnit][attr] ~= nil) then
             if (type(v) == 'string') then
                 local opr = string.sub(v, 1, 1)
                 v = string.sub(v, 2, string.len(v))
@@ -720,17 +716,17 @@ hattr.set = function(whichUnit, during, data)
                 if (val == nil) then
                     val = v
                 end
-                hattr.setHandle(hattrCache[whichUnit], whichUnit, attr, opr, val, during)
+                hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, opr, val, during)
             elseif (type(v) == 'table') then
                 --todo 特效
                 if (attr == 'attack_buff' or attr == 'attack_debuff' or attr == 'skill_buff' or attr == 'skill_debuff' or attr == 'attack_effect' or attr == 'skill_effect') then
                     for buff, bv in pairs(v) do
-                        if (hattrCache[whichUnit][attr][buff] == nil) then
-                            hattrCache[whichUnit][attr][buff] = {}
+                        if (hRuntime.attribute[whichUnit][attr][buff] == nil) then
+                            hRuntime.attribute[whichUnit][attr][buff] = {}
                         end
                         for effect, ev in pairs(bv) do
-                            if (hattrCache[whichUnit][attr][buff][effect] == nil) then
-                                hattrCache[whichUnit][attr][buff][effect] = {}
+                            if (hRuntime.attribute[whichUnit][attr][buff][effect] == nil) then
+                                hRuntime.attribute[whichUnit][attr][buff][effect] = {}
                             end
                             local opr = string.sub(ev, 1, 1)
                             ev = string.sub(ev, 2, string.len(ev))
@@ -738,7 +734,7 @@ hattr.set = function(whichUnit, during, data)
                             if (val == nil) then
                                 val = ev
                             end
-                            hattr.setHandle(hattrCache[whichUnit][attr][buff], whichUnit, effect, opr, val, during)
+                            hattr.setHandle(hRuntime.attribute[whichUnit][attr][buff], whichUnit, effect, opr, val, during)
                         end
                     end
                 end
@@ -752,61 +748,61 @@ hattr.get = function(whichUnit, attr)
     if (whichUnit == nil or attr == nil) then
         return nil
     end
-    if (hattrCache[whichUnit] == nil) then
+    if (hRuntime.attribute[whichUnit] == nil) then
         hattr.registerAll(whichUnit)
     end
-    return hattrCache[whichUnit][attr]
+    return hRuntime.attribute[whichUnit][attr]
 end
 
 ---重置注册
 hattr.reRegister = function(whichUnit)
-    local life = hattrCache[whichUnit].life
-    local mana = hattrCache[whichUnit].mana
-    local move = hattrCache[whichUnit].move
-    local strGreen = hattrCache[whichUnit].str_green
-    local agiGreen = hattrCache[whichUnit].agi_green
-    local intGreen = hattrCache[whichUnit].int_green
-    local strWhite = hattrCache[whichUnit].str_white
-    local agiWhite = hattrCache[whichUnit].agi_white
-    local intWhite = hattrCache[whichUnit].int_white
-    local attackWhite = hattrCache[whichUnit].attack_white
-    local attackGreen = hattrCache[whichUnit].attack_green
-    local attackSpeed = hattrCache[whichUnit].attack_speed
-    local defend = hattrCache[whichUnit].defend
+    local life = hRuntime.attribute[whichUnit].life
+    local mana = hRuntime.attribute[whichUnit].mana
+    local move = hRuntime.attribute[whichUnit].move
+    local strGreen = hRuntime.attribute[whichUnit].str_green
+    local agiGreen = hRuntime.attribute[whichUnit].agi_green
+    local intGreen = hRuntime.attribute[whichUnit].int_green
+    local strWhite = hRuntime.attribute[whichUnit].str_white
+    local agiWhite = hRuntime.attribute[whichUnit].agi_white
+    local intWhite = hRuntime.attribute[whichUnit].int_white
+    local attackWhite = hRuntime.attribute[whichUnit].attack_white
+    local attackGreen = hRuntime.attribute[whichUnit].attack_green
+    local attackSpeed = hRuntime.attribute[whichUnit].attack_speed
+    local defend = hRuntime.attribute[whichUnit].defend
     -- 注册技能
     registerAll(whichUnit)
     -- 弥补属性
-    cj.SetHeroStr(whichUnit,cj.R2I(strWhite),true)
-    cj.SetHeroAgi(whichUnit,cj.R2I(agiWhite),true)
-    cj.SetHeroInt(whichUnit,cj.R2I(intWhite),true)
-    if( move < 0 ) then
-        cj.SetUnitMoveSpeed( whichUnit , 0 )
+    cj.SetHeroStr(whichUnit, cj.R2I(strWhite), true)
+    cj.SetHeroAgi(whichUnit, cj.R2I(agiWhite), true)
+    cj.SetHeroInt(whichUnit, cj.R2I(intWhite), true)
+    if (move < 0) then
+        cj.SetUnitMoveSpeed(whichUnit, 0)
     else
-        if(hcamera.model=="zoomin")then
-            cj.SetUnitMoveSpeed( whichUnit , cj.R2I(move*0.5) )
+        if (hcamera.model == "zoomin") then
+            cj.SetUnitMoveSpeed(whichUnit, cj.R2I(move * 0.5))
         else
-            cj.SetUnitMoveSpeed( whichUnit , cj.R2I(move) )
+            cj.SetUnitMoveSpeed(whichUnit, cj.R2I(move))
         end
     end
-    hattrCache[whichUnit].life = cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit);
-    hattrCache[whichUnit].mana = cj.GetUnitStateSwap(UNIT_STATE_MAX_MANA, whichUnit);
-    hattrCache[whichUnit].defend = hslk_global.unitsKV[unitId].def or 0.0;
-    hattrCache[whichUnit].attack_speed = 0;
-    hattrCache[whichUnit].attack_white = 0;
-    hattrCache[whichUnit].attack_green = 0;
-    hattrCache[whichUnit].str_green = 0;
-    hattrCache[whichUnit].agi_green = 0;
-    hattrCache[whichUnit].int_green = 0;
-    hattr.set(whichUnit,0,{
-        life = '+'..(life-cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit)),
-        mana = '+'..(mana-cj.GetUnitStateSwap(UNIT_STATE_MAX_LIFE, whichUnit)),
-        str_green = '+'..strGreen,
-        agi_green = '+'..agiGreen,
-        int_green = '+'..intGreen,
-        attack_white = '+'..attackWhite,
-        attack_green = '+'..attackGreen,
-        attack_speed = '+'..attackSpeed,
-        defend = '+'..defend,
+    hRuntime.attribute[whichUnit].life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE);
+    hRuntime.attribute[whichUnit].mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA);
+    hRuntime.attribute[whichUnit].defend = hslk_global.unitsKV[unitId].def or 0.0;
+    hRuntime.attribute[whichUnit].attack_speed = 0;
+    hRuntime.attribute[whichUnit].attack_white = 0;
+    hRuntime.attribute[whichUnit].attack_green = 0;
+    hRuntime.attribute[whichUnit].str_green = 0;
+    hRuntime.attribute[whichUnit].agi_green = 0;
+    hRuntime.attribute[whichUnit].int_green = 0;
+    hattr.set(whichUnit, 0, {
+        life = '+' .. (life - cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)),
+        mana = '+' .. (mana - cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)),
+        str_green = '+' .. strGreen,
+        agi_green = '+' .. agiGreen,
+        int_green = '+' .. intGreen,
+        attack_white = '+' .. attackWhite,
+        attack_green = '+' .. attackGreen,
+        attack_speed = '+' .. attackSpeed,
+        defend = '+' .. defend,
     })
 end
 
@@ -1344,11 +1340,11 @@ hattr.huntUnit = function(bean)
                 punish_current = '-' .. realDamage
             })
             if (hattr.get(bean.toUnit, 'punish_current') <= 0) then
-                hisCache[bean.toUnit].isPunishing = true
+                hRuntime.is[bean.toUnit].isPunishing = true
                 htime.setTimeout(punish_during + 1.00, nil, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
-                    hisCache[bean.toUnit].isPunishing = false
+                    hRuntime.is[bean.toUnit].isPunishing = false
                 end)
             end
             local punishEffectAttackSpeed = (100 + hattr.get(bean.toUnit, 'attack_speed')) * punishEffectRatio
@@ -1784,164 +1780,4 @@ hattr.huntUnit = function(bean)
     end
 end
 
---todo 系统初始化
--- 单位受伤
-local triggerBeHunt = cj.CreateTrigger()
-cj.TriggerAddAction(triggerBeHunt, function()
-    local fromUnit = cj.GetEventDamageSource()
-    local toUnit = cj.GetTriggerUnit()
-    local damage = cj.GetEventDamage()
-    local oldLife = hunit.getLife(toUnit)
-    if (damage > 0.125) then
-        hattr.set(toUnit, 0, { life = '+' .. damage })
-        htime.setTimeout(0, nil, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            hattr.set(toUnit, 0, { life = '-' .. damage })
-            hunit.setLife(toUnit, oldLife)
-            hattr.huntUnit({
-                fromUnit = fromUnit,
-                toUnit = toUnit,
-                damage = damage,
-                huntKind = "attack",
-            })
-        end)
-    end
-end)
--- 单位死亡
-local triggerDeath = cj.CreateTrigger()
-cj.TriggerAddAction(triggerDeath, function()
-    local u = cj.GetTriggerUnit()
-    local killer = hevent.getLastDamageUnit(u)
-    hplayer.addKill(GetOwningPlayer(killer), 1)
-    -- @触发死亡事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.dead,
-        triggerUnit = u,
-        killer = killer
-    })
-    -- @触发击杀事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.kill,
-        killer = killer,
-        triggerUnit = killer,
-        targetUnit = u
-    })
-end)
--- 单位进入区域注册
-local triggerRegIn = cj.CreateTrigger()
-cj.TriggerRegisterEnterRectSimple(triggerRegIn, cj.GetPlayableMapRect())
-cj.TriggerAddAction(triggerRegIn, function()
-    local u = cj.GetTriggerUnit()
-    if (cj.GetUnitAbilityLevel(u, 'Aloc') > 0) then
-        -- 蝗虫不做某些处理
-        return
-    end
-    -- 排除单位类型
-    local uid = cj.GetUnitTypeId(u)
-    if (uid == hslk_global.unit_token
-            or uid == hslk_global.unit_hero_tavern_token
-            or uid == hslk_global.unit_hero_death_token
-            or uid == hslk_global.unit_hero_tavern
-    ) then
-        return
-    end
-    -- 注册事件
-    if (hattrCache[u] == nil) then
-        hattr.registerAll(u)
-        cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
-        cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)
-        -- 拥有物品栏的单位绑定物品处理
-        if (his.hasSlot(u)) then
-            hitem.initUnit(u)
-        end
-        -- 触发注册事件(全局)
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.register,
-            triggerHandle = hevent.defaultHandle,
-            triggerUnit = u,
-        })
-    end
-end)
--- 生命魔法恢复
-htime.setInterval(0.50, nil, function(t, td)
-    local period = cj.TimerGetTimeout(t)
-    for k, u in pairs(hattrGroup.life_back) do
-        if (his.alive(u)) then
-            if (hattr.get(u, 'life_back') ~= 0) then
-                hunit.addLife(u, hattr.get(u, 'life_back') * period)
-            end
-        end
-    end
-    for k, u in pairs(hattrGroup.mana_back) do
-        if (his.alive(u)) then
-            if (hattr.get(u, 'mana_back') ~= 0) then
-                hunit.addMana(u, hattr.get(u, 'mana_back') * period)
-            end
-        end
-    end
-    --- 源力只有在没受伤判定的情况下才会有效
-    for k, u in pairs(hattrGroup.life_source) do
-        if (his.alive(u) and hunit.getLifePercent(u) < hplayer.getLifeSourceRatio(cj.GetOwningPlayer(u))) then
-            if (hattr.get(u, 'be_hunting') == false) then
-                if (hattr.get(u, 'life_source_current') > 0) then
-                    local fill = hunit.getMaxLife(u) - hunit.getCurLife(u)
-                    if (fill > hattr.get(u, 'life_source_current')) then
-                        fill = hattr.get(u, 'life_source_current')
-                    end
-                    hattr.set(u, 0, { life_source_current = '-' .. fill })
-                    hunit.addLife(u, fill)
-                    httg.style(
-                            httg.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
-                            "scale",
-                            0,
-                            0.2
-                    )
-                end
-            end
-        end
-    end
-    for k, u in pairs(hattrGroup.mana_source) do
-        if (his.alive(u) and hunit.getManaPercent(u) < hplayer.getManaSourceRatio(cj.GetOwningPlayer(u))) then
-            if (hattr.get(u, 'be_hunting') == false) then
-                if (hattr.get(u, 'mana_source_current') > 0) then
-                    local fill = hunit.getMaxLife(u) - hunit.getCurMana(u)
-                    if (fill > hattr.get(u, 'mana_source_current')) then
-                        fill = hattr.get(u, 'mana_source_current')
-                    end
-                    hattr.set(u, 0, { mana_source_current = '-' .. fill })
-                    hunit.addMana(u, fill)
-                    httg.style(
-                            httg.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
-                            "scale",
-                            0,
-                            0.2
-                    )
-                end
-            end
-        end
-    end
-end)
--- 硬直恢复(3秒内没收到伤害后,每1秒恢复1%)
-htime.setInterval(1.00, nil, function(t, td)
-    for k, u in pairs(hattrGroup.punish_current) do
-        if (his.alive(u) and hattr.get(u, 'punish') > 0 and hattr.get(u, 'punish_current') < hattr.get(u, 'punish')) then
-            if (hattr.get(u, 'be_hunting') == false) then
-                hattr.set(u, 0, { punish_current = '+' .. (hattr.get(u, 'punish') * 0.01) })
-            end
-        end
-    end
-end)
--- 源恢复
-htime.setInterval(15.00, nil, function(t, td)
-    for k, u in pairs(hattrGroup.life_source) do
-        if (his.alive(u)) then
-            hattr.set(u, 0, { life_source_current = '+100' })
-        end
-    end
-    for k, u in pairs(hattrGroup.mana_source) do
-        if (his.alive(u)) then
-            hattr.set(u, 0, { mana_source_current = '+100' })
-        end
-    end
-end)
+return hattr

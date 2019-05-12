@@ -1,4 +1,4 @@
-hlightning = {
+local hlightning = {
     type = {
         shan_dian_lian_zhu = "CLPB", -- 闪电效果 - 闪电链主
         shan_dian_lian_ci = "CLSB", -- 闪电效果 - 闪电链次
@@ -44,3 +44,5 @@ hlightning.unit2unit = function(codename, unit1, unit2, during)
             cj.GetUnitX(unit2), cj.GetUnitY(unit2), cj.GetUnitFlyHeight(unit2),
             during)
 end
+
+return hlightning

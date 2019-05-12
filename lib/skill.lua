@@ -1,5 +1,5 @@
-hskillCache = {}
-hskill = {
+
+local hskill = {
     SKILL_TOKEN = hslk_global.unit_token,
     SKILL_BREAK = hslk_global.skill_break,
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
@@ -118,16 +118,16 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
     percent = percent or -1
-    if (hskillCache[u] == nil) then
-        hskillCache[u] = {}
+    if (hRuntime.skill[u] == nil) then
+        hRuntime.skill[u] = {}
     end
-    local t = hskillCache[u].swimTimer
+    local t = hRuntime.skill[u].swimTimer
     if (t ~= nil and cj.TimerGetRemaining(t) > 0) then
         if (during <= cj.TimerGetRemaining(t)) then
             return
         else
             htime.delTimer(t)
-            hskillCache[u].swimTimer = nil
+            hRuntime.skill[u].swimTimer = nil
             cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
             httg.style(httg.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
         end
@@ -142,7 +142,7 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
     cj.SetUnitAbilityLevel(cu, hskill.SKILL_SWIM, 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.4)
-    hisCache[cu].isSwim = true
+    hRuntime.is[cu].isSwim = true
     if (sourceUnit ~= nil) then
         -- @触发眩晕事件
         hevent.triggerEvent({
@@ -163,11 +163,11 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
         percent = percent,
         during = during,
     })
-    hskillCache[u].swimTimer = htime.setTimeout(during, function(t, td)
+    hRuntime.skill[u].swimTimer = htime.setTimeout(during, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
-        hisCache[cu].isSwim = false
+        hRuntime.is[cu].isSwim = false
     end)
 end
 
@@ -176,35 +176,35 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
     percent = percent or -1
-    if (hskillCache[u] == nil) then
-        hskillCache[u] = {}
+    if (hRuntime.skill[u] == nil) then
+        hRuntime.skill[u] = {}
     end
-    if (hskillCache.silentUnits == nil) then
-        hskillCache.silentUnits = {}
+    if (hRuntime.skill.silentUnits == nil) then
+        hRuntime.skill.silentUnits = {}
     end
-    if (hskillCache.silentTrigger == nil) then
-        hskillCache.silentTrigger = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hskillCache.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        cj.TriggerAddAction(hskillCache.silentTrigger, function()
+    if (hRuntime.skill.silentTrigger == nil) then
+        hRuntime.skill.silentTrigger = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
+        cj.TriggerAddAction(hRuntime.skill.silentTrigger, function()
             local u1 = cj.GetTriggerUnit()
-            if (hsystem.inArray(u1, hskillCache.silentUnits)) then
+            if (hsystem.inArray(u1, hRuntime.skill.silentUnits)) then
                 cj.IssueImmediateOrder(u1, "stop")
             end
         end)
     end
-    local level = hskillCache[u].silentLevel + 1
+    local level = hRuntime.skill[u].silentLevel + 1
     if (level <= 1) then
         httg.style(httg.ttg2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
         httg.style(httg.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     end
-    hskillCache[u].silentLevel = level
-    if (hsystem.inArray(u, hskillCache.silentUnits) == false) then
-        table.insert(hskillCache.silentUnits, u)
+    hRuntime.skill[u].silentLevel = level
+    if (hsystem.inArray(u, hRuntime.skill.silentUnits) == false) then
+        table.insert(hRuntime.skill.silentUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "head", -1)
-        hskillCache[u].silentEffect = eff
+        hRuntime.skill[u].silentEffect = eff
     end
-    hisCache[u].isSilent = true
+    hRuntime.is[u].isSilent = true
     if (sourceUnit ~= nil) then
         -- @触发沉默事件
         hevent.triggerEvent({
@@ -228,13 +228,13 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
     htime.setTimeout(during, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
-        hskillCache[u].silentLevel = hskillCache[u].silentLevel - 1
-        if (hskillCache[u].silentLevel <= 0) then
-            heffect.del(hskillCache[u].silentEffect)
-            if (hsystem.inArray(u, hskillCache.silentUnits)) then
-                hsystem.rmArray(u, hskillCache.silentUnits)
+        hRuntime.skill[u].silentLevel = hRuntime.skill[u].silentLevel - 1
+        if (hRuntime.skill[u].silentLevel <= 0) then
+            heffect.del(hRuntime.skill[u].silentEffect)
+            if (hsystem.inArray(u, hRuntime.skill.silentUnits)) then
+                hsystem.rmArray(u, hRuntime.skill.silentUnits)
             end
-            hisCache[u].isSilent = false
+            hRuntime.is[u].isSilent = false
         end
     end)
 end
@@ -244,35 +244,35 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
     percent = percent or -1
-    if (hskillCache[u] == nil) then
-        hskillCache[u] = {}
+    if (hRuntime.skill[u] == nil) then
+        hRuntime.skill[u] = {}
     end
-    if (hskillCache.unarmUnits == nil) then
-        hskillCache.unarmUnits = {}
+    if (hRuntime.skill.unarmUnits == nil) then
+        hRuntime.skill.unarmUnits = {}
     end
-    if (hskillCache.unarmTrigger == nil) then
-        hskillCache.unarmTrigger = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hskillCache.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(hskillCache.unarmTrigger, function()
+    if (hRuntime.skill.unarmTrigger == nil) then
+        hRuntime.skill.unarmTrigger = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
+        cj.TriggerAddAction(hRuntime.skill.unarmTrigger, function()
             local u1 = cj.GetTriggerUnit()
-            if (hsystem.inArray(u1, hskillCache.unarmUnits)) then
+            if (hsystem.inArray(u1, hRuntime.skill.unarmUnits)) then
                 cj.IssueImmediateOrder(u1, "stop")
             end
         end)
     end
-    local level = hskillCache[u].unarmLevel + 1
+    local level = hRuntime.skill[u].unarmLevel + 1
     if (level <= 1) then
         httg.style(httg.ttg2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
         httg.style(httg.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     end
-    hskillCache[u].unarmLevel = level
-    if (hsystem.inArray(u, hskillCache.unarmUnits) == false) then
-        table.insert(hskillCache.unarmUnits, u)
+    hRuntime.skill[u].unarmLevel = level
+    if (hsystem.inArray(u, hRuntime.skill.unarmUnits) == false) then
+        table.insert(hRuntime.skill.unarmUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "weapon", -1)
-        hskillCache[u].unarmEffect = eff
+        hRuntime.skill[u].unarmEffect = eff
     end
-    hisCache[u].isUnArm = true
+    hRuntime.is[u].isUnArm = true
     if (sourceUnit ~= nil) then
         -- @触发缴械事件
         hevent.triggerEvent({
@@ -296,13 +296,13 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
     htime.setTimeout(during, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
-        hskillCache[u].unarmLevel = hskillCache[u].unarmLevel - 1
-        if (hskillCache[u].unarmLevel <= 0) then
-            heffect.del(hskillCache[u].unarmEffect)
-            if (hsystem.inArray(u, hskillCache.unarmUnits)) then
-                hsystem.rmArray(u, hskillCache.unarmUnits)
+        hRuntime.skill[u].unarmLevel = hRuntime.skill[u].unarmLevel - 1
+        if (hRuntime.skill[u].unarmLevel <= 0) then
+            heffect.del(hRuntime.skill[u].unarmEffect)
+            if (hsystem.inArray(u, hRuntime.skill.unarmUnits)) then
+                hsystem.rmArray(u, hRuntime.skill.unarmUnits)
             end
-            hisCache[u].isUnArm = false
+            hRuntime.is[u].isUnArm = false
         end
     end)
 end
@@ -372,19 +372,19 @@ hskill.pause = function(whichUnit, during, pauseColor)
     if (whichUnit == nil) then
         return
     end
-    if (hskillCache[whichUnit] == nil) then
-        hskillCache[whichUnit] = {}
+    if (hRuntime.skill[whichUnit] == nil) then
+        hRuntime.skill[whichUnit] = {}
     end
     if (during < 0) then
         during = 0.01  -- 假如没有设置时间，默认打断效果
     end
-    local prevTimer = hskillCache[whichUnit].pauseTimer
+    local prevTimer = hRuntime.skill[whichUnit].pauseTimer
     local prevTimeRemaining = 0
     if (prevTimer ~= nil) then
         prevTimeRemaining = cj.TimerGetRemaining(prevTimer)
         if (prevTimeRemaining > 0) then
             htime.delTimer(prevTimer)
-            hskillCache[whichUnit].pauseTimer = nil
+            hRuntime.skill[whichUnit].pauseTimer = nil
         else
             prevTimeRemaining = 0
         end
@@ -400,7 +400,7 @@ hskill.pause = function(whichUnit, during, pauseColor)
     end
     cj.SetUnitTimeScalePercent(whichUnit, 0.00)
     cj.PauseUnit(whichUnit, true)
-    hskillCache[whichUnit].pauseTimer = htime.setTimeout(during + prevTimeRemaining, function(t, td)
+    hRuntime.skill[whichUnit].pauseTimer = htime.setTimeout(during + prevTimeRemaining, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.PauseUnit(whichUnit, false)
@@ -581,10 +581,10 @@ hskill.crackFly = function(distance, high, during, bean)
         return
     end
     -- 不二次击飞
-    if (hisCache[bean.toUnit].isCrackFly == true) then
+    if (hRuntime.is[bean.toUnit].isCrackFly == true) then
         return
     end
-    hisCache[bean.toUnit].isCrackFly = true
+    hRuntime.is[bean.toUnit].isCrackFly = true
     if (during < 0.5) then
         during = 0.5
     end
@@ -629,7 +629,7 @@ hskill.crackFly = function(distance, high, during, bean)
             })
             cj.SetUnitFlyHeight(bean.toUnit, originHigh, 10000)
             cj.SetUnitPathing(bean.toUnit, true)
-            hisCache[bean.toUnit].isCrackFly = false
+            hRuntime.is[bean.toUnit].isCrackFly = false
             if (his.water(bean.toUnit) == true) then
                 -- 如果是水面，创建水花
                 heffect.toUnit("Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl", bean.toUnit, 0)
@@ -752,3 +752,4 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
     end)
 end
 
+return hskill

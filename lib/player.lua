@@ -1,5 +1,4 @@
-hplayerData = {}
-hplayer = {
+local hplayer = {
     --用户玩家
     players = {},
     --中立敌对
@@ -37,15 +36,15 @@ hplayer.index = function(whichPlayer)
 end
 --- 获取玩家当前选中的单位
 hplayer.getSelection = function(whichPlayer)
-    return hplayerData[whichPlayer].selection or nil
+    return hplayerRuntime[whichPlayer].selection or nil
 end
 --- 获取玩家当前状态
 hplayer.getStatus = function(whichPlayer)
-    return hplayerData[whichPlayer].status or hplayer.player_status.none
+    return hplayerRuntime[whichPlayer].status or hplayer.player_status.none
 end
 --- 获取玩家APM
 hplayer.getApm = function(whichPlayer)
-    return hplayerData[whichPlayer].apm or 0
+    return hplayerRuntime[whichPlayer].apm or 0
 end
 --- 在所有玩家里获取一个随机的英雄
 hplayer.getRandomHero = function()
@@ -90,15 +89,15 @@ hplayer.victory = function(whichPlayer)
 end
 --- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
 hplayer.setIsAutoConvert = function(whichPlayer, b)
-    hplayerData[whichPlayer].isAutoConvert = b
+    hplayerRuntime[whichPlayer].isAutoConvert = b
 end
 --- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
 hplayer.getIsAutoConvert = function(whichPlayer)
-    return hplayerData[whichPlayer].isAutoConvert or false
+    return hplayerRuntime[whichPlayer].isAutoConvert or false
 end
 --- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
 hplayer.getExceedLumber = function(whichPlayer, exceedGold)
-    local current = hplayerData[whichPlayer].exceed_gold or 0
+    local current = hplayerRuntime[whichPlayer].exceed_gold or 0
     local l = 0
     if (current < 0) then
         current = 0
@@ -112,57 +111,57 @@ hplayer.getExceedLumber = function(whichPlayer, exceedGold)
         l = math.floor(current / player_convert_ratio)
         current = math.floor(current - l * player_convert_ratio)
     end
-    hplayerData[whichPlayer].exceed_gold = current
+    hplayerRuntime[whichPlayer].exceed_gold = current
     return l
 end
 --- 获取玩家造成的总伤害
 hplayer.getDamage = function(whichPlayer)
-    return hplayerData[whichPlayer].damage or 0
+    return hplayerRuntime[whichPlayer].damage or 0
 end
 --- 增加玩家造成的总伤害
 hplayer.addDamage = function(whichPlayer, val)
-    hplayerData[whichPlayer].damage = hplayerData[whichPlayer].damage + val
+    hplayerRuntime[whichPlayer].damage = hplayerRuntime[whichPlayer].damage + val
 end
 --- 获取玩家受到的总伤害
 hplayer.getBeDamage = function(whichPlayer)
-    return hplayerData[whichPlayer].beDamage or 0
+    return hplayerRuntime[whichPlayer].beDamage or 0
 end
 --- 增加玩家受到的总伤害
 hplayer.addBeDamage = function(whichPlayer, val)
-    hplayerData[whichPlayer].beDamage = hplayerData[whichPlayer].beDamage + val
+    hplayerRuntime[whichPlayer].beDamage = hplayerRuntime[whichPlayer].beDamage + val
 end
 --- 获取玩家杀敌数
 hplayer.getBeDamage = function(whichPlayer)
-    return hplayerData[whichPlayer].kill or 0
+    return hplayerRuntime[whichPlayer].kill or 0
 end
 --- 增加玩家杀敌数
 hplayer.addBeDamage = function(whichPlayer, val)
-    hplayerData[whichPlayer].kill = hplayerData[whichPlayer].kill + val
+    hplayerRuntime[whichPlayer].kill = hplayerRuntime[whichPlayer].kill + val
 end
 --- 获取玩家生命源设定百分比
 hplayer.getLifeSourceRatio = function(whichPlayer)
-    return hplayerData[whichPlayer].lifeSourceRatio
+    return hplayerRuntime[whichPlayer].lifeSourceRatio
 end
 --- 获取玩家魔法源设定百分比
 hplayer.getManaSourceRatio = function(whichPlayer)
-    return hplayerData[whichPlayer].manaSourceRatio
+    return hplayerRuntime[whichPlayer].manaSourceRatio
 end
 
 --- 黄金比率
 hplayer.diffGoldRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
-        hplayerData[whichPlayer].goldRatio = hplayerData[whichPlayer].goldRatio + diff
+        hplayerRuntime[whichPlayer].goldRatio = hplayerRuntime[whichPlayer].goldRatio + diff
         if (during > 0) then
             htime.setTimeout(during, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hplayerData[whichPlayer].goldRatio = hplayerData[whichPlayer].goldRatio - diff
+                hplayerRuntime[whichPlayer].goldRatio = hplayerRuntime[whichPlayer].goldRatio - diff
             end)
         end
     end
 end
 hplayer.setGoldRatio = function(whichPlayer, val, during)
-    hplayer.diffGoldRatio(whichPlayer, val - hplayerData[whichPlayer].goldRatio, during)
+    hplayer.diffGoldRatio(whichPlayer, val - hplayerRuntime[whichPlayer].goldRatio, during)
 end
 hplayer.addGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, val, during)
@@ -171,24 +170,24 @@ hplayer.subGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, -val, during)
 end
 hplayer.getGoldRatio = function(whichPlayer)
-    return hplayerData[whichPlayer].goldRatio
+    return hplayerRuntime[whichPlayer].goldRatio
 end
 
 --- 木头比率
 hplayer.diffLumberRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
-        hplayerData[whichPlayer].lumberRatio = hplayerData[whichPlayer].lumberRatio + diff
+        hplayerRuntime[whichPlayer].lumberRatio = hplayerRuntime[whichPlayer].lumberRatio + diff
         if (during > 0) then
             htime.setTimeout(during, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hplayerData[whichPlayer].lumberRatio = hplayerData[whichPlayer].lumberRatio - diff
+                hplayerRuntime[whichPlayer].lumberRatio = hplayerRuntime[whichPlayer].lumberRatio - diff
             end)
         end
     end
 end
 hplayer.setLumberRatio = function(whichPlayer, val, during)
-    hplayer.diffLumberRatio(whichPlayer, val - hplayerData[whichPlayer].lumberRatio, during)
+    hplayer.diffLumberRatio(whichPlayer, val - hplayerRuntime[whichPlayer].lumberRatio, during)
 end
 hplayer.addLumberRatio = function(whichPlayer, val, during)
     hplayer.diffLumberRatio(whichPlayer, val, during)
@@ -197,24 +196,24 @@ hplayer.subLumberRatio = function(whichPlayer, val, during)
     hplayer.diffLumberRatio(whichPlayer, -val, during)
 end
 hplayer.getLumberRatio = function(whichPlayer)
-    return hplayerData[whichPlayer].lumberRatio
+    return hplayerRuntime[whichPlayer].lumberRatio
 end
 
 --- 经验比率
 hplayer.diffExpRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
-        hplayerData[whichPlayer].expRatio = hplayerData[whichPlayer].expRatio + diff
+        hplayerRuntime[whichPlayer].expRatio = hplayerRuntime[whichPlayer].expRatio + diff
         if (during > 0) then
             htime.setTimeout(during, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hplayerData[whichPlayer].expRatio = hplayerData[whichPlayer].expRatio - diff
+                hplayerRuntime[whichPlayer].expRatio = hplayerRuntime[whichPlayer].expRatio - diff
             end)
         end
     end
 end
 hplayer.setExpRatio = function(whichPlayer, val, during)
-    hplayer.diffExpRatio(whichPlayer, val - hplayerData[whichPlayer].expRatio, during)
+    hplayer.diffExpRatio(whichPlayer, val - hplayerRuntime[whichPlayer].expRatio, during)
 end
 hplayer.addExpRatio = function(whichPlayer, val, during)
     hplayer.diffExpRatio(whichPlayer, val, during)
@@ -223,24 +222,24 @@ hplayer.subExpRatio = function(whichPlayer, val, during)
     hplayer.diffExpRatio(whichPlayer, -val, during)
 end
 hplayer.getExpRatio = function(whichPlayer)
-    return hplayerData[whichPlayer].expRatio
+    return hplayerRuntime[whichPlayer].expRatio
 end
 
 --- 售卖比率
 hplayer.diffSellRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
-        hplayerData[whichPlayer].sellRatio = hplayerData[whichPlayer].sellRatio + diff
+        hplayerRuntime[whichPlayer].sellRatio = hplayerRuntime[whichPlayer].sellRatio + diff
         if (during > 0) then
             htime.setTimeout(during, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hplayerData[whichPlayer].sellRatio = hplayerData[whichPlayer].sellRatio - diff
+                hplayerRuntime[whichPlayer].sellRatio = hplayerRuntime[whichPlayer].sellRatio - diff
             end)
         end
     end
 end
 hplayer.setSellRatio = function(whichPlayer, val, during)
-    hplayer.diffSellRatio(whichPlayer, val - hplayerData[whichPlayer].sellRatio, during)
+    hplayer.diffSellRatio(whichPlayer, val - hplayerRuntime[whichPlayer].sellRatio, during)
 end
 hplayer.addSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, val, during)
@@ -249,60 +248,60 @@ hplayer.subSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, -val, during)
 end
 hplayer.getSellRatio = function(whichPlayer)
-    return hplayerData[whichPlayer].sellRatio
+    return hplayerRuntime[whichPlayer].sellRatio
 end
 
 --- 玩家总获金量
 hplayer.getTotalGold = function(whichPlayer)
-    return hplayerData[whichPlayer].totalGold
+    return hplayerRuntime[whichPlayer].totalGold
 end
 hplayer.addTotalGold = function(whichPlayer, val)
-    hplayerData[whichPlayer].totalGold = hplayerData[whichPlayer].totalGold + val
+    hplayerRuntime[whichPlayer].totalGold = hplayerRuntime[whichPlayer].totalGold + val
 end
 --- 玩家总耗金量
 hplayer.getTotalGoldCost = function(whichPlayer)
-    return hplayerData[whichPlayer].totalGoldCost
+    return hplayerRuntime[whichPlayer].totalGoldCost
 end
 hplayer.addTotalGoldCost = function(whichPlayer, val)
-    hplayerData[whichPlayer].totalGoldCost = hplayerData[whichPlayer].totalGoldCost + val
+    hplayerRuntime[whichPlayer].totalGoldCost = hplayerRuntime[whichPlayer].totalGoldCost + val
 end
 
 --- 玩家总获木量
 hplayer.getTotalLumber = function(whichPlayer)
-    return hplayerData[whichPlayer].totalLumber
+    return hplayerRuntime[whichPlayer].totalLumber
 end
 hplayer.addTotalLumber = function(whichPlayer, val)
-    hplayerData[whichPlayer].totalLumber = hplayerData[whichPlayer].totalLumber + val
+    hplayerRuntime[whichPlayer].totalLumber = hplayerRuntime[whichPlayer].totalLumber + val
 end
 --- 玩家总耗木量
 hplayer.getTotalLumberCost = function(whichPlayer)
-    return hplayerData[whichPlayer].totalLumberCost
+    return hplayerRuntime[whichPlayer].totalLumberCost
 end
 hplayer.addTotalLumberCost = function(whichPlayer, val)
-    hplayerData[whichPlayer].totalLumberCost = hplayerData[whichPlayer].totalLumberCost + val
+    hplayerRuntime[whichPlayer].totalLumberCost = hplayerRuntime[whichPlayer].totalLumberCost + val
 end
 
 --- 核算玩家金钱
 hplayer.adjustGold = function(whichPlayer)
-    local prvSys = hplayerData[whichPlayer].prevGold
+    local prvSys = hplayerRuntime[whichPlayer].prevGold
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
     if (prvSys > relSys) then
         hplayer.addTotalGoldCost(whichPlayer, prvSys - relSys)
     elseif (prvSys < relSys) then
         hplayer.addTotalGold(whichPlayer, relSys - prvSys)
     end
-    hplayerData[whichPlayer].prevGold = relSys
+    hplayerRuntime[whichPlayer].prevGold = relSys
 end
 --- 核算玩家木头
 hplayer.adjustLumber = function(whichPlayer)
-    local prvSys = hplayerData[whichPlayer].prevLumber
+    local prvSys = hplayerRuntime[whichPlayer].prevLumber
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
     if (prvSys > relSys) then
         hplayer.addTotalLumberCost(whichPlayer, prvSys - relSys)
     elseif (prvSys < relSys) then
         hplayer.addTotalLumber(whichPlayer, relSys - prvSys)
     end
-    hplayerData[whichPlayer].prevLumber = relSys
+    hplayerRuntime[whichPlayer].prevLumber = relSys
 end
 
 --- 获取玩家实时金钱
@@ -365,16 +364,16 @@ hplayerInit = function()
     local triggerConvert = cj.CreateTrigger()
     cj.TriggerAddAction(triggerApm, function()
         local p = cj.GetTriggerPlayer()
-        hplayerData[p].apm = hplayerData[p].apm + 1
+        hplayerRuntime[p].apm = hplayerRuntime[p].apm + 1
     end)
     cj.TriggerAddAction(triggerApmUnit, function()
         local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
-        hplayerData[p].apm = hplayerData[p].apm + 1
+        hplayerRuntime[p].apm = hplayerRuntime[p].apm + 1
     end)
     cj.TriggerAddAction(triggerLeave, function()
         local p = cj.GetTriggerPlayer()
         local g
-        hplayerData[p].status = p, hplayer.player_status.leave
+        hplayerRuntime[p].status = p, hplayer.player_status.leave
         hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
         g = hgroup.createByRect(cj.GetEntireMapRect(), function()
             local b = false
@@ -393,10 +392,10 @@ hplayerInit = function()
         hplayer.qty_current = hplayer.qty_current - 1
     end)
     hevent.onSelectionDouble(null, function()
-        hplayerData[hevent.getTriggerPlayer()].selection = hevent.getTriggerUnit()
+        hplayerRuntime[hevent.getTriggerPlayer()].selection = hevent.getTriggerUnit()
     end)
     cj.TriggerAddAction(triggerDeSelection, function()
-        hplayerData[cj.GetTriggerPlayer()].selection = nil
+        hplayerRuntime[cj.GetTriggerPlayer()].selection = nil
     end)
     cj.TriggerAddAction(triggerLSR, function()
         local p = cj.GetTriggerPlayer()
@@ -414,7 +413,7 @@ hplayerInit = function()
             local dd = cj.GetClickedDialog()
             local bb = cj.GetClickedButton()
             hmessage.echoXY0(p, "已设定生命源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
-            hplayerData[p].lifeSourceRatio = bValue[bb]
+            hplayerRuntime[p].lifeSourceRatio = bValue[bb]
             cj.DialogClear(dd)
             cj.DialogDestroy(dd)
             cj.DisableTrigger(cj.GetTriggeringTrigger())
@@ -439,7 +438,7 @@ hplayerInit = function()
             local dd = cj.GetClickedDialog()
             local bb = cj.GetClickedButton()
             hmessage.echoXY0(p, "已设定魔法源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
-            hplayerData[p].manaSourceRatio = bValue[bb]
+            hplayerRuntime[p].manaSourceRatio = bValue[bb]
             cj.DialogClear(dd)
             cj.DialogDestroy(dd)
             cj.DisableTrigger(cj.GetTriggeringTrigger())
@@ -451,10 +450,10 @@ hplayerInit = function()
     cj.TriggerAddAction(triggerConvert, function()
         local p = GetTriggerPlayer()
         if (his.autoConvertGoldLumber(p) == true) then
-            hisCache[p].isAutoConvertGoldLumber = false
+            hRuntime.is[p].isAutoConvertGoldLumber = false
             hmessage.echoXY0(GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
         else
-            hisCache[p].isAutoConvertGoldLumber = true
+            hRuntime.is[p].isAutoConvertGoldLumber = true
             hmessage.echoXY0(GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
         end
     end)
@@ -464,28 +463,28 @@ hplayerInit = function()
     for i = 1, hplayer.qty_max, 1 do
         hplayer.players[i] = cj.Player(i - 1)
         cj.SetPlayerHandicapXP(hplayer.players[i], 0)
-        hplayerData[hplayer.players[i]].prevGold = 0
-        hplayerData[hplayer.players[i]].prevLumber = 0
-        hplayerData[hplayer.players[i]].totalGold = 0
-        hplayerData[hplayer.players[i]].totalGoldCost = 0
-        hplayerData[hplayer.players[i]].totalLumber = 0
-        hplayerData[hplayer.players[i]].totalLumberCost = 0
-        hplayerData[hplayer.players[i]].goldRatio = 100.00
-        hplayerData[hplayer.players[i]].lumberRatio = 100.00
-        hplayerData[hplayer.players[i]].expRatio = 100.00
-        hplayerData[hplayer.players[i]].sellRatio = 50.00
-        hplayerData[hplayer.players[i]].lifeSourceRatio = 50.00
-        hplayerData[hplayer.players[i]].manaSourceRatio = 50.00
-        hplayerData[hplayer.players[i]].apm = 0
-        hplayerData[hplayer.players[i]].damage = 0
-        hplayerData[hplayer.players[i]].beDamage = 0
-        hplayerData[hplayer.players[i]].kill = 0
+        hplayerRuntime[hplayer.players[i]].prevGold = 0
+        hplayerRuntime[hplayer.players[i]].prevLumber = 0
+        hplayerRuntime[hplayer.players[i]].totalGold = 0
+        hplayerRuntime[hplayer.players[i]].totalGoldCost = 0
+        hplayerRuntime[hplayer.players[i]].totalLumber = 0
+        hplayerRuntime[hplayer.players[i]].totalLumberCost = 0
+        hplayerRuntime[hplayer.players[i]].goldRatio = 100.00
+        hplayerRuntime[hplayer.players[i]].lumberRatio = 100.00
+        hplayerRuntime[hplayer.players[i]].expRatio = 100.00
+        hplayerRuntime[hplayer.players[i]].sellRatio = 50.00
+        hplayerRuntime[hplayer.players[i]].lifeSourceRatio = 50.00
+        hplayerRuntime[hplayer.players[i]].manaSourceRatio = 50.00
+        hplayerRuntime[hplayer.players[i]].apm = 0
+        hplayerRuntime[hplayer.players[i]].damage = 0
+        hplayerRuntime[hplayer.players[i]].beDamage = 0
+        hplayerRuntime[hplayer.players[i]].kill = 0
         if ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)) then
             --- his
-            hisCache[hplayer.players[i]].isComputer = false
+            hRuntime.is[hplayer.players[i]].isComputer = false
             --
             hplayer.qty_current = hplayer.qty_current + 1
-            hplayerData[hplayer.players[i]].status = hplayer.player_status.gaming
+            hplayerRuntime[hplayer.players[i]].status = hplayer.player_status.gaming
             cj.TriggerRegisterPlayerSelectionEventBJ(triggerApm, hplayer.players[i], true)
             cj.TriggerRegisterPlayerEventLeave(triggerLeave, hplayer.players[i])
             cj.TriggerRegisterPlayerKeyEventBJ(triggerApm, hplayer.players[i], bj_KEYEVENTTYPE_DEPRESS, bj_KEYEVENTKEY_LEFT)
@@ -498,9 +497,11 @@ hplayerInit = function()
             cj.TriggerRegisterPlayerChatEvent(triggerConvert, hplayer.players[i], "-apc", true)
         else
             --- his
-            hisCache[hplayer.players[i]].isComputer = true
+            hRuntime.is[hplayer.players[i]].isComputer = true
             --
-            hplayerData[hplayer.players[i]].status = hplayer.player_status.none
+            hplayerRuntime[hplayer.players[i]].status = hplayer.player_status.none
         end
     end
 end
+
+return hplayer

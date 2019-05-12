@@ -1,6 +1,4 @@
-hheroCache = {}
-hheroBuildSelectionCache = {}
-hhero = {
+local hhero = {
     trigger_hero_lvup = nil,
     primary = {
         STR = "力量",
@@ -22,7 +20,7 @@ for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
 end
 --- 初始化英雄升级触发器
 hhero.trigger_hero_lvup = cj.CreateTrigger()
-hhero.trigger_hero_lvup.TriggerAddAction(tg, function()
+cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
     local u = cj.GetTriggerUnit()
     local diffLv = cj.GetHeroLevel(u) - hhero.getPrevLevel(u)
     print("diffLv=" .. diffLv)
@@ -45,17 +43,17 @@ hhero.trigger_hero_lvup.TriggerAddAction(tg, function()
 end)
 --- 设置英雄之前的等级
 hhero.setPrevLevel = function(u, lv)
-    if (hheroCache[u] == nil) then
-        hheroCache[u] = {}
+    if (hRuntime.hero[u] == nil) then
+        hRuntime.hero[u] = {}
     end
-    hheroCache[u].prevLevel = lv
+    hRuntime.hero[u].prevLevel = lv
 end
 --- 获取英雄之前的等级
 hhero.getPrevLevel = function(u)
-    if (hheroCache[u] == nil) then
-        hheroCache[u] = {}
+    if (hRuntime.hero[u] == nil) then
+        hRuntime.hero[u] = {}
     end
-    return hheroCache[u].prevLevel or 0
+    return hRuntime.hero[u].prevLevel or 0
 end
 --- 设定酒馆参数
 hhero.setBuildParams = function(x, y, distance, per_row, allow_qty)
@@ -90,7 +88,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         if (type == 'click') then
             -- 点击方式
             u = sItem
-            hheroBuildSelectionCache[u].canSelect = false
+            hRuntime.heroBuildSelection[u].canSelect = false
             cj.SetUnitOwner(u, whichPlayer, true)
             local loc = cj.Location(hhero.hero_born_params.x, hhero.hero_born_params.y)
             cj.SetUnitPositionLoc(u, loc)
@@ -133,9 +131,9 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
     if (type == 'click') then
         -- 点击方式
         local heroId = cj.GetUnitTypeId(u)
-        local x = hheroBuildSelectionCache[u].x
-        local y = hheroBuildSelectionCache[u].y
-        hheroBuildSelectionCache[u] = nil
+        local x = hRuntime.heroBuildSelection[u].x
+        local y = hRuntime.heroBuildSelection[u].y
+        hRuntime.heroBuildSelection[u] = nil
         hunit.del(u, 0)
         local u_new = hunit.create({
             whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
@@ -144,7 +142,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
             y = y,
             isPause = true,
         })
-        hheroBuildSelectionCache[u_new] = {
+        hRuntime.heroBuildSelection[u_new] = {
             x = x,
             x = y,
             canChoose = true,
@@ -152,8 +150,8 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
     elseif (type == 'tavern') then
         -- 酒馆方式
         local heroId = cj.GetUnitTypeId(u)
-        local itemId = hheroBuildSelectionCache[heroId].itemId
-        local tavern = hheroBuildSelectionCache[heroId].tavern
+        local itemId = hRuntime.heroBuildSelection[heroId].itemId
+        local tavern = hRuntime.heroBuildSelection[heroId].tavern
         hunit.del(u, 0)
         cj.AddItemToStock(tavern, itemId, 1, 1)
     end
@@ -162,7 +160,7 @@ end
 -- 请不要乱设置[一般单位]为[英雄]，以致于力量敏捷智力等不属于一般单位的属性引起崩溃报错
 -- 设定后 his.hero 方法会认为单位为英雄，同时属性系统才会认定它为英雄，从而生效
 hhero.setIsHero = function(u, flag)
-    hisCache[u].isHero = flag
+    hRuntime.is[u].isHero = flag
 end
 --- 获取英雄的类型（STR AGI INT）
 hhero.getHeroType = function(u)
@@ -209,7 +207,7 @@ hhero.buildClick = function(during, clickQty)
                 isInvulnerable = true,
                 isPause = true,
             })
-            hheroBuildSelectionCache[u] = {
+            hRuntime.heroBuildSelection[u] = {
                 x = x,
                 x = y,
                 canChoose = true,
@@ -224,10 +222,10 @@ hhero.buildClick = function(during, clickQty)
     local tgr_click = hevent.onSelection(nil, clickQty, function()
         local p = hevent.getTriggerPlayer()
         local u = hevent.getTriggerUnit()
-        if (hheroBuildSelectionCache[u] == nil) then
+        if (hRuntime.heroBuildSelection[u] == nil) then
             return
         end
-        if (hheroBuildSelectionCache[u].canSelect == false) then
+        if (hRuntime.heroBuildSelection[u].canSelect == false) then
             return
         end
         if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
@@ -343,8 +341,8 @@ hhero.buildTavern = function(during)
         local it = cj.GetSoldItem()
         local itemId = cj.GetItemTypeId(it)
         local p = cj.GetOwningPlayer(cj.GetBuyingUnit())
-        local unitId = hheroBuildSelectionCache[itemId].unitId
-        local tavern = hheroBuildSelectionCache[itemId].tavern
+        local unitId = hRuntime.heroBuildSelection[itemId].unitId
+        local tavern = hRuntime.heroBuildSelection[itemId].tavern
         if (unitId == nil or tavern == nil) then
             print("hhero.buildTavern-tgr_sell=nil")
             return
@@ -371,8 +369,8 @@ hhero.buildTavern = function(during)
         while (true) do
             local itemId = hsystem.randTable(randomChooseAbleList)
             hsystem.rmArray(itemId, randomChooseAbleList)
-            local unitId = hheroBuildSelectionCache[itemId].unitId
-            local tavern = hheroBuildSelectionCache[itemId].tavern
+            local unitId = hRuntime.heroBuildSelection[itemId].unitId
+            local tavern = hRuntime.heroBuildSelection[itemId].tavern
             if (unitId == nil or tavern == nil) then
                 print("hhero.buildTavern-tgr_random=nil")
                 return
@@ -402,7 +400,7 @@ hhero.buildTavern = function(during)
         for k, v in pairs(hhero.player_units[p]) do
             local heroId = cj.GetUnitTypeId(v)
             hhero.removePlayerUnit(p, v, 'tavern')
-            table.insert(randomChooseAbleList, hheroBuildSelectionCache[heroId].itemId)
+            table.insert(randomChooseAbleList, hRuntime.heroBuildSelection[heroId].itemId)
         end
         hhero.player_units[p] = {}
         hhero.player_current_qty[p] = 0
@@ -443,11 +441,11 @@ hhero.buildTavern = function(during)
             end
             tavernNowQty[tavern] = tavernNowQty[tavern] + 1
             cj.AddItemToStock(tavern, itemId, 1, 1)
-            hheroBuildSelectionCache[itemId] = {
+            hRuntime.heroBuildSelection[itemId] = {
                 heroId = heroId,
                 tavern = tavern,
             }
-            hheroBuildSelectionCache[heroId] = {
+            hRuntime.heroBuildSelection[heroId] = {
                 itemId = itemId,
                 tavern = tavern,
             }
@@ -491,3 +489,5 @@ hhero.buildTavern = function(during)
     -- 转移玩家镜头
     hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
 end
+
+return hhero

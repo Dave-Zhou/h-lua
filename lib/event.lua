@@ -1,6 +1,3 @@
-heventGlobalTgr = {}
-heventTgr = {}
-heventData = {}
 heventKeyMap = {
     attackDetect = "attackDetect",
     attackGetTarget = "attackGetTarget",
@@ -80,15 +77,15 @@ heventKeyMap = {
     register = "register",
     pickHero = "pickHero",
 }
-hevent = {
+local hevent = {
     defaultHandle = cj.Player(PLAYER_NEUTRAL_PASSIVE),
     -- set最后一位伤害的单位
     setLastDamageUnit = function(which, last)
-        heventData[which].lastDamageUnit = last
+        hRuntime.event[which].lastDamageUnit = last
     end,
     -- get最后一位伤害的单位
     getLastDamageUnit = function(which)
-        return heventData[which].lastDamageUnit or nil
+        return hRuntime.event[which].lastDamageUnit or nil
     end,
 }
 -- 触发事件（通用）
@@ -106,106 +103,106 @@ hevent.triggerEvent = function(bean)
         bean.triggerHandle = bean.triggerUnit
     end
     if (bean.triggerHandle ~= nil) then
-        if (heventData[bean.triggerHandle] == nil) then
+        if (hRuntime.event[bean.triggerHandle] == nil) then
             return
         end
-        if (heventData[bean.triggerHandle].trigger == nil) then
+        if (hRuntime.event[bean.triggerHandle].trigger == nil) then
             return
         end
-        if (heventData[bean.triggerHandle].trigger[bean.triggerKey] == nil) then
+        if (hRuntime.event[bean.triggerHandle].trigger[bean.triggerKey] == nil) then
             return
         end
-        local triggers = heventData[bean.triggerHandle].trigger[bean.triggerKey]
+        local triggers = hRuntime.event[bean.triggerHandle].trigger[bean.triggerKey]
         if (triggers == nil or #triggers == 0) then
             return
         end
         for k, tempTgr in pairs(triggers) do
             if (bean.triggerUnit ~= nil) then
-                heventTgr[tempTgr].triggerUnit = bean.triggerUnit
+                hRuntime.eventTgr[tempTgr].triggerUnit = bean.triggerUnit
             end
             if (bean.triggerEnterUnit ~= nil) then
-                heventTgr[tempTgr].triggerEnterUnit = bean.triggerEnterUnit
+                hRuntime.eventTgr[tempTgr].triggerEnterUnit = bean.triggerEnterUnit
             end
             if (bean.triggerRect ~= nil) then
-                heventTgr[tempTgr].triggerRect = bean.triggerRect
+                hRuntime.eventTgr[tempTgr].triggerRect = bean.triggerRect
             end
             if (bean.triggerItem ~= nil) then
-                heventTgr[tempTgr].triggerItem = bean.triggerItem
+                hRuntime.eventTgr[tempTgr].triggerItem = bean.triggerItem
             end
             if (bean.triggerPlayer ~= nil) then
-                heventTgr[tempTgr].triggerPlayer = bean.triggerPlayer
+                hRuntime.eventTgr[tempTgr].triggerPlayer = bean.triggerPlayer
             end
             if (bean.triggerString ~= nil) then
-                heventTgr[tempTgr].triggerString = bean.triggerString
+                hRuntime.eventTgr[tempTgr].triggerString = bean.triggerString
             end
             if (bean.triggerStringMatched ~= nil) then
-                heventTgr[tempTgr].triggerStringMatched = bean.triggerStringMatched
+                hRuntime.eventTgr[tempTgr].triggerStringMatched = bean.triggerStringMatched
             end
             if (bean.triggerSkill ~= nil) then
-                heventTgr[tempTgr].triggerSkill = bean.triggerSkill
+                hRuntime.eventTgr[tempTgr].triggerSkill = bean.triggerSkill
             end
             if (bean.sourceUnit ~= nil) then
-                heventTgr[tempTgr].sourceUnit = bean.sourceUnit
+                hRuntime.eventTgr[tempTgr].sourceUnit = bean.sourceUnit
             end
             if (bean.targetUnit ~= nil) then
-                heventTgr[tempTgr].targetUnit = bean.targetUnit
+                hRuntime.eventTgr[tempTgr].targetUnit = bean.targetUnit
             end
             if (bean.targetLoc ~= nil) then
-                heventTgr[tempTgr].targetLoc = bean.targetLoc
+                hRuntime.eventTgr[tempTgr].targetLoc = bean.targetLoc
             end
             if (bean.attacker ~= nil) then
-                heventTgr[tempTgr].attacker = bean.attacker
+                hRuntime.eventTgr[tempTgr].attacker = bean.attacker
             end
             if (bean.killer ~= nil) then
-                heventTgr[tempTgr].killer = bean.killer
+                hRuntime.eventTgr[tempTgr].killer = bean.killer
             end
             if (bean.damage ~= nil) then
-                heventTgr[tempTgr].damage = bean.damage
+                hRuntime.eventTgr[tempTgr].damage = bean.damage
             end
             if (bean.realDamage ~= nil) then
-                heventTgr[tempTgr].realDamage = bean.realDamage
+                hRuntime.eventTgr[tempTgr].realDamage = bean.realDamage
             end
             if (bean.id ~= nil) then
-                heventTgr[tempTgr].id = bean.id
+                hRuntime.eventTgr[tempTgr].id = bean.id
             end
             if (bean.range ~= nil) then
-                heventTgr[tempTgr].range = bean.range
+                hRuntime.eventTgr[tempTgr].range = bean.range
             end
             if (bean.qty ~= nil) then
-                heventTgr[tempTgr].qty = bean.qty
+                hRuntime.eventTgr[tempTgr].qty = bean.qty
             end
             if (bean.index ~= nil) then
-                heventTgr[tempTgr].index = bean.index
+                hRuntime.eventTgr[tempTgr].index = bean.index
             end
             if (bean.high ~= nil) then
-                heventTgr[tempTgr].high = bean.high
+                hRuntime.eventTgr[tempTgr].high = bean.high
             end
             if (bean.distance ~= nil) then
-                heventTgr[tempTgr].distance = bean.distance
+                hRuntime.eventTgr[tempTgr].distance = bean.distance
             end
             if (bean.value ~= nil) then
-                heventTgr[tempTgr].value = bean.value
+                hRuntime.eventTgr[tempTgr].value = bean.value
             end
             if (bean.percent ~= nil) then
-                heventTgr[tempTgr].percent = bean.percent
+                hRuntime.eventTgr[tempTgr].percent = bean.percent
             end
             if (bean.during ~= nil) then
-                heventTgr[tempTgr].during = bean.during
+                hRuntime.eventTgr[tempTgr].during = bean.during
             end
             if (bean.damageKind ~= nil) then
-                heventTgr[tempTgr].damageKind = bean.damageKind
+                hRuntime.eventTgr[tempTgr].damageKind = bean.damageKind
             end
             if (bean.damageType ~= nil) then
-                heventTgr[tempTgr].damageType = bean.damageType
+                hRuntime.eventTgr[tempTgr].damageType = bean.damageType
             end
             if (bean.breakType ~= nil) then
-                heventTgr[tempTgr].breakType = bean.breakType
+                hRuntime.eventTgr[tempTgr].breakType = bean.breakType
             end
             if (bean.type ~= nil) then
-                heventTgr[tempTgr].type = bean.type
+                hRuntime.eventTgr[tempTgr].type = bean.type
             end
             if (bean.isNoAvoid ~= false) then
-                heventTgr[tempTgr].isNoAvoid = bean.isNoAvoid
+                hRuntime.eventTgr[tempTgr].isNoAvoid = bean.isNoAvoid
             end
             cj.TriggerExecute(tempTgr)
         end
@@ -216,16 +213,16 @@ hevent.onEventByHandleDefaultTrigger = function(evtKey, whichHandle, action, def
     if (string.len(evtKey) < 1 or whichHandle == nil or action == nil) then
         return
     end
-    if (heventData[whichHandle] == nil) then
-        heventData[whichHandle] = {}
+    if (hRuntime.event[whichHandle] == nil) then
+        hRuntime.event[whichHandle] = {}
     end
-    if (heventData[whichHandle].trigger == nil) then
-        heventData[whichHandle].trigger = {}
+    if (hRuntime.event[whichHandle].trigger == nil) then
+        hRuntime.event[whichHandle].trigger = {}
     end
-    if (heventData[whichHandle].trigger[evtKey] == nil) then
-        heventData[whichHandle].trigger[evtKey] = {}
+    if (hRuntime.event[whichHandle].trigger[evtKey] == nil) then
+        hRuntime.event[whichHandle].trigger[evtKey] = {}
     end
-    table.insert(heventData[whichHandle].trigger[evtKey], defaultTrigger)
+    table.insert(hRuntime.event[whichHandle].trigger[evtKey], defaultTrigger)
     return defaultTrigger
 end
 hevent.onEventByHandle = function(evtKey, whichHandle, action)
@@ -236,119 +233,119 @@ end
 
 -- 获取 triggerUnit 单位
 hevent.getTriggerUnit = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerUnit or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerUnit or nil
 end
 -- 获取 triggerEnterUnit 单位
 hevent.getTriggerEnterUnit = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerEnterUnit or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerEnterUnit or nil
 end
 -- 获取 triggerRect 区域
 hevent.getTriggerRect = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerRect or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerRect or nil
 end
 -- 获取 triggerItem 物品
 hevent.getTriggerItem = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerItem or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerItem or nil
 end
 -- 获取 triggerPlayer 玩家
 hevent.getTriggerPlayer = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerPlayer or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerPlayer or nil
 end
 -- 获取 triggerString 字符串
 hevent.getTriggerString = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerString or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerString or nil
 end
 -- 获取 triggerStringMatched 字符串
 hevent.getTriggerStringMatched = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerStringMatched or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerStringMatched or nil
 end
 -- 获取 triggerSkill 整型
 hevent.getTriggerSkill = function()
-    return heventTgr[cj.GetTriggeringTrigger()].triggerSkill or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerSkill or nil
 end
 -- 获取 sourceUnit 单位
 hevent.getSourceUnit = function()
-    return heventTgr[cj.GetTriggeringTrigger()].sourceUnit or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].sourceUnit or nil
 end
 -- 获取 targetUnit 单位
 hevent.getTargetUnit = function()
-    return heventTgr[cj.GetTriggeringTrigger()].targetUnit or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].targetUnit or nil
 end
 -- 获取 targetLoc 点
 hevent.getTargetLoc = function()
-    return heventTgr[cj.GetTriggeringTrigger()].targetLoc or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].targetLoc or nil
 end
 -- 获取 attacker 单位
 hevent.getAttacker = function()
-    return heventTgr[cj.GetTriggeringTrigger()].attacker or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].attacker or nil
 end
 -- 获取 killer 单位
 hevent.getKiller = function()
-    return heventTgr[cj.GetTriggeringTrigger()].killer or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].killer or nil
 end
 -- 获取 damage 实数
 hevent.getDamage = function()
-    return heventTgr[cj.GetTriggeringTrigger()].damage or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].damage or nil
 end
 -- 获取 realDamage 实数
 hevent.getRealDamage = function()
-    return heventTgr[cj.GetTriggeringTrigger()].realDamage or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].realDamage or nil
 end
 -- 获取 id 整型
 hevent.getId = function()
-    return heventTgr[cj.GetTriggeringTrigger()].id or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].id or nil
 end
 -- 获取 range 实数
 hevent.getRange = function()
-    return heventTgr[cj.GetTriggeringTrigger()].range or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].range or nil
 end
 -- 获取 qty 实数
 hevent.getQty = function()
-    return heventTgr[cj.GetTriggeringTrigger()].qty or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].qty or nil
 end
 -- 获取 index 实数
 hevent.getIndex = function()
-    return heventTgr[cj.GetTriggeringTrigger()].index or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].index or nil
 end
 -- 获取 high 实数
 hevent.getHigh = function()
-    return heventTgr[cj.GetTriggeringTrigger()].high or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].high or nil
 end
 -- 获取 distance 实数
 hevent.getDistance = function()
-    return heventTgr[cj.GetTriggeringTrigger()].distance or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].distance or nil
 end
 -- 获取 value 实数
 hevent.getValue = function()
-    return heventTgr[cj.GetTriggeringTrigger()].value or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].value or nil
 end
 -- 获取 percent 百分比（%）
 hevent.getPercent = function()
-    return heventTgr[cj.GetTriggeringTrigger()].percent or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].percent or nil
 end
 -- 获取 during 实数
 hevent.getDuring = function()
-    return heventTgr[cj.GetTriggeringTrigger()].during or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].during or nil
 end
 -- 获取 damageKind 字符串
 hevent.getDamageKind = function()
-    return heventTgr[cj.GetTriggeringTrigger()].damageKind or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].damageKind or nil
 end
 -- 获取 damageType 字符串
 hevent.getDamageType = function()
-    return heventTgr[cj.GetTriggeringTrigger()].damageType or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].damageType or nil
 end
 -- 获取 breakType 字符串
 hevent.getBreakType = function()
-    return heventTgr[cj.GetTriggeringTrigger()].breakType or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].breakType or nil
 end
 -- 获取 type 字符串
 hevent.getType = function()
-    return heventTgr[cj.GetTriggeringTrigger()].type or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].type or nil
 end
 -- 获取 isNoAvoid 布尔值
 hevent.getIsNoAvoid = function()
-    return heventTgr[cj.GetTriggeringTrigger()].isNoAvoid or nil
+    return hRuntime.eventTgr[cj.GetTriggeringTrigger()].isNoAvoid or nil
 end
 
 -- todo - 注意到攻击目标
@@ -356,9 +353,9 @@ end
 --- getTargetUnit 获取被注意/目标单位
 hevent.onAttackDetect = function(whichUnit, action)
     local evtKey = heventKeyMap.attackDetect
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -366,7 +363,7 @@ hevent.onAttackDetect = function(whichUnit, action)
             })
         end)
     end
-    cj.TriggerRegisterUnitEvent(heventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_ACQUIRED_TARGET)
+    cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_ACQUIRED_TARGET)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 -- todo - 获取攻击目标
@@ -374,9 +371,9 @@ end
 --- getTargetUnit 获取被获取/目标单位
 hevent.onAttackGetTarget = function(whichUnit, action)
     local evtKey = heventKeyMap.attackGetTarget
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -384,7 +381,7 @@ hevent.onAttackGetTarget = function(whichUnit, action)
             })
         end)
     end
-    cj.TriggerRegisterUnitEvent(heventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
+    cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 -- todo - 准备攻击
@@ -393,10 +390,10 @@ end
 --- getAttacker 获取攻击单位
 hevent.onAttackReadyAction = function(whichUnit, action)
     local evtKey = heventKeyMap.attackReady
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetAttacker(),
@@ -413,10 +410,10 @@ end
 --- getAttacker 获取攻击单位
 hevent.onBeAttackReady = function(whichUnit, action)
     local evtKey = heventKeyMap.beAttackReady
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_ATTACKED)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -455,10 +452,10 @@ end
 --- getTriggerSkill 获取学习技能ID
 hevent.onSkillStudy = function(whichUnit, action)
     local evtKey = heventKeyMap.skillStudy
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_HERO_SKILL)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_HERO_SKILL)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -475,10 +472,10 @@ end
 --- getTargetLoc 获取施放目标点
 hevent.onSkillReady = function(whichUnit, action)
     local evtKey = heventKeyMap.skillReady
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CHANNEL)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -497,10 +494,10 @@ end
 --- getTargetLoc 获取施放目标点
 hevent.onSkillStart = function(whichUnit, action)
     local evtKey = heventKeyMap.skillStart
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CAST)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_CAST)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -517,10 +514,10 @@ end
 --- getTriggerSkill 获取施放技能ID
 hevent.onSkillStop = function(whichUnit, action)
     local evtKey = heventKeyMap.skillStop
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_ENDCAST)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_ENDCAST)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -537,10 +534,10 @@ end
 --- getTargetLoc 获取施放目标点
 hevent.onSkillHappen = function(whichUnit, action)
     local evtKey = heventKeyMap.skillHappen
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -557,10 +554,10 @@ end
 --- getTriggerSkill 获取施放技能ID
 hevent.onSkillOver = function(whichUnit, action)
     local evtKey = heventKeyMap.skillOver
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_FINISH)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SPELL_FINISH)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -611,9 +608,9 @@ end
 --- getTriggerItem 获取触发物品
 hevent.onItemDestroy = function(whichItem, action)
     local evtKey = heventKeyMap.itemDestroy
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerItem = cj.GetManipulatedItem(),
@@ -621,7 +618,7 @@ hevent.onItemDestroy = function(whichItem, action)
             })
         end)
     end
-    cj.TriggerRegisterDeathEvent(heventGlobalTgr[evtKey], whichItem)
+    cj.TriggerRegisterDeathEvent(hRuntime.eventGlobalTgr[evtKey], whichItem)
     return hevent.onEventByHandle(evtKey, whichItem, action)
 end
 -- todo - 合成物品
@@ -1023,10 +1020,10 @@ end
 --- getTriggerUnit 获取被召唤单位
 hevent.onSummon = function(whichUnit, action)
     local evtKey = heventKeyMap.summon
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(heventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SUMMON)
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.eventGlobalTgr[evtKey], EVENT_PLAYER_UNIT_SUMMON)
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -1041,15 +1038,15 @@ end
 --- getRange 获取设定范围
 hevent.onEnterUnitRange = function(whichUnit, range, action)
     local evtKey = heventKeyMap.enterUnitRange
-    if (heventData[whichUnit].evtInit == nil) then
-        heventData[whichUnit].evtInit = {}
+    if (hRuntime.event[whichUnit].evtInit == nil) then
+        hRuntime.event[whichUnit].evtInit = {}
     end
-    if (heventData[whichUnit].evtInit[evtKey] == nil) then
-        heventData[whichUnit].evtInit[evtKey] = true
+    if (hRuntime.event[whichUnit].evtInit[evtKey] == nil) then
+        hRuntime.event[whichUnit].evtInit[evtKey] = true
         local tg = cj.CreateTrigger()
         cj.TriggerRegisterUnitInRangeSimple(tg, range, whichUnit)
-        heventTgr[tg].triggerUnit = whichUnit
-        heventTgr[tg].range = range
+        hRuntime.eventTgr[tg].triggerUnit = whichUnit
+        hRuntime.eventTgr[tg].range = range
         cj.TriggerAddAction(tg, function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -1066,14 +1063,14 @@ end
 --- getTriggerUnit 获取离开矩形区域的单位
 hevent.onEnterUnitRange = function(whichRect, action)
     local evtKey = heventKeyMap.leaveRect
-    if (heventData[whichRect].evtInit == nil) then
-        heventData[whichRect].evtInit = {}
+    if (hRuntime.event[whichRect].evtInit == nil) then
+        hRuntime.event[whichRect].evtInit = {}
     end
-    if (heventData[whichRect].evtInit[evtKey] == nil) then
-        heventData[whichRect].evtInit[evtKey] = true
+    if (hRuntime.event[whichRect].evtInit[evtKey] == nil) then
+        hRuntime.event[whichRect].evtInit[evtKey] = true
         local tg = cj.CreateTrigger()
         cj.TriggerRegisterLeaveRectSimple(tg, whichRect)
-        heventTgr[tg].triggerRect = whichRect
+        hRuntime.eventTgr[tg].triggerRect = whichRect
         cj.TriggerAddAction(tg, function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
@@ -1116,14 +1113,14 @@ end
 --- getTriggerPlayer 获取触发玩家
 hevent.onEsc = function(whichPlayer, action)
     local evtKey = heventKeyMap.esc
-    if (heventData[whichPlayer].evtInit == nil) then
-        heventData[whichPlayer].evtInit = {}
+    if (hRuntime.event[whichPlayer].evtInit == nil) then
+        hRuntime.event[whichPlayer].evtInit = {}
     end
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            if (heventData[p].evtInit[evtKey] == nil) then
-                heventData[p].evtInit[evtKey] = true
+            if (hRuntime.event[p].evtInit[evtKey] == nil) then
+                hRuntime.event[p].evtInit[evtKey] = true
                 local tg = cj.CreateTrigger()
                 cj.TriggerRegisterPlayerEventEndCinematic(tg, p)
                 cj.TriggerAddAction(tg, function()
@@ -1137,8 +1134,8 @@ hevent.onEsc = function(whichPlayer, action)
         end
         return
     else
-        if (heventData[whichPlayer].evtInit[evtKey] == nil) then
-            heventData[whichPlayer].evtInit[evtKey] = true
+        if (hRuntime.event[whichPlayer].evtInit[evtKey] == nil) then
+            hRuntime.event[whichPlayer].evtInit[evtKey] = true
             local tg = cj.CreateTrigger()
             cj.TriggerRegisterPlayerEventEndCinematic(tg, whichPlayer)
             cj.TriggerAddAction(tg, function()
@@ -1154,8 +1151,8 @@ end
 -- todo - 选择单位(基准)
 --- 单选evtKey=selection1，双击=selection2，如此类推
 hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
-    if (heventData[whichPlayer].evtInit == nil) then
-        heventData[whichPlayer].evtInit = {
+    if (hRuntime.event[whichPlayer].evtInit == nil) then
+        hRuntime.event[whichPlayer].evtInit = {
             selectionBind = false,
             clickQty = 0,
         }
@@ -1163,17 +1160,17 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
     if (whichPlayer == nil) then
         return
     end
-    if (heventGlobalTgr['selectionBind'] == nil) then
-        heventGlobalTgr['selectionBind'] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr['selectionBind'], function()
+    if (hRuntime.eventGlobalTgr['selectionBind'] == nil) then
+        hRuntime.eventGlobalTgr['selectionBind'] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr['selectionBind'], function()
             local triggerPlayer = cj.GetTriggerPlayer()
             local triggerUnit = cj.GetTriggerUnit()
-            local qty = 1 + heventData[whichPlayer].clickQty
+            local qty = 1 + hRuntime.event[whichPlayer].clickQty
             if (qty < 1) then
                 qty = 1
             end
             qty = math.ceil(qty)
-            heventData[whichPlayer].clickQty = qty
+            hRuntime.event[whichPlayer].clickQty = qty
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.selection .. qty,
                 triggerPlayer = triggerPlayer,
@@ -1182,21 +1179,21 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
             htime.setTimeout(0.3, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                heventData[whichPlayer].clickQty = heventData[whichPlayer].clickQty - 1
+                hRuntime.event[whichPlayer].clickQty = hRuntime.event[whichPlayer].clickQty - 1
             end)
         end)
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-            heventData[cj.Player(i - 1)].evtInit  = {
+            hRuntime.event[cj.Player(i - 1)].evtInit  = {
                 selectionBind = false,
                 clickQty = 0,
             }
         end
     end
-    if (heventData[whichPlayer].evtInit.selectionBind == false) then
-        heventData[whichPlayer].evtInit.selectionBind = true
-        bj.TriggerRegisterPlayerSelectionEvent(heventGlobalTgr['selectionBind'], whichPlayer, true)
+    if (hRuntime.event[whichPlayer].evtInit.selectionBind == false) then
+        hRuntime.event[whichPlayer].evtInit.selectionBind = true
+        bj.TriggerRegisterPlayerSelectionEvent(hRuntime.eventGlobalTgr['selectionBind'], whichPlayer, true)
     end
-    return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, heventGlobalTgr['selectionBind'])
+    return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr['selectionBind'])
 end
 hevent.onSelectionBind = function(whichPlayer, action, evtKey)
     if (whichPlayer ~= nil) then
@@ -1206,7 +1203,7 @@ hevent.onSelectionBind = function(whichPlayer, action, evtKey)
     else
         hevent.onSelectionBindPlayer(whichPlayer, action, evtKey)
     end
-    return heventGlobalTgr['selectionBind']
+    return hRuntime.eventGlobalTgr['selectionBind']
 end
 -- todo - 玩家 N 击选择单位
 --- whichPlayer 为nil时，指所有玩家
@@ -1217,7 +1214,7 @@ hevent.onSelection = function(whichPlayer, qty, action)
     return hevent.onSelectionBind(whichPlayer, action, heventKeyMap.selection .. qty)
 end
 hevent.onSelectionClear = function()
-    heventGlobalTgr['selectionBind'] = nil
+    hRuntime.eventGlobalTgr['selectionBind'] = nil
 end
 -- todo - 玩家取消选择单位
 --- getTriggerPlayer 获取触发玩家
@@ -1248,57 +1245,57 @@ end
 --- getTriggerUnit 获取触发单位
 hevent.onUpgradeStart = function(whichUnit, action)
     local evtKey = heventKeyMap.upgradeStart
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
             })
         end)
     end
-    cj.TriggerRegisterUnitEvent(heventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_START)
+    cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_START)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 -- todo - 建筑升级取消时
 --- getTriggerUnit 获取触发单位
 hevent.onUpgradeCancel = function(whichUnit, action)
     local evtKey = heventKeyMap.upgradeCancel
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
             })
         end)
     end
-    cj.TriggerRegisterUnitEvent(heventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
+    cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 -- todo - 建筑升级完成时
 --- getTriggerUnit 获取触发单位
 hevent.onUpgradeFinish = function(whichUnit, action)
     local evtKey = heventKeyMap.upgradeFinish
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
             })
         end)
     end
-    cj.TriggerRegisterUnitEvent(heventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_FINISH)
+    cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_FINISH)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 -- todo - 任意建筑建造开始时
 --- getTriggerUnit 获取触发单位
 hevent.onConstructStart = function(whichPlayer, action)
     local evtKey = heventKeyMap.constructStart
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetTriggerUnit(),
@@ -1308,22 +1305,22 @@ hevent.onConstructStart = function(whichPlayer, action)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            cj.TriggerRegisterPlayerUnitEvent(heventGlobalTgr[evtKey], p, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
-            hevent.onEventByHandleDefaultTrigger(evtKey, p, action, heventGlobalTgr[evtKey])
+            cj.TriggerRegisterPlayerUnitEvent(hRuntime.eventGlobalTgr[evtKey], p, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
+            hevent.onEventByHandleDefaultTrigger(evtKey, p, action, hRuntime.eventGlobalTgr[evtKey])
         end
         return
     else
-        cj.TriggerRegisterPlayerUnitEvent(heventGlobalTgr[evtKey], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
-        return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, heventGlobalTgr[evtKey])
+        cj.TriggerRegisterPlayerUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
+        return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr[evtKey])
     end
 end
 -- todo - 任意建筑建造取消时
 --- getTriggerUnit 获取触发单位
 hevent.onConstructCancel = function(whichPlayer, action)
     local evtKey = heventKeyMap.constructCancel
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetCancelledStructure(),
@@ -1333,22 +1330,22 @@ hevent.onConstructCancel = function(whichPlayer, action)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            cj.TriggerRegisterPlayerUnitEvent(heventGlobalTgr[evtKey], p, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-            hevent.onEventByHandleDefaultTrigger(evtKey, p, action, heventGlobalTgr[evtKey])
+            cj.TriggerRegisterPlayerUnitEvent(hRuntime.eventGlobalTgr[evtKey], p, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+            hevent.onEventByHandleDefaultTrigger(evtKey, p, action, hRuntime.eventGlobalTgr[evtKey])
         end
         return
     else
-        cj.TriggerRegisterPlayerUnitEvent(heventGlobalTgr[evtKey], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-        return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, heventGlobalTgr[evtKey])
+        cj.TriggerRegisterPlayerUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+        return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr[evtKey])
     end
 end
 -- todo - 任意建筑建造完成时
 --- getTriggerUnit 获取触发单位
 hevent.onConstructFinish = function(whichPlayer, action)
     local evtKey = heventKeyMap.constructFinish
-    if (heventGlobalTgr[evtKey] == nil) then
-        heventGlobalTgr[evtKey] = cj.CreateTrigger()
-        cj.TriggerAddAction(heventGlobalTgr[evtKey], function()
+    if (hRuntime.eventGlobalTgr[evtKey] == nil) then
+        hRuntime.eventGlobalTgr[evtKey] = cj.CreateTrigger()
+        cj.TriggerAddAction(hRuntime.eventGlobalTgr[evtKey], function()
             hevent.triggerEvent({
                 triggerKey = evtKey,
                 triggerUnit = cj.GetConstructedStructure(),
@@ -1358,13 +1355,13 @@ hevent.onConstructFinish = function(whichPlayer, action)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            cj.TriggerRegisterPlayerUnitEvent(heventGlobalTgr[evtKey], p, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-            hevent.onEventByHandleDefaultTrigger(evtKey, p, action, heventGlobalTgr[evtKey])
+            cj.TriggerRegisterPlayerUnitEvent(hRuntime.eventGlobalTgr[evtKey], p, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+            hevent.onEventByHandleDefaultTrigger(evtKey, p, action, hRuntime.eventGlobalTgr[evtKey])
         end
         return
     else
-        cj.TriggerRegisterPlayerUnitEvent(heventGlobalTgr[evtKey], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-        return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, heventGlobalTgr[evtKey])
+        cj.TriggerRegisterPlayerUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+        return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr[evtKey])
     end
 end
 -- todo - 任意单位注册进h-lua系统时(注意这是全局事件)
@@ -1381,3 +1378,4 @@ hevent.onPickHero = function(action)
     return hevent.onEventByHandle(evtKey, hevent.defaultHandle, action)
 end
 
+return hevent

@@ -1,5 +1,5 @@
 ---遮罩
-hmark = {}
+local hmark = {}
 --- 显示
 hmark.show = function(whichPlayer)
     if (whichPlayer == nil) then
@@ -32,3 +32,5 @@ hmark.display = function(whichPlayer, path, through, startPercent, endPercent, d
         hmark.hide(whichPlayer)
     end)
 end
+
+return hmark

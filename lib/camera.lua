@@ -1,11 +1,5 @@
-hcameraCache = {}
-for i = 1, 12, 1 do
-    local p = cj.Player(i - 1)
-    hcameraCache[p] = {}
-    hcameraCache[p].model = "normal" -- 镜头模型
-    hcameraCache[p].isShocking = false
-end
-hcamera = {}
+
+local hcamera = {}
 
 -- 重置镜头
 hcamera.reset = function(whichPlayer, during)
@@ -71,7 +65,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         scale = 5.00 -- 假如没有振幅，默认5.00意思意思一下
     end
     -- 镜头动作降噪
-    if (hcameraCache[whichPlayer].isShocking == true) then
+    if (hRuntime.camera[whichPlayer].isShocking == true) then
         return
     end
     cameraData[whichPlayer].isShocking = true
@@ -100,7 +94,7 @@ end
 
 --- 获取镜头模型
 hcamera.getModel = function(whichPlayer)
-    return hcameraCache[whichPlayer].model
+    return hRuntime.camera[whichPlayer].model
 end
 --- 设置镜头模式
 --[[
@@ -136,12 +130,13 @@ hcamera.setModel = function(bean)
         return
     end
     if (bean.whichPlayer ~= nil) then
-        hcameraCache[bean.whichPlayer].model = bean.model
+        hRuntime.camera[bean.whichPlayer].model = bean.model
     else
         for i = 1, 12, 1 do
             local p = cj.Player(i - 1)
-            hcameraCache[p].model = bean.model
+            hRuntime.camera[p].model = bean.model
         end
     end
 end
 
+return hcamera
