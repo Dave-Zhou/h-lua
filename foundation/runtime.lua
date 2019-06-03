@@ -33,6 +33,7 @@ hRuntime = {
         punish = {},
         punish_current = {},
     },
+    item = {},
 }
 
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do

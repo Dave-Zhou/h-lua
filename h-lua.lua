@@ -52,6 +52,7 @@ hgroup = require "lib.group" -- 单位组
 hhero = require "lib.hero" -- 英雄
 hskill = require "lib.skill" -- 技能
 hattr = require "lib.attribute" -- 属性
+hitem = require "lib.item" -- 物品
 
 -- 最后的初始化
 -- last init
