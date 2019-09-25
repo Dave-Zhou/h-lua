@@ -1,6 +1,6 @@
 # h-lua
 ### h-lua是在h-vjass基础上更进一步的魔兽制图框架
- * [未完成的实践：bossHunter](https://github.com/hunzsig/h-war3/tree/master/w3xMaps/bossHunter)
+ * 未有实践（敬请期待）
  * author hunzsig
 
 ## 使用优势？
