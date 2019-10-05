@@ -1,4 +1,4 @@
--- todo 声音
+-- 声音
 local hsound = {}
 
 --- 播放音效

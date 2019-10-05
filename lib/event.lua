@@ -116,7 +116,7 @@ hevent.triggerEvent = function(bean)
         if (triggers == nil or #triggers == 0) then
             return
         end
-        for k, tempTgr in pairs(triggers) do
+        for _, tempTgr in pairs(triggers) do
             if (bean.triggerUnit ~= nil) then
                 hRuntime.eventTgr[tempTgr].triggerUnit = bean.triggerUnit
             end
@@ -348,7 +348,7 @@ hevent.getIsNoAvoid = function()
     return hRuntime.eventTgr[cj.GetTriggeringTrigger()].isNoAvoid or nil
 end
 
--- todo - 注意到攻击目标
+-- 注意到攻击目标
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被注意/目标单位
 hevent.onAttackDetect = function(whichUnit, action)
@@ -366,7 +366,7 @@ hevent.onAttackDetect = function(whichUnit, action)
     cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_ACQUIRED_TARGET)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 获取攻击目标
+-- 获取攻击目标
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被获取/目标单位
 hevent.onAttackGetTarget = function(whichUnit, action)
@@ -384,7 +384,7 @@ hevent.onAttackGetTarget = function(whichUnit, action)
     cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 准备攻击
+-- 准备攻击
 --- getTriggerUnit 获取攻击单位
 --- getTargetUnit 获取被攻击单位
 --- getAttacker 获取攻击单位
@@ -404,7 +404,7 @@ hevent.onAttackReadyAction = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 准备被攻击
+--准备被攻击
 --- getTriggerUnit 获取被攻击单位
 --- getTargetUnit 获取攻击单位
 --- getAttacker 获取攻击单位
@@ -424,7 +424,7 @@ hevent.onBeAttackReady = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 造成攻击
+--造成攻击
 --- getTriggerUnit 获取攻击来源
 --- getTargetUnit 获取被攻击单位
 --- getAttacker 获取攻击来源
@@ -436,7 +436,7 @@ hevent.onAttack = function(whichUnit, action)
     local evtKey = heventKeyMap.attack
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 承受攻击
+--承受攻击
 --- getTriggerUnit 获取被攻击单位
 --- getAttacker 获取攻击来源
 --- getDamage 获取初始伤害
@@ -447,7 +447,7 @@ hevent.onBeAttack = function(whichUnit, action)
     local evtKey = heventKeyMap.beAttack
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---todo - 学习技能
+-- 学习技能
 --- getTriggerUnit 获取学习单位
 --- getTriggerSkill 获取学习技能ID
 hevent.onSkillStudy = function(whichUnit, action)
@@ -465,7 +465,7 @@ hevent.onSkillStudy = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---todo - 准备施放技能
+-- 准备施放技能
 --- getTriggerUnit 获取施放单位
 --- getTargetUnit 获取目标单位(只对对目标施放有效)
 --- getTriggerSkill 获取施放技能ID
@@ -487,7 +487,7 @@ hevent.onSkillReady = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---todo - 开始施放技能
+-- 开始施放技能
 --- getTriggerUnit 获取施放单位
 --- getTargetUnit 获取目标单位(只对对目标施放有效)
 --- getTriggerSkill 获取施放技能ID
@@ -509,7 +509,7 @@ hevent.onSkillStart = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---todo - 停止施放技能
+-- 停止施放技能
 --- getTriggerUnit 获取施放单位
 --- getTriggerSkill 获取施放技能ID
 hevent.onSkillStop = function(whichUnit, action)
@@ -527,7 +527,7 @@ hevent.onSkillStop = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---todo - 发动技能效果
+-- 发动技能效果
 --- getTriggerUnit 获取施放单位
 --- getTargetUnit 获取目标单位(只对对目标施放有效)
 --- getTriggerSkill 获取施放技能ID
@@ -549,7 +549,7 @@ hevent.onSkillHappen = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 施放技能结束
+--施放技能结束
 --- getTriggerUnit 获取施放单位
 --- getTriggerSkill 获取施放技能ID
 hevent.onSkillOver = function(whichUnit, action)
@@ -567,21 +567,21 @@ hevent.onSkillOver = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 单位使用物品
+--单位使用物品
 --- getTriggerUnit 获取触发单位
 --- getTriggerItem 获取触发物品
 hevent.onItemUsed = function(whichUnit, action)
     local evtKey = heventKeyMap.itemUsed
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 出售物品(商店卖给玩家)
+--出售物品(商店卖给玩家)
 --- getTriggerUnit 获取触发单位
 --- getTriggerItem 获取触发物品
 hevent.onItemSell = function(whichUnit, action)
     local evtKey = heventKeyMap.itemSell
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 丢弃物品
+--丢弃物品
 --- getTriggerUnit 获取触发/出售单位
 --- getTargetUnit 获取购买单位
 --- getTriggerItem 获取触发/出售物品
@@ -589,21 +589,21 @@ hevent.onItemDrop = function(whichUnit, action)
     local evtKey = heventKeyMap.itemDrop
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 获得物品
+--获得物品
 --- getTriggerUnit 获取触发单位
 --- getTriggerItem 获取触发物品
 hevent.onItemGet = function(whichUnit, action)
     local evtKey = heventKeyMap.itemGet
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 抵押物品（玩家把物品扔给商店）
+--抵押物品（玩家把物品扔给商店）
 --- getTriggerUnit 获取触发单位
 --- getTriggerItem 获取触发物品
 hevent.onItemPawn = function(whichUnit, action)
     local evtKey = heventKeyMap.itemPawn
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 物品被破坏
+--物品被破坏
 --- getTriggerUnit 获取触发单位
 --- getTriggerItem 获取触发物品
 hevent.onItemDestroy = function(whichItem, action)
@@ -621,14 +621,14 @@ hevent.onItemDestroy = function(whichItem, action)
     cj.TriggerRegisterDeathEvent(hRuntime.eventGlobalTgr[evtKey], whichItem)
     return hevent.onEventByHandle(evtKey, whichItem, action)
 end
--- todo - 合成物品
+--合成物品
 --- getTriggerUnit 获取触发单位
 --- getTriggerItem 获取合成的物品
 hevent.onItemMix = function(whichUnit, action)
     local evtKey = heventKeyMap.itemMix
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 拆分物品
+--拆分物品
 --- getTriggerUnit 获取触发单位
 --- getId 获取拆分的物品ID
 --- getType 获取拆分的类型 { simple 单件拆分 | mixed 合成品拆分 }
@@ -636,7 +636,7 @@ hevent.onItemSeparate = function(whichUnit, action)
     local evtKey = heventKeyMap.itemSeparate
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 造成伤害
+--造成伤害
 --- getTriggerUnit 获取伤害来源
 --- getTargetUnit 获取被伤害单位
 --- getSourceUnit 获取伤害来源
@@ -648,7 +648,7 @@ hevent.onDamage = function(whichUnit, action)
     local evtKey = heventKeyMap.damage
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 承受伤害
+--承受伤害
 --- getTriggerUnit 获取被伤害单位
 --- getSourceUnit 获取伤害来源
 --- getDamage 获取初始伤害
@@ -659,14 +659,14 @@ hevent.onBeDamage = function(whichUnit, action)
     local evtKey = heventKeyMap.beDamage
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 回避攻击成功
+--回避攻击成功
 --- getTriggerUnit 获取触发单位
 --- getAttacker 获取攻击单位
 hevent.onAvoid = function(whichUnit, action)
     local evtKey = heventKeyMap.avoid
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 攻击被回避
+--攻击被回避
 --- getTriggerUnit 获取攻击单位
 --- getAttacker 获取攻击单位
 --- getTargetUnit 获取回避的单位
@@ -674,7 +674,7 @@ hevent.onBeAvoid = function(whichUnit, action)
     local evtKey = heventKeyMap.beAvoid
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 破防（护甲/魔抗）成功
+--破防（护甲/魔抗）成功
 --- getBreakType 获取无视类型
 --- getTriggerUnit 获取触发无视单位
 --- getTargetUnit 获取目标单位
@@ -683,7 +683,7 @@ hevent.onBreakArmor = function(whichUnit, action)
     local evtKey = heventKeyMap.breakArmor
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被破防（护甲/魔抗）成功
+--被破防（护甲/魔抗）成功
 --- getBreakType 获取无视类型
 --- getTriggerUnit 获取被破甲单位
 --- getSourceUnit 获取来源单位
@@ -692,7 +692,7 @@ hevent.onBeBreakArmor = function(whichUnit, action)
     local evtKey = heventKeyMap.beBreakArmor
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 眩晕成功
+--眩晕成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被眩晕单位
 --- getPercent 获取眩晕几率百分比
@@ -702,7 +702,7 @@ hevent.onSwim = function(whichUnit, action)
     local evtKey = heventKeyMap.swim
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被眩晕
+--被眩晕
 --- getTriggerUnit 获取被眩晕单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取眩晕几率百分比
@@ -712,7 +712,7 @@ hevent.onBeSwim = function(whichUnit, action)
     local evtKey = heventKeyMap.beSwim
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 打断成功
+--打断成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被打断单位
 --- getPercent 获取打断几率百分比
@@ -721,7 +721,7 @@ hevent.onBroken = function(whichUnit, action)
     local evtKey = heventKeyMap.broken
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被打断
+--被打断
 --- getTriggerUnit 获取被眩晕单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取打断几率百分比
@@ -730,7 +730,7 @@ hevent.onBeSwim = function(whichUnit, action)
     local evtKey = heventKeyMap.beBroken
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 沉默成功
+--沉默成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被沉默单位
 --- getPercent 获取沉默几率百分比
@@ -740,7 +740,7 @@ hevent.onSilent = function(whichUnit, action)
     local evtKey = heventKeyMap.silent
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被沉默
+--被沉默
 --- getTriggerUnit 获取被沉默单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取沉默几率百分比
@@ -750,7 +750,7 @@ hevent.onBeSilent = function(whichUnit, action)
     local evtKey = heventKeyMap.beSilent
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 缴械成功
+--缴械成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被缴械单位
 --- getPercent 获取缴械几率百分比
@@ -760,7 +760,7 @@ hevent.onUnarm = function(whichUnit, action)
     local evtKey = heventKeyMap.unarm
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被缴械
+--被缴械
 --- getTriggerUnit 获取被缴械单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取缴械几率百分比
@@ -770,7 +770,7 @@ hevent.onBeUnarm = function(whichUnit, action)
     local evtKey = heventKeyMap.beUnarm
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 缚足成功
+--缚足成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被缚足单位
 --- getPercent 获取缚足几率百分比
@@ -780,7 +780,7 @@ hevent.onFetter = function(whichUnit, action)
     local evtKey = heventKeyMap.fetter
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被缚足
+--被缚足
 --- getTriggerUnit 获取被缚足单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取缚足几率百分比
@@ -790,7 +790,7 @@ hevent.onBeFetter = function(whichUnit, action)
     local evtKey = heventKeyMap.beFetter
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 爆破成功
+--爆破成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被爆破单位
 --- getPercent 获取爆破几率百分比
@@ -800,7 +800,7 @@ hevent.onBomb = function(whichUnit, action)
     local evtKey = heventKeyMap.bomb
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被爆破
+--被爆破
 --- getTriggerUnit 获取被爆破单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取爆破几率百分比
@@ -810,7 +810,7 @@ hevent.onBeBomb = function(whichUnit, action)
     local evtKey = heventKeyMap.beBomb
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 闪电链成功
+--闪电链成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被闪电链单位
 --- getPercent 获取闪电链几率百分比
@@ -821,7 +821,7 @@ hevent.onLightningChain = function(whichUnit, action)
     local evtKey = heventKeyMap.lightningChain
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被闪电链
+--被闪电链
 --- getTriggerUnit 获取被闪电链单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取闪电链伤害
@@ -831,7 +831,7 @@ hevent.onBeLightningChain = function(whichUnit, action)
     local evtKey = heventKeyMap.beLightningChain
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 击飞成功
+--击飞成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被闪电链单位
 --- getPercent 获取击飞几率百分比
@@ -842,7 +842,7 @@ hevent.onCrackFly = function(whichUnit, action)
     local evtKey = heventKeyMap.crackFly
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被击飞
+--被击飞
 --- getTriggerUnit 获取被击飞单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取击飞伤害
@@ -853,7 +853,7 @@ hevent.onBeCrackFly = function(whichUnit, action)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 
--- todo - 反伤时
+--反伤时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取反伤伤害
@@ -861,7 +861,7 @@ hevent.onRebound = function(whichUnit, action)
     local evtKey = heventKeyMap.rebound
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 造成无法回避的伤害时
+--造成无法回避的伤害时
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取目标单位
 --- getDamage 获取伤害值
@@ -869,7 +869,7 @@ hevent.onNoAvoid = function(whichUnit, action)
     local evtKey = heventKeyMap.noAvoid
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被造成无法回避的伤害时
+--被造成无法回避的伤害时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取伤害值
@@ -877,7 +877,7 @@ hevent.onBeNoAvoid = function(whichUnit, action)
     local evtKey = heventKeyMap.beNoAvoid
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 物理暴击时
+--物理暴击时
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取目标单位
 --- getDamage 获取暴击伤害值
@@ -887,7 +887,7 @@ hevent.onKnocking = function(whichUnit, action)
     local evtKey = heventKeyMap.knocking
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 承受物理暴击时
+--承受物理暴击时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取暴击伤害值
@@ -897,7 +897,7 @@ hevent.onBeKnocking = function(whichUnit, action)
     local evtKey = heventKeyMap.beKnocking
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 魔法暴击时
+--魔法暴击时
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取目标单位
 --- getDamage 获取暴击伤害值
@@ -907,7 +907,7 @@ hevent.onViolence = function(whichUnit, action)
     local evtKey = heventKeyMap.violence
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 承受魔法暴击时
+--承受魔法暴击时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取暴击伤害值
@@ -917,7 +917,7 @@ hevent.onBeViolence = function(whichUnit, action)
     local evtKey = heventKeyMap.beViolence
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 分裂时
+--分裂时
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取目标单位
 --- getDamage 获取分裂伤害值
@@ -927,7 +927,7 @@ hevent.onSpilt = function(whichUnit, action)
     local evtKey = heventKeyMap.spilt
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 承受分裂时
+--承受分裂时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取分裂伤害值
@@ -937,14 +937,14 @@ hevent.onBeSpilt = function(whichUnit, action)
     local evtKey = heventKeyMap.beSpilt
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 极限韧性抵抗
+--极限韧性抵抗
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 hevent.onLimitToughness = function(whichUnit, action)
     local evtKey = heventKeyMap.limitToughness
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 吸血时
+--吸血时
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取目标单位
 --- getDamage 获取吸血值
@@ -953,7 +953,7 @@ hevent.onHemophagia = function(whichUnit, action)
     local evtKey = heventKeyMap.hemophagia
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被吸血时
+--被吸血时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取吸血值
@@ -962,7 +962,7 @@ hevent.onBeHemophagia = function(whichUnit, action)
     local evtKey = heventKeyMap.beHemophagia
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 技能吸血时
+--技能吸血时
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取目标单位
 --- getDamage 获取吸血值
@@ -971,7 +971,7 @@ hevent.onSkillHemophagia = function(whichUnit, action)
     local evtKey = heventKeyMap.skillHemophagia
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被技能吸血时
+--被技能吸血时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getDamage 获取吸血值
@@ -980,7 +980,7 @@ hevent.onBeSkillHemophagia = function(whichUnit, action)
     local evtKey = heventKeyMap.beSkillHemophagia
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 硬直时
+--硬直时
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取硬直程度百分比
@@ -989,14 +989,14 @@ hevent.onPunish = function(whichUnit, action)
     local evtKey = heventKeyMap.punish
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 死亡时
+--死亡时
 --- getTriggerUnit 获取触发单位
 --- getKiller 获取凶手单位
 hevent.onDead = function(whichUnit, action)
     local evtKey = heventKeyMap.dead
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 击杀时
+--击杀时
 --- getTriggerUnit 获取触发单位
 --- getKiller 获取凶手单位
 --- getTargetUnit 获取死亡单位
@@ -1004,19 +1004,19 @@ hevent.onKill = function(whichUnit, action)
     local evtKey = heventKeyMap.kill
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
+--复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
 --- getTriggerUnit 获取触发单位
 hevent.onReborn = function(whichUnit, action)
     local evtKey = heventKeyMap.reborn
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 提升升等级时
+--提升升等级时
 --- getTriggerUnit 获取触发单位
 hevent.onLevelUp = function(whichUnit, action)
     local evtKey = heventKeyMap.levelUp
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 被召唤时
+--被召唤时
 --- getTriggerUnit 获取被召唤单位
 hevent.onSummon = function(whichUnit, action)
     local evtKey = heventKeyMap.summon
@@ -1032,7 +1032,7 @@ hevent.onSummon = function(whichUnit, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 进入某单位（whichUnit）范围内
+--进入某单位（whichUnit）范围内
 --- getTriggerUnit 获取被进入范围的中心单位
 --- getTriggerEnterUnit 获取进入范围的单位
 --- getRange 获取设定范围
@@ -1058,7 +1058,7 @@ hevent.onEnterUnitRange = function(whichUnit, range, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 离开某区域内
+--离开某区域内
 --- getTriggerRect 获取被离开的矩形区域
 --- getTriggerUnit 获取离开矩形区域的单位
 hevent.onEnterUnitRange = function(whichRect, action)
@@ -1081,7 +1081,7 @@ hevent.onEnterUnitRange = function(whichRect, action)
     end
     return hevent.onEventByHandle(evtKey, whichRect, action)
 end
--- todo - 当聊天时
+--当聊天时
 --- params matchAll 是否全匹配，false为like
 --- getTriggerPlayer 获取聊天的玩家
 --- getTriggerString 获取聊天的内容
@@ -1109,7 +1109,7 @@ hevent.onChat = function(whichPlayer, chatStr, matchAll, action)
         return hevent.onEventByHandle(evtKey, whichPlayer, action)
     end
 end
--- todo - 按ESC
+--按ESC
 --- getTriggerPlayer 获取触发玩家
 hevent.onEsc = function(whichPlayer, action)
     local evtKey = heventKeyMap.esc
@@ -1148,7 +1148,7 @@ hevent.onEsc = function(whichPlayer, action)
         end
     end
 end
--- todo - 选择单位(基准)
+--选择单位(基准)
 --- 单选evtKey=selection1，双击=selection2，如此类推
 hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
     if (hRuntime.event[whichPlayer].evtInit == nil) then
@@ -1183,7 +1183,7 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
             end)
         end)
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-            hRuntime.event[cj.Player(i - 1)].evtInit  = {
+            hRuntime.event[cj.Player(i - 1)].evtInit = {
                 selectionBind = false,
                 clickQty = 0,
             }
@@ -1205,7 +1205,7 @@ hevent.onSelectionBind = function(whichPlayer, action, evtKey)
     end
     return hRuntime.eventGlobalTgr['selectionBind']
 end
--- todo - 玩家 N 击选择单位
+--玩家 N 击选择单位
 --- whichPlayer 为nil时，指所有玩家
 --- qty 需要点击次数
 --- getTriggerPlayer 获取触发玩家
@@ -1216,7 +1216,7 @@ end
 hevent.onSelectionClear = function()
     hRuntime.eventGlobalTgr['selectionBind'] = nil
 end
--- todo - 玩家取消选择单位
+--玩家取消选择单位
 --- getTriggerPlayer 获取触发玩家
 --- getTriggerUnit 获取触发单位
 hevent.onUnSelection = function(whichPlayer, action)
@@ -1241,7 +1241,7 @@ hevent.onUnSelection = function(whichPlayer, action)
         return hevent.onEventByHandle(evtKey, p, action)
     end
 end
--- todo - 建筑升级开始时
+--建筑升级开始时
 --- getTriggerUnit 获取触发单位
 hevent.onUpgradeStart = function(whichUnit, action)
     local evtKey = heventKeyMap.upgradeStart
@@ -1257,7 +1257,7 @@ hevent.onUpgradeStart = function(whichUnit, action)
     cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_START)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 建筑升级取消时
+--建筑升级取消时
 --- getTriggerUnit 获取触发单位
 hevent.onUpgradeCancel = function(whichUnit, action)
     local evtKey = heventKeyMap.upgradeCancel
@@ -1273,7 +1273,7 @@ hevent.onUpgradeCancel = function(whichUnit, action)
     cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 建筑升级完成时
+--建筑升级完成时
 --- getTriggerUnit 获取触发单位
 hevent.onUpgradeFinish = function(whichUnit, action)
     local evtKey = heventKeyMap.upgradeFinish
@@ -1289,7 +1289,7 @@ hevent.onUpgradeFinish = function(whichUnit, action)
     cj.TriggerRegisterUnitEvent(hRuntime.eventGlobalTgr[evtKey], whichUnit, EVENT_UNIT_UPGRADE_FINISH)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
--- todo - 任意建筑建造开始时
+--任意建筑建造开始时
 --- getTriggerUnit 获取触发单位
 hevent.onConstructStart = function(whichPlayer, action)
     local evtKey = heventKeyMap.constructStart
@@ -1314,7 +1314,7 @@ hevent.onConstructStart = function(whichPlayer, action)
         return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr[evtKey])
     end
 end
--- todo - 任意建筑建造取消时
+--任意建筑建造取消时
 --- getTriggerUnit 获取触发单位
 hevent.onConstructCancel = function(whichPlayer, action)
     local evtKey = heventKeyMap.constructCancel
@@ -1339,7 +1339,7 @@ hevent.onConstructCancel = function(whichPlayer, action)
         return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr[evtKey])
     end
 end
--- todo - 任意建筑建造完成时
+--任意建筑建造完成时
 --- getTriggerUnit 获取触发单位
 hevent.onConstructFinish = function(whichPlayer, action)
     local evtKey = heventKeyMap.constructFinish
@@ -1364,13 +1364,13 @@ hevent.onConstructFinish = function(whichPlayer, action)
         return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr[evtKey])
     end
 end
--- todo - 任意单位注册进h-lua系统时(注意这是全局事件)
+--任意单位注册进h-lua系统时(注意这是全局事件)
 --- getTriggerUnit 获取触发单位
 hevent.onRegister = function(action)
     local evtKey = heventKeyMap.register
     return hevent.onEventByHandle(evtKey, hevent.defaultHandle, action)
 end
--- todo - 任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
+--任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
 --- getTriggerPlayer 获取触发玩家
 --- getTriggerUnit 获取触发单位
 hevent.onPickHero = function(action)

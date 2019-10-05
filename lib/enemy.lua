@@ -1,9 +1,10 @@
---todo 敌人模块
+-- 敌人模块
 local henemy = {
     players = {}, -- 充当敌人的玩家
     numbers = {}, -- 充当敌人的玩家调用次数，默认 0
     numberLimit = 100000, -- 充当敌人的玩家调用次数上限，达到就全体归0
     name = "敌军",
+    color = cj.ConvertPlayerColor(12),
 }
 
 --- 设置敌人的名称
@@ -14,6 +15,16 @@ end
 henemy.getName = function()
     return henemy.name
 end
+
+--- 设置敌人的颜色
+henemy.setColor = function(color)
+    henemy.color = color
+end
+--- 获取敌人的颜色
+henemy.getColor = function()
+    return henemy.color
+end
+
 --- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
 henemy.setPlayer = function(whichPlayer)
     table.insert(henemy.players, whichPlayer)
@@ -21,7 +32,7 @@ henemy.setPlayer = function(whichPlayer)
         henemy.numbers[whichPlayer] = 0
     end
     cj.SetPlayerName(whichPlayer, henemy.name)
-    cj.SetPlayerColor(whichPlayer, cj.ConvertPlayerColor(12))
+    cj.SetPlayerColor(whichPlayer, henemy.getColor())
 end
 --- 最优化自动获取一个敌人玩家
 -- createQty 可设定创建单位数，更精准调用，默认权重 1

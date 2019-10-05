@@ -335,7 +335,7 @@ hattr.registerAll = function(whichUnit)
         natural_ghost_oppose = 0.0,
         natural_metal_oppose = 0.0,
         natural_dragon_oppose = 0.0,
-        -- todo
+        --
         attack_buff = {}, -- array
         attack_debuff = {}, -- array
         skill_buff = {}, -- array
@@ -718,7 +718,7 @@ hattr.set = function(whichUnit, during, data)
                 end
                 hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, opr, val, during)
             elseif (type(v) == 'table') then
-                --todo 特效
+                -- 特效
                 if (attr == 'attack_buff' or attr == 'attack_debuff' or attr == 'skill_buff' or attr == 'skill_debuff' or attr == 'attack_effect' or attr == 'skill_effect') then
                     for buff, bv in pairs(v) do
                         if (hRuntime.attribute[whichUnit][attr][buff] == nil) then
@@ -905,7 +905,7 @@ hattr.huntUnit = function(bean)
     local toUnitKnockingOppose = hattr.get(bean.toUnit, 'knocking_oppose')
     local toUnitViolenceOppose = hattr.get(bean.toUnit, 'violence_oppose')
 
-    -- todo *重要* hjass必须设定护甲因子为0，这里为了修正魔兽负护甲依然因子保持0.06的bug
+    -- *重要* hjass必须设定护甲因子为0，这里为了修正魔兽负护甲依然因子保持0.06的bug
     -- 当护甲x为负时，最大-20,公式2-(1-a)^abs(x)
     if (toUnitDefend < 0 and toUnitDefend >= -20) then
         bean.damage = bean.damage / (2 - cj.Pow(0.94, math.abs(toUnitDefend)))
@@ -1166,7 +1166,7 @@ hattr.huntUnit = function(bean)
             realDamage = realDamage - toUnitToughness
         end
     end
-    --TODO 上面都是先行计算 ------------------
+    -- 上面都是先行计算 ------------------
 
     -- 造成伤害
     print("realDamage:" .. realDamage)
@@ -1574,7 +1574,7 @@ hattr.huntUnit = function(bean)
                 isCrackFly = true
             end
         end
-        -- TODO 眩晕
+        -- 眩晕
         if (isSwim) then
             hskill.swim(bean.toUnit, swimEffect.during, bean.fromUnit, swimEffect.val, swimEffect.odds)
             if (swimEffect.val > 0) then
@@ -1592,7 +1592,7 @@ hattr.huntUnit = function(bean)
                 heffect.toUnit(swimEffect.model, bean.toUnit, "origin", 0.5)
             end
         end
-        -- TODO 打断
+        -- 打断
         if (isBroken) then
             hskill.broken(bean.toUnit, bean.fromUnit, brokenEffect.val, brokenEffect.odds)
             if (brokenEffect.val > 0) then
@@ -1610,7 +1610,7 @@ hattr.huntUnit = function(bean)
                 heffect.toUnit(brokenEffect.model, bean.toUnit, "origin", 0.5)
             end
         end
-        -- TODO 沉默
+        -- 沉默
         if (isSilent) then
             hskill.silent(bean.toUnit, silentEffect.during, bean.fromUnit, silentEffect.val, silentEffect.odds)
             if (silentEffect.val > 0) then
@@ -1628,7 +1628,7 @@ hattr.huntUnit = function(bean)
                 heffect.toUnit(silentEffect.model, bean.toUnit, "origin", 0.5)
             end
         end
-        -- TODO 缴械
+        -- 缴械
         if (isUnarm) then
             hskill.unarm(bean.toUnit, unarmEffect.during, bean.fromUnit, unarmEffect.val, unarmEffect.odds)
             if (unarmEffect.val > 0) then
@@ -1646,7 +1646,7 @@ hattr.huntUnit = function(bean)
                 heffect.toUnit(unarmEffect.model, bean.toUnit, "origin", 0.5)
             end
         end
-        -- TODO 缚足
+        -- 缚足
         if (isFetter) then
             hattr.set(bean.toUnit, fetterEffect.during, {
                 move = '-1000'
@@ -1684,7 +1684,7 @@ hattr.huntUnit = function(bean)
                 during = fetterEffect.during,
             })
         end
-        -- TODO 爆破
+        -- 爆破
         if (isBomb) then
             if (bombEffect.val > 0) then
                 local tempGroup = hgroup.createByUnit(bean.toUnit, bombEffect.range, function()
@@ -1735,7 +1735,7 @@ hattr.huntUnit = function(bean)
                 heffect.toUnit(bombEffect.model, bean.toUnit, "origin", 0.5)
             end
         end
-        -- TODO 闪电链
+        -- 闪电链
         if (isLightningChain) then
             hskill.lightningChain(bean.model, lightningChainEffect.qty, lightningChainEffect.reduce, lightningChainEffect.range, false, {
                 fromUnit = bean.fromUnit,
@@ -1753,7 +1753,7 @@ hattr.huntUnit = function(bean)
                 qty = lightningChainEffect.qty,
             })
         end
-        -- TODO 击飞
+        -- 击飞
         if (isCrackFly) then
             hskill.crackFly(crackFlyEffect.distance, crackFlyEffect.high, crackFlyEffect.during, {
                 fromUnit = bean.fromUnit,

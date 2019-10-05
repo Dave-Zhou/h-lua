@@ -353,7 +353,7 @@ hplayer.subLumber = function(whichPlayer, lumber)
 end
 
 
--- todo 初始化
+-- 初始化
 hplayerInit = function()
     local triggerApm = cj.CreateTrigger()
     local triggerApmUnit = cj.CreateTrigger()

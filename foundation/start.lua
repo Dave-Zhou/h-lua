@@ -1,9 +1,9 @@
 
---todo 时钟初始化
+-- 时钟初始化
 -- 全局计时器
 cj.TimerStart(cj.CreateTimer(), 1.00, true, htime.clock)
 
---todo 属性初始化
+-- 属性初始化
 -- 单位受伤
 local triggerBeHunt = cj.CreateTrigger()
 cj.TriggerAddAction(triggerBeHunt, function()
