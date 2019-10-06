@@ -46,6 +46,11 @@ for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     hRuntime.sound[p] = {}
     hRuntime.sound[p].currentBgm = nil
     hRuntime.sound[p].bgmDelay = 3.00
+    -- event
+    hRuntime.event[p] = {}
+    hRuntime.eventGlobalTgr[p] = {}
+    -- player
+    hRuntime.player[p] = {}
     -- camera
     hRuntime.camera[p] = {}
     hRuntime.camera[p].model = "normal" -- 镜头模型

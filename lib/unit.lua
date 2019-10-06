@@ -1,4 +1,3 @@
-
 local hunit = {}
 
 -- 获取单位的最大生命值
@@ -106,6 +105,9 @@ end
     }
 ]]
 hunit.create = function(bean)
+    if (bean.qty == nil) then
+        bean.qty = 1
+    end
     if (bean.whichPlayer == nil or bean.unitId == nil or bean.qty <= 0) then
         print('create unit fail -pl-id')
         return
@@ -145,39 +147,39 @@ hunit.create = function(bean)
     if (bean.qty > 1) then
         g = cj.CreateGroup()
     end
-    for i = 0, qty, 1 do
+    for i = 0, bean.qty, 1 do
         if (bean.x ~= nil and bean.y ~= nil) then
             u = cj.CreateUnit(bean.whichPlayer, bean.unitId, bean.x, bean.y, facing)
         elseif (bean.loc ~= nil) then
             u = cj.CreateUnitAtLoc(bean.whichPlayer, bean.unitId, bean.loc, facing)
         end
         -- 高度
-        if (bean.height ~= 0 and bean.height ~= nil) then
+        if (bean.height ~= nil and bean.height ~= 0) then
             bean.height = hlogin.round(bean.height)
             hunit.setCanFly(u)
             cj.SetUnitFlyHeight(u, bean.height, 10000)
         end
         -- 动作时间比例 %
-        if (bean.timeScalePercent > 0 and bean.timeScalePercent ~= nil) then
+        if (bean.timeScalePercent ~= nil and bean.timeScalePercent > 0) then
             bean.timeScalePercent = hlogin.round(bean.timeScalePercent)
             cj.SetUnitTimeScalePercent(u, timeScalePercent)
         end
         -- 模型缩放比例 %
-        if (bean.modelScalePercent > 0 and bean.modelScalePercent ~= nil) then
+        if (bean.modelScalePercent ~= nil and bean.modelScalePercent > 0) then
             bean.modelScalePercent = hlogin.round(bean.modelScalePercent)
             cj.SetUnitScalePercent(u, bean.modelScalePercent, bean.modelScalePercent, bean.modelScalePercent)
         end
         -- 透明比例
-        if (bean.opacity <= 255 and bean.opacity >= 0 and bean.opacity ~= nil) then
+        if (bean.opacity ~= nil and bean.opacity <= 255 and bean.opacity >= 0) then
             bean.opacity = hlogin.round(bean.opacity)
             cj.SetUnitVertexColor(u, 255, 255, 255, bean.opacity)
         end
         -- 生命周期 dead
-        if (bean.life > 0) then
+        if (bean.life ~= nil and bean.life > 0) then
             hunit.setPeriod(u, bean.life)
         end
         -- 持续时间 delete
-        if (bean.during > 0) then
+        if (bean.during ~= nil and bean.during > 0) then
             hunit.del(u, bean.during)
         end
         if (bean.attackX ~= nil and bean.attackY ~= nil) then

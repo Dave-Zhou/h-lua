@@ -14,11 +14,45 @@ bj.TriggerRegisterAnyUnitEventBJ = function(trig, whichEvent)
         cj.TriggerRegisterPlayerUnitEvent(trig, cj.Player(i - 1), whichEvent, nil)
     end
 end
-bj.TriggerRegisterPlayerSelectionEvent = function(trig, whichPlayer, selected)
+bj.TriggerRegisterPlayerSelectionEventBJ = function(trig, whichPlayer, selected)
     if (selected) then
         return cj.TriggerRegisterPlayerUnitEvent(trig, whichPlayer, EVENT_PLAYER_UNIT_SELECTED, nil)
     else
         return cj.TriggerRegisterPlayerUnitEvent(trig, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
+    end
+end
+bj.TriggerRegisterPlayerKeyEventBJ = function(trig, whichPlayer, keType, keKey)
+    if keType == bj_KEYEVENTTYPE_DEPRESS then
+        -- Depress event - find out what key
+        if keKey == bj_KEYEVENTKEY_LEFT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_LEFT_DOWN)
+        elseif keKey == bj_KEYEVENTKEY_RIGHT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_RIGHT_DOWN)
+        elseif keKey == bj_KEYEVENTKEY_DOWN then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_DOWN_DOWN)
+        elseif keKey == bj_KEYEVENTKEY_UP then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_UP_DOWN)
+        else
+            -- Unrecognized key - ignore the request and return failure.
+            return nil
+        end
+    elseif keType == bj_KEYEVENTTYPE_RELEASE then
+        -- Release event - find out what key
+        if keKey == bj_KEYEVENTKEY_LEFT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_LEFT_UP)
+        elseif keKey == bj_KEYEVENTKEY_RIGHT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_RIGHT_UP)
+        elseif keKey == bj_KEYEVENTKEY_DOWN then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_DOWN_UP)
+        elseif keKey == bj_KEYEVENTKEY_UP then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_UP_UP)
+        else
+            -- Unrecognized key - ignore the request and return failure.
+            return nil
+        end
+    else
+        -- Unrecognized type - ignore the request and return failure.
+        return nil
     end
 end
 bj.AllowVictoryDefeatBJ = function(gameResult)

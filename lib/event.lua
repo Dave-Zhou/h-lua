@@ -1191,17 +1191,17 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
     end
     if (hRuntime.event[whichPlayer].evtInit.selectionBind == false) then
         hRuntime.event[whichPlayer].evtInit.selectionBind = true
-        bj.TriggerRegisterPlayerSelectionEvent(hRuntime.eventGlobalTgr['selectionBind'], whichPlayer, true)
+        bj.TriggerRegisterPlayerSelectionEventBJ(hRuntime.eventGlobalTgr['selectionBind'], whichPlayer, true)
     end
     return hevent.onEventByHandleDefaultTrigger(evtKey, whichPlayer, action, hRuntime.eventGlobalTgr['selectionBind'])
 end
 hevent.onSelectionBind = function(whichPlayer, action, evtKey)
     if (whichPlayer ~= nil) then
+        hevent.onSelectionBindPlayer(whichPlayer, action, evtKey)
+    else
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             hevent.onSelectionBindPlayer(cj.Player(i - 1), action, evtKey)
         end
-    else
-        hevent.onSelectionBindPlayer(whichPlayer, action, evtKey)
     end
     return hRuntime.eventGlobalTgr['selectionBind']
 end
@@ -1232,12 +1232,12 @@ hevent.onUnSelection = function(whichPlayer, action)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
-            bj.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
+            bj.TriggerRegisterPlayerSelectionEventBJ(tg, whichPlayer, false)
             hevent.onEventByHandle(evtKey, p, action)
         end
         return
     else
-        bj.TriggerRegisterPlayerSelectionEvent(tg, whichPlayer, false)
+        bj.TriggerRegisterPlayerSelectionEventBJ(tg, whichPlayer, false)
         return hevent.onEventByHandle(evtKey, p, action)
     end
 end
