@@ -33,7 +33,7 @@ avoiding null values in your data to begin with.
 --]]
 
 
-local json = {}
+json = {}
 
 
 -- Internal functions.
@@ -226,5 +226,3 @@ function json.parse(str, pos, end_delim)
         error('Invalid json syntax starting at ' .. pos_info_str)
     end
 end
-
-return json

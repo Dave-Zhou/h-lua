@@ -49,11 +49,11 @@ hdzapi.server.set = {
         japi.DzAPI_Map_SaveServerValue(whichPlayer, 'S' .. key, data or nil)
     end,
     unit = function(whichPlayer, key, data)
-        local id = hsystem.getObjChar(cj.GetUnitTypeId(data))
+        local id = hSys.getObjChar(cj.GetUnitTypeId(data))
         japi.DzAPI_Map_SaveServerValue(whichPlayer, 'S' .. key, id, data or nil)
     end,
     item = function(whichPlayer, key, data)
-        local id = hsystem.getObjChar(cj.GetItemTypeId(data))
+        local id = hSys.getObjChar(cj.GetItemTypeId(data))
         japi.DzAPI_Map_SaveServerValue(whichPlayer, 'S' .. key, id, data or nil)
     end,
 }
@@ -77,14 +77,14 @@ hdzapi.server.get = {
     unit = function(whichPlayer, key)
         local id = japi.DzAPI_Map_GetServerValue(whichPlayer, 'S' .. key) or ''
         if (string.len(id) > 0) then
-            return hsystem.getObjId(id)
+            return hSys.getObjId(id)
         end
         return nil
     end,
     item = function(whichPlayer, key)
         local id = japi.DzAPI_Map_GetServerValue(whichPlayer, 'S' .. key) or ''
         if (string.len(id) > 0) then
-            return hsystem.getObjId(id)
+            return hSys.getObjId(id)
         end
         return nil
     end,

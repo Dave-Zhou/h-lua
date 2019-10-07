@@ -59,7 +59,7 @@ hunit.setManaPercent = function(u, val)
 end
 -- 设置单位的生命周期
 hunit.setPeriod = function(u, life)
-    cj.UnitApplyTimedLifeBJ(life, hsystem.getObjId('BTLF'), u)
+    cj.UnitApplyTimedLifeBJ(life, hSys.getObjId('BTLF'), u)
 end
 
 --获取单位面向角度
@@ -120,7 +120,7 @@ hunit.create = function(bean)
         print('create unit id')
         return
     end
-    bean.unitId = hsystem.getObjId(bean.unitId)
+    bean.unitId = hSys.getObjId(bean.unitId)
     local u
     local facing
     local x
@@ -231,7 +231,7 @@ end
 
 -- 获取单位ID字符串
 hunit.getId = function(u)
-    return hsystem.getObjChar(cj.GetUnitTypeId(u))
+    return hSys.getObjChar(cj.GetUnitTypeId(u))
 end
 -- 获取单位数据集
 hunit.getSlk = function(u)

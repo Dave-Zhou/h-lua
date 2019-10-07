@@ -175,7 +175,7 @@ hrect.lock = function(bean)
             while (cj.IsUnitGroupEmptyBJ(lockGroup) == false) do
                 local u = cj.FirstOfGroup(lockGroup)
                 cj.GroupRemoveUnit(lockGroup, u)
-                if (~hsystem.inArray(u, inGroups)) then
+                if (~hSys.inArray(u, inGroups)) then
                     table.insert(inGroups, u)
                 end
             end

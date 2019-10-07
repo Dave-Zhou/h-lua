@@ -5,7 +5,7 @@ local hskill = {
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
-    BUFF_SWIM = hsystem.getObjId('BPSE'),
+    BUFF_SWIM = hSys.getObjId('BPSE'),
 }
 
 --- 造成伤害
@@ -187,7 +187,7 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
         bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
         cj.TriggerAddAction(hRuntime.skill.silentTrigger, function()
             local u1 = cj.GetTriggerUnit()
-            if (hsystem.inArray(u1, hRuntime.skill.silentUnits)) then
+            if (hSys.inArray(u1, hRuntime.skill.silentUnits)) then
                 cj.IssueImmediateOrder(u1, "stop")
             end
         end)
@@ -199,7 +199,7 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
         httg.style(httg.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     end
     hRuntime.skill[u].silentLevel = level
-    if (hsystem.inArray(u, hRuntime.skill.silentUnits) == false) then
+    if (hSys.inArray(u, hRuntime.skill.silentUnits) == false) then
         table.insert(hRuntime.skill.silentUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "head", -1)
         hRuntime.skill[u].silentEffect = eff
@@ -231,8 +231,8 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
         hRuntime.skill[u].silentLevel = hRuntime.skill[u].silentLevel - 1
         if (hRuntime.skill[u].silentLevel <= 0) then
             heffect.del(hRuntime.skill[u].silentEffect)
-            if (hsystem.inArray(u, hRuntime.skill.silentUnits)) then
-                hsystem.rmArray(u, hRuntime.skill.silentUnits)
+            if (hSys.inArray(u, hRuntime.skill.silentUnits)) then
+                hSys.rmArray(u, hRuntime.skill.silentUnits)
             end
             hRuntime.is[u].isSilent = false
         end
@@ -255,7 +255,7 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
         bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
         cj.TriggerAddAction(hRuntime.skill.unarmTrigger, function()
             local u1 = cj.GetTriggerUnit()
-            if (hsystem.inArray(u1, hRuntime.skill.unarmUnits)) then
+            if (hSys.inArray(u1, hRuntime.skill.unarmUnits)) then
                 cj.IssueImmediateOrder(u1, "stop")
             end
         end)
@@ -267,7 +267,7 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
         httg.style(httg.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     end
     hRuntime.skill[u].unarmLevel = level
-    if (hsystem.inArray(u, hRuntime.skill.unarmUnits) == false) then
+    if (hSys.inArray(u, hRuntime.skill.unarmUnits) == false) then
         table.insert(hRuntime.skill.unarmUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "weapon", -1)
         hRuntime.skill[u].unarmEffect = eff
@@ -299,8 +299,8 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
         hRuntime.skill[u].unarmLevel = hRuntime.skill[u].unarmLevel - 1
         if (hRuntime.skill[u].unarmLevel <= 0) then
             heffect.del(hRuntime.skill[u].unarmEffect)
-            if (hsystem.inArray(u, hRuntime.skill.unarmUnits)) then
-                hsystem.rmArray(u, hRuntime.skill.unarmUnits)
+            if (hSys.inArray(u, hRuntime.skill.unarmUnits)) then
+                hSys.rmArray(u, hRuntime.skill.unarmUnits)
             end
             hRuntime.is[u].isUnArm = false
         end

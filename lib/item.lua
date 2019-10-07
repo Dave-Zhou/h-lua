@@ -22,7 +22,7 @@
 
 local hitem = {
 
-    default_skill_item_slot = hsystem.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）hjass默认全部认定这个技能为物品栏，如有需要自行更改
+    default_skill_item_slot = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）hjass默认全部认定这个技能为物品栏，如有需要自行更改
     default_skill_item_separate = hslk_global.skill_item_separate, -- 默认拆分物品技能
     typeMap = {
         forever = 'forever',

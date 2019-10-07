@@ -9,7 +9,7 @@ local hattr = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    default_skill_item_slot = hsystem.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    default_skill_item_slot = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
     threeBuff = {
         --- 每一点三围对属性的影响，默认会写一些，可以通过 setThreeBuff 方法来改变系统构成
         --- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
@@ -241,8 +241,8 @@ end
 hattr.registerAll = function(whichUnit)
     hattr.regAllAbility(whichUnit)
     --init
-    hsystem.print_r(hslk_global.unitsKV)
-    local unitId = hsystem.getObjChar(cj.GetUnitTypeId(whichUnit))
+    hSys.print_r(hslk_global.unitsKV)
+    local unitId = hSys.getObjChar(cj.GetUnitTypeId(whichUnit))
     print(cj.GetUnitTypeId(whichUnit))
     print(unitId)
     hRuntime.attribute[whichUnit] = {
@@ -413,8 +413,8 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end)
             end
         elseif (opr == '-') then
-            if (hsystem.inArray(val, params[attr])) then
-                hsystem.rmArray(val, params[attr], 1)
+            if (hSys.inArray(val, params[attr])) then
+                hSys.rmArray(val, params[attr], 1)
                 if (dur > 0) then
                     htime.setTimeout(dur, nil, function(t, td)
                         htime.delDialog(td)
@@ -424,7 +424,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
             end
         elseif (opr == '=') then
-            local old = hsystem.cloneTable(params[attr])
+            local old = hSys.cloneTable(params[attr])
             params[attr] = val
             if (dur > 0) then
                 htime.setTimeout(dur, nil, function(t, td)
@@ -558,7 +558,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     cj.UnitRemoveAbility(whichUnit, ability)
                 end
                 tempVal = math.floor(futureVal)
-                local sightTotal = hsystem.cloneTable(hslk_global.attr.sightTotal)
+                local sightTotal = hSys.cloneTable(hslk_global.attr.sightTotal)
                 if (tempVal ~= 0) then
                     if (diff < 0) then
                         tempVal = math.abs(tempVal);
@@ -568,7 +568,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         for k, v in pairs(sightTotal) do
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
-                                hsystem.rmArray(v, sightTotal)
+                                hSys.rmArray(v, sightTotal)
                                 if (diff > 0) then
                                     cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
                                 else
@@ -584,7 +584,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
                 --- 绿字攻击 攻击速度 护甲
-            elseif (hsystem.inArray(attr, { 'attack_green', 'attack_speed', 'defend' })) then
+            elseif (hSys.inArray(attr, { 'attack_green', 'attack_speed', 'defend' })) then
                 if (futureVal < -99999999) then
                     futureVal = -99999999
                 elseif (futureVal > 99999999) then
@@ -614,7 +614,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
                 --- 绿字力量 绿字敏捷 绿字智力
-            elseif (his.hero(whichUnit) and hsystem.inArray(attr, { 'str_green', 'agi_green', 'int_green' })) then
+            elseif (his.hero(whichUnit) and hSys.inArray(attr, { 'str_green', 'agi_green', 'int_green' })) then
                 if (futureVal < -99999999) then
                     futureVal = -99999999
                 elseif (futureVal > 99999999) then
@@ -649,7 +649,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
                 hattr.set(whichUnit, 0, setting)
                 --- 白字力量 敏捷 智力
-            elseif (his.hero(whichUnit) and hsystem.inArray(attr, { 'str_white', 'agi_white', 'int_white' })) then
+            elseif (his.hero(whichUnit) and hSys.inArray(attr, { 'str_white', 'agi_white', 'int_white' })) then
                 if (attr == 'str_white') then
                     cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
                 elseif (attr == 'agi_white') then
@@ -664,10 +664,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 hattr.set(whichUnit, 0, setting)
                 --- 生命恢复 魔法恢复
             elseif (attr == 'life_back' or attr == 'mana_back') then
-                if (math.abs(futureVal) > 0.02 and hsystem.inArray(whichUnit, hRuntime.attributeGroup[attr]) == false) then
+                if (math.abs(futureVal) > 0.02 and hSys.inArray(whichUnit, hRuntime.attributeGroup[attr]) == false) then
                     table.insert(hRuntime.attributeGroup[attr], whichUnit)
                 elseif (math.abs(futureVal) < 0.02) then
-                    hsystem.rmArray(whichUnit, hRuntime.attributeGroup[attr])
+                    hSys.rmArray(whichUnit, hRuntime.attributeGroup[attr])
                 end
                 --- 生命源 魔法源(current)
             elseif (attr == 'life_source_current' or attr == 'mana_source_current') then
@@ -676,10 +676,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     futureVal = hRuntime.attribute[whichUnit][attrSource]
                     hRuntime.attribute[whichUnit][attr] = futureVal
                 end
-                if (math.abs(futureVal) > 1 and hsystem.inArray(whichUnit, hRuntime.attributeGroup[attrSource]) == false) then
+                if (math.abs(futureVal) > 1 and hSys.inArray(whichUnit, hRuntime.attributeGroup[attrSource]) == false) then
                     table.insert(hRuntime.attributeGroup[attrSource], whichUnit)
                 elseif (math.abs(futureVal) < 1) then
-                    hsystem.rmArray(whichUnit, hRuntime.attributeGroup[attrSource])
+                    hSys.rmArray(whichUnit, hRuntime.attributeGroup[attrSource])
                 end
                 --- 硬直
             elseif (attr == 'punish' and hunit.isOpenPunish(whichUnit)) then
@@ -878,7 +878,7 @@ hattr.huntUnit = function(bean)
     end
     -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
     if (his.invincible(bean.toUnit) == true or math.random(1, 100) < hattr.get(bean.toUnit, 'invincible')) then
-        if (hsystem.inArray('absolute', bean.huntType) == false) then
+        if (hSys.inArray('absolute', bean.huntType) == false) then
             return
         end
     end
@@ -925,21 +925,21 @@ hattr.huntUnit = function(bean)
     -- 判断无视装甲类型
     if (bean.breakArmorType) then
         realDamageString = realDamageString .. "无视"
-        if (hsystem.inArray('defend', bean.breakArmorType)) then
+        if (hSys.inArray('defend', bean.breakArmorType)) then
             if (toUnitDefend > 0) then
                 toUnitDefend = 0
             end
             realDamageString = realDamageString .. "护甲"
             realDamageStringColor = "f97373"
         end
-        if (hsystem.inArray('resistance', bean.breakArmorType)) then
+        if (hSys.inArray('resistance', bean.breakArmorType)) then
             if (toUnitResistance > 0) then
                 toUnitResistance = 0
             end
             realDamageString = realDamageString .. "魔抗"
             realDamageStringColor = "6fa8dc"
         end
-        if (hsystem.inArray('avoid', bean.breakArmorType)) then
+        if (hSys.inArray('avoid', bean.breakArmorType)) then
             toUnitAvoid = -100
             realDamageString = realDamageString .. "回避"
             realDamageStringColor = "76a5af"
@@ -960,23 +960,23 @@ hattr.huntUnit = function(bean)
         })
     end
     -- 如果遇到真实伤害，无法回避
-    if (hsystem.inArray('real', bean.huntType) == true) then
+    if (hSys.inArray('real', bean.huntType) == true) then
         toUnitAvoid = -100
         realDamageString = realDamageString .. "真实"
     end
     -- 如果遇到绝对伤害，无法回避
-    if (hsystem.inArray('absolute', bean.huntType) == true) then
+    if (hSys.inArray('absolute', bean.huntType) == true) then
         toUnitAvoid = -100
         realDamageString = realDamageString .. "绝对"
     end
     -- 计算物理暴击,几率50000满100%，伤害每10000点增加5%
-    if (hsystem.inArray('physical', bean.huntType) == true and (fromUnitKnocking - toUnitKnockingOppose) > 0 and math.random(1, 1000) <= ((fromUnitKnocking - toUnitKnockingOppose) / 50)) then
+    if (hSys.inArray('physical', bean.huntType) == true and (fromUnitKnocking - toUnitKnockingOppose) > 0 and math.random(1, 1000) <= ((fromUnitKnocking - toUnitKnockingOppose) / 50)) then
         realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * (fromUnitKnocking - toUnitKnockingOppose) * 0.0005
         toUnitAvoid = -100 -- 触发暴击，无法回避
         isKnocking = true
     end
     -- 计算魔法暴击,几率75000满100%，伤害每10000点增加7%
-    if (hsystem.inArray('magic', bean.huntType) == true and (fromUnitViolence - toUnitViolenceOppose) > 0 and math.random(1, 1000) <= ((fromUnitViolence - toUnitViolenceOppose) / 75)) then
+    if (hSys.inArray('magic', bean.huntType) == true and (fromUnitViolence - toUnitViolenceOppose) > 0 and math.random(1, 1000) <= ((fromUnitViolence - toUnitViolenceOppose) / 75)) then
         realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * (fromUnitViolence - toUnitViolenceOppose) * 0.0007
         toUnitAvoid = -100 -- 触发暴击，无法回避
         isViolence = true
@@ -1055,67 +1055,67 @@ hattr.huntUnit = function(bean)
         if (fromUnitNaturalDragon < -100) then
             fromUnitNaturalDragon = -100
         end
-        if (hsystem.inArray('fire', bean.huntType) and fromUnitNaturalFire ~= 0) then
+        if (hSys.inArray('fire', bean.huntType) and fromUnitNaturalFire ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalFire * 0.01
             realDamageString = realDamageString .. "火"
             realDamageStringColor = "f45454"
         end
-        if (hsystem.inArray('soil', bean.huntType) and fromUnitNaturalSoil ~= 0) then
+        if (hSys.inArray('soil', bean.huntType) and fromUnitNaturalSoil ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalSoil * 0.01
             realDamageString = realDamageString .. "土"
             realDamageStringColor = "dbb745"
         end
-        if (hsystem.inArray('water', bean.huntType) and fromUnitNaturalWater ~= 0) then
+        if (hSys.inArray('water', bean.huntType) and fromUnitNaturalWater ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalWater * 0.01
             realDamageString = realDamageString .. "水"
             realDamageStringColor = "85adee"
         end
-        if (hsystem.inArray('ice', bean.huntType) and fromUnitNaturalIce ~= 0) then
+        if (hSys.inArray('ice', bean.huntType) and fromUnitNaturalIce ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalIce * 0.01
             realDamageString = realDamageString .. "冰"
             realDamageStringColor = "85f4f4"
         end
-        if (hsystem.inArray('wind', bean.huntType) and fromUnitNaturalWind ~= 0) then
+        if (hSys.inArray('wind', bean.huntType) and fromUnitNaturalWind ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalWind * 0.01
             realDamageString = realDamageString .. "风"
             realDamageStringColor = "b6d7a8"
         end
-        if (hsystem.inArray('light', bean.huntType) and fromUnitNaturalLight ~= 0) then
+        if (hSys.inArray('light', bean.huntType) and fromUnitNaturalLight ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalLight * 0.01
             realDamageString = realDamageString .. "光"
             realDamageStringColor = "f9f99c"
         end
-        if (hsystem.inArray('dark', bean.huntType) and fromUnitNaturalDark ~= 0) then
+        if (hSys.inArray('dark', bean.huntType) and fromUnitNaturalDark ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalDark * 0.01
             realDamageString = realDamageString .. "暗"
             realDamageStringColor = "383434"
         end
-        if (hsystem.inArray('wood', bean.huntType) and fromUnitNaturalWood ~= 0) then
+        if (hSys.inArray('wood', bean.huntType) and fromUnitNaturalWood ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalWood * 0.01
             realDamageString = realDamageString .. "木"
             realDamageStringColor = "7cbd60"
         end
-        if (hsystem.inArray('thunder', bean.huntType) and fromUnitNaturalThunder ~= 0) then
+        if (hSys.inArray('thunder', bean.huntType) and fromUnitNaturalThunder ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalThunder * 0.01
             realDamageString = realDamageString .. "雷"
             realDamageStringColor = "7cbd60"
         end
-        if (hsystem.inArray('poison', bean.huntType) and fromUnitNaturalPoison ~= 0) then
+        if (hSys.inArray('poison', bean.huntType) and fromUnitNaturalPoison ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalPoison * 0.01
             realDamageString = realDamageString .. "毒"
             realDamageStringColor = "45f7f7"
         end
-        if (hsystem.inArray('ghost', bean.huntType) and fromUnitNaturalGhost ~= 0) then
+        if (hSys.inArray('ghost', bean.huntType) and fromUnitNaturalGhost ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalGhost * 0.01
             realDamageString = realDamageString .. "鬼"
             realDamageStringColor = "383434"
         end
-        if (hsystem.inArray('metal', bean.huntType) and fromUnitNaturalMetal ~= 0) then
+        if (hSys.inArray('metal', bean.huntType) and fromUnitNaturalMetal ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalMetal * 0.01
             realDamageString = realDamageString .. "金"
             realDamageStringColor = "f9f99c"
         end
-        if (hsystem.inArray('dragon', bean.huntType) and fromUnitNaturalDragon ~= 0) then
+        if (hSys.inArray('dragon', bean.huntType) and fromUnitNaturalDragon ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalDragon * 0.01
             realDamageString = realDamageString .. "龙"
             realDamageStringColor = "7cbd60"
@@ -1126,7 +1126,7 @@ hattr.huntUnit = function(bean)
         realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
     end
     -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (hsystem.inArray("physical", bean.huntType) and toUnitDefend > 0) then
+    if (hSys.inArray("physical", bean.huntType) and toUnitDefend > 0) then
         toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
         -- 计算护甲
         if (toUnitDefend > 0) then
@@ -1136,7 +1136,7 @@ hattr.huntUnit = function(bean)
         end
     end
     -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
-    if (hsystem.inArray("maigc", bean.huntType) and toUnitResistance > 0) then
+    if (hSys.inArray("maigc", bean.huntType) and toUnitResistance > 0) then
         toUnitResistance = toUnitResistance * fromUnitHuntPercent.magic
         -- 计算魔抗
         if (toUnitResistance ~= 0) then
@@ -1439,36 +1439,36 @@ hattr.huntUnit = function(bean)
         local isCrackFly = false
         -- data
         local swimEffect = {
-            attack = hsystem.cloneTable(attackEffect.swim),
-            skill = hsystem.cloneTable(skillEffect.swim),
+            attack = hSys.cloneTable(attackEffect.swim),
+            skill = hSys.cloneTable(skillEffect.swim),
         }
         local brokenEffect = {
-            attack = hsystem.cloneTable(attackEffect.broken),
-            skill = hsystem.cloneTable(skillEffect.broken),
+            attack = hSys.cloneTable(attackEffect.broken),
+            skill = hSys.cloneTable(skillEffect.broken),
         }
         local silentEffect = {
-            attack = hsystem.cloneTable(attackEffect.silent),
-            skill = hsystem.cloneTable(skillEffect.silent),
+            attack = hSys.cloneTable(attackEffect.silent),
+            skill = hSys.cloneTable(skillEffect.silent),
         }
         local unarmEffect = {
-            attack = hsystem.cloneTable(attackEffect.unarm),
-            skill = hsystem.cloneTable(skillEffect.unarm),
+            attack = hSys.cloneTable(attackEffect.unarm),
+            skill = hSys.cloneTable(skillEffect.unarm),
         }
         local fetterEffect = {
-            attack = hsystem.cloneTable(attackEffect.fetter),
-            skill = hsystem.cloneTable(skillEffect.fetter),
+            attack = hSys.cloneTable(attackEffect.fetter),
+            skill = hSys.cloneTable(skillEffect.fetter),
         }
         local bombEffect = {
-            attack = hsystem.cloneTable(attackEffect.bomb),
-            skill = hsystem.cloneTable(skillEffect.bomb),
+            attack = hSys.cloneTable(attackEffect.bomb),
+            skill = hSys.cloneTable(skillEffect.bomb),
         }
         local lightningChainEffect = {
-            attack = hsystem.cloneTable(attackEffect.lightning_chain),
-            skill = hsystem.cloneTable(skillEffect.lightning_chain),
+            attack = hSys.cloneTable(attackEffect.lightning_chain),
+            skill = hSys.cloneTable(skillEffect.lightning_chain),
         }
         local crackFlyEffect = {
-            attack = hsystem.cloneTable(attackEffect.lightning_chain),
-            skill = hsystem.cloneTable(skillEffect.lightning_chain),
+            attack = hSys.cloneTable(attackEffect.lightning_chain),
+            skill = hSys.cloneTable(skillEffect.lightning_chain),
         }
         -- oppose
         local swimOppose = hattr.get(bean.toUnit, 'swim_oppose')

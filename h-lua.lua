@@ -9,16 +9,11 @@ require "foundation.blizzard_c"
 require "foundation.blizzard_b"
 bj = require "foundation.blizzard_bj"
 
--- 加载json
-json = require "foundation.json"
-
--- 加载runtime
-require "foundation.runtime"
+-- 加载foundation
+hLuaStart = require "foundation.start"
 
 -- 读取hSlk数据 # hash_hslk
-hsystem = require "lib.system"
 require "slkInit"
-require "foundation.f9"
 
 --[[
     加载Dzapi库
@@ -54,8 +49,7 @@ hskill = require "lib.skill" -- 技能
 hattr = require "lib.attribute" -- 属性
 hitem = require "lib.item" -- 物品
 
--- 最后的初始化
+-- 最后的初始化run
 -- last init
-require "foundation.start"
-
+hLuaStart.run()
 

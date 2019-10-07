@@ -1,7 +1,7 @@
-local hsystem = {};
+hSys = {};
 
 --获取一个对象的id
-hsystem.getObjId = function(idChar)
+hSys.getObjId = function(idChar)
     local i = string.byte(idChar, 1)
     i = i * 256 + string.byte(idChar, 2)
     i = i * 256 + string.byte(idChar, 3)
@@ -9,14 +9,14 @@ hsystem.getObjId = function(idChar)
     return i
 end
 --获取一个对象的id字符串
-hsystem.getObjChar = function(id)
+hSys.getObjChar = function(id)
     return string.char(id // 0x1000000)
             .. string.char(id // 0x10000 % 0x100)
             .. string.char(id // 0x100 % 0x100)
             .. string.char(id % 0x100)
 end
 --获取一个table的正确长度
-hsystem.getTableLen = function(table)
+hSys.getTableLen = function(table)
     local len = 0
     for k, v in pairs(table) do
         len = len + 1
@@ -24,7 +24,7 @@ hsystem.getTableLen = function(table)
     return len
 end
 --随机在数组内取一个
-hsystem.randTable = function(arr)
+hSys.randTable = function(arr)
     local keys = {}
     for k, v in pairs(arr) do
         table.insert(keys, k)
@@ -34,7 +34,7 @@ hsystem.randTable = function(arr)
     return val
 end
 --克隆table
-hsystem.cloneTable = function(org)
+hSys.cloneTable = function(org)
     local function copy(org1, res)
         for k, v in pairs(org1) do
             if type(v) ~= "table" then
@@ -50,7 +50,7 @@ hsystem.cloneTable = function(org)
     return res
 end
 --在数组内
-hsystem.inArray = function(val, arr)
+hSys.inArray = function(val, arr)
     local isin = false
     for k, v in pairs(arr) do
         if (v == val) then
@@ -61,7 +61,7 @@ hsystem.inArray = function(val, arr)
     return isin
 end
 --删除数组一次某个值(qty次,默认删除全部)
-hsystem.rmArray = function(val, arr, qty)
+hSys.rmArray = function(val, arr, qty)
     qty = qty or -1
     local q = 0
     for k, v in pairs(arr) do
@@ -75,7 +75,7 @@ hsystem.rmArray = function(val, arr, qty)
     end
 end
 --打印对象table
-hsystem.print_r = function(t)
+hSys.print_r = function(t)
     local print_r_cache = {}
     local function sub_print_r(tt, indent)
         if (print_r_cache[tostring(tt)]) then
@@ -110,7 +110,7 @@ hsystem.print_r = function(t)
 end
 
 --转义
-hsystem.addslashes = function(s)
+hSys.addslashes = function(s)
     local in_char = { '\\', '"', '/', '\b', '\f', '\n', '\r', '\t' }
     local out_char = { '\\', '"', '/', 'b', 'f', 'n', 'r', 't' }
     for i, c in ipairs(in_char) do
@@ -119,7 +119,7 @@ hsystem.addslashes = function(s)
     return s
 end
 --反转义
-hsystem.stripslashes = function(s)
+hSys.stripslashes = function(s)
     local in_char = { '\\', '"', '/', 'b', 'f', 'n', 'r', 't' }
     local out_char = { '\\', '"', '/', '\b', '\f', '\n', '\r', '\t' }
 
@@ -129,7 +129,7 @@ hsystem.stripslashes = function(s)
     return s
 end
 
-hsystem.base64encode = function(source_str)
+hSys.base64encode = function(source_str)
     local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
     local s64 = ''
     local str = source_str
@@ -160,7 +160,7 @@ hsystem.base64encode = function(source_str)
 
     return s64
 end
-hsystem.base64Decode = function(str64)
+hSys.base64Decode = function(str64)
     local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
     local temp = {}
     for i = 1, 64 do
@@ -201,7 +201,7 @@ hsystem.base64Decode = function(str64)
     end
     return str
 end
-hsystem.explode = function(delimeter, str)
+hSys.explode = function(delimeter, str)
     local res = {}
     local start, start_pos, end_pos = 1, 1, 1
     while true do
@@ -215,5 +215,14 @@ hsystem.explode = function(delimeter, str)
     table.insert(res, string.sub(str, start))
     return res
 end
-
-return hsystem
+hSys.implode = function(delimeter, table)
+    local str
+    for _, v in ipairs(table) do
+        if (str == nil) then
+            str = v
+        else
+            str = str .. delimeter .. v
+        end
+    end
+    return str
+end

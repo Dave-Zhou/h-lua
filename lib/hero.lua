@@ -126,7 +126,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
 end
 --- 删除一个单位对玩家
 hhero.removePlayerUnit = function(whichPlayer, u, type)
-    hsystem.rmArray(u, hhero.player_units[whichPlayer])
+    hSys.rmArray(u, hhero.player_units[whichPlayer])
     hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
     if (type == 'click') then
         -- 点击方式
@@ -235,7 +235,7 @@ hhero.buildClick = function(during, clickQty)
             hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
             return
         end
-        hsystem.rmArray(u, randomChooseAbleList)
+        hSys.rmArray(u, randomChooseAbleList)
         hhero.addPlayerUnit(p, u, 'click')
         if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
             hmessage.echoXY0(p, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
@@ -252,8 +252,8 @@ hhero.buildClick = function(during, clickQty)
         local txt = ""
         local qty = 0
         while (true) do
-            local u = hsystem.randTable(randomChooseAbleList)
-            hsystem.rmArray(u, randomChooseAbleList)
+            local u = hSys.randTable(randomChooseAbleList)
+            hSys.rmArray(u, randomChooseAbleList)
             txt = txt .. " " .. cj.GetUnitName(u)
             hhero.addPlayerUnit(p, u, 'click')
             hhero.player_current_qty[p] = hhero.player_current_qty[p] + 1
@@ -355,7 +355,7 @@ hhero.buildTavern = function(during)
         end
         hhero.player_current_qty[p] = hhero.player_current_qty[p] + 1
         cj.RemoveItemFromStock(tavern, itemId)
-        hsystem.rmArray(itemId, randomChooseAbleList)
+        hSys.rmArray(itemId, randomChooseAbleList)
         hhero.addPlayerUnit(p, unitId, 'tavern')
     end)
     cj.TriggerAddAction(tgr_random, function()
@@ -367,8 +367,8 @@ hhero.buildTavern = function(during)
         local txt = ""
         local qty = 0
         while (true) do
-            local itemId = hsystem.randTable(randomChooseAbleList)
-            hsystem.rmArray(itemId, randomChooseAbleList)
+            local itemId = hSys.randTable(randomChooseAbleList)
+            hSys.rmArray(itemId, randomChooseAbleList)
             local unitId = hRuntime.heroBuildSelection[itemId].unitId
             local tavern = hRuntime.heroBuildSelection[itemId].tavern
             if (unitId == nil or tavern == nil) then

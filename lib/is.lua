@@ -52,7 +52,7 @@ his.detected = function(whichUnit, whichPlayer)
 end
 --是否拥有物品栏
 his.hasSlot = function(whichUnit)
-    return cj.GetUnitAbilityLevel(whichUnit, hsystem.ITEM_SKILL) >= 1
+    return cj.GetUnitAbilityLevel(whichUnit, hSys.ITEM_SKILL) >= 1
 end
 --是否死亡
 his.death = function(whichUnit)
