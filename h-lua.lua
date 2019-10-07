@@ -9,6 +9,9 @@ require "foundation.blizzard_c"
 require "foundation.blizzard_b"
 bj = require "foundation.blizzard_bj"
 
+-- 加载const
+require "const.start"
+
 -- 加载foundation
 hLuaStart = require "foundation.start"
 
