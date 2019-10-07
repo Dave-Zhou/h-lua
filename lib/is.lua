@@ -68,7 +68,7 @@ his.invincible = function(whichUnit)
 end
 --是否英雄
 his.hero = function(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or hRuntime.is[whichUnit].isHero == true
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or (hRuntime.is[whichUnit] ~= nil and hRuntime.is[whichUnit].isHero == true)
 end
 --是否建筑
 his.building = function(whichUnit)

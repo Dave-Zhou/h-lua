@@ -1165,12 +1165,12 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
         cj.TriggerAddAction(hRuntime.eventGlobalTgr['selectionBind'], function()
             local triggerPlayer = cj.GetTriggerPlayer()
             local triggerUnit = cj.GetTriggerUnit()
-            local qty = 1 + hRuntime.event[whichPlayer].clickQty
+            local qty = 1 + hRuntime.event[whichPlayer].evtInit.clickQty
             if (qty < 1) then
                 qty = 1
             end
             qty = math.ceil(qty)
-            hRuntime.event[whichPlayer].clickQty = qty
+            hRuntime.event[whichPlayer].evtInit.clickQty = qty
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.selection .. qty,
                 triggerPlayer = triggerPlayer,
@@ -1179,7 +1179,7 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
             htime.setTimeout(0.3, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hRuntime.event[whichPlayer].clickQty = hRuntime.event[whichPlayer].clickQty - 1
+                hRuntime.event[whichPlayer].evtInit.clickQty = hRuntime.event[whichPlayer].evtInit.clickQty - 1
             end)
         end)
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do

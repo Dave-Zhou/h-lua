@@ -45,8 +45,8 @@ CONST_ATTR = {
     toughness = "韧性",
     avoid = "回避",
     aim = "命中",
-    knocking = "物理暴击",
-    violence = "魔法暴击",
+    knocking = "物理暴击伤害",
+    violence = "魔法暴击伤害",
     knocking_odds = "物理暴击几率",
     violence_odds = "魔法暴击几率",
     punish = "僵直",
@@ -133,7 +133,10 @@ CONST_ATTR = {
 
 const_getItemDesc = function(attr)
     local str = ""
-    for k, v in ipairs(attr) do
+    for k, v in pairs(attr) do
+        if (type(v) ~= "table" and v > 0) then
+            v = "+" .. v
+        end
         -- 附加单位
         if (k == "attack_speed_space") then
             v = v .. "击每秒"
@@ -155,9 +158,8 @@ const_getItemDesc = function(attr)
             v = v .. "%"
         end
         --
-        str = str .. CONST_ATTR[k]
+        str = str .. CONST_ATTR[k] .. "："
         if (type(v) == "table") then
-            str = str .. "："
             local temp = ""
             if (k == "attack_hunt_type") then
                 for _, vv in ipairs(v) do
@@ -169,6 +171,9 @@ const_getItemDesc = function(attr)
                 end
             else
                 for kk, vv in ipairs(v) do
+                    if (vv > 0) then
+                        vv = "+" .. vv
+                    end
                     if (kk == "during") then
                         vv = vv .. "秒"
                     end
@@ -179,8 +184,9 @@ const_getItemDesc = function(attr)
                         vv = vv .. "每秒"
                     end
                     if (hSys.inArray(kk, {
-                        "resistance", "avoid", "aim",
-                        "knocking_odds", "violence_odds", "hemophagia", "hemophagia_skill",
+                        "attack_speed", "resistance", "avoid", "aim",
+                        "knocking", "violence", "knocking_odds", "violence_odds",
+                        "hemophagia", "hemophagia_skill",
                         "split", "luck", "invincible",
                         "hunt_amplitude", "hunt_rebound", "cure",
                         "odds", "reduce"
@@ -200,14 +206,17 @@ const_getItemDesc = function(attr)
         end
         str = str .. "|n"
     end
+    return str
 end
 
 const_getItemUbertip = function(attr)
     local str = ""
-    for k, v in ipairs(attr) do
-        str = str .. CONST_ATTR[k]
+    for k, v in pairs(attr) do
+        if (type(v) ~= "table" and v > 0) then
+            v = "+" .. v
+        end
+        str = str .. CONST_ATTR[k] .. ":"
         if (type(v) == "table") then
-            str = str .. ":"
             local temp = ""
             if (k == "attack_hunt_type") then
                 for _, vv in ipairs(v) do
@@ -223,5 +232,6 @@ const_getItemUbertip = function(attr)
         end
         str = str .. ","
     end
+    return str
 end
 

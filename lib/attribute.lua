@@ -977,13 +977,13 @@ hattr.huntUnit = function(bean)
     end
     -- 计算物理暴击
     if (hSys.inArray("physical", bean.huntType) == true and (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)) then
-        realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking
+        realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking * 0.01
         toUnitAvoid = -100 -- 触发暴击，回避减100%
         isKnocking = true
     end
     -- 计算魔法暴击
     if (hSys.inArray("magic", bean.huntType) == true and (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)) then
-        realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence
+        realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence * 0.01
         toUnitAvoid = -100 -- 触发暴击，回避减100%
         isViolence = true
     end
