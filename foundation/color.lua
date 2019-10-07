@@ -12,6 +12,10 @@ hColor.white = function(str)
     return hColor.mixed(str, "ffffff")
 end
 
+hColor.grey = function(str)
+    return hColor.mixed(str, "c0c0c0")
+end
+
 hColor.redLight = function(str)
     return hColor.mixed(str, "ff8080")
 end

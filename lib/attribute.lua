@@ -28,6 +28,7 @@ local hattr = {
         },
     },
 }
+
 --- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（百度谷歌[卡血牌bug]，了解原理）
 hattr.setLM = function(u, abilityId, qty)
     if (qty <= 0) then
@@ -278,6 +279,8 @@ hattr.registerAll = function(whichUnit)
         aim = 0.0,
         knocking = 0.0,
         violence = 0.0,
+        knocking_odds = 0.0,
+        violence_odds = 0.0,
         punish = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
         punish_current = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
         meditative = 0.0,
@@ -296,6 +299,7 @@ hattr.registerAll = function(whichUnit)
         knocking_oppose = 0.0,
         violence_oppose = 0.0,
         hemophagia_oppose = 0.0,
+        hemophagia_skill_oppose = 0.0,
         split_oppose = 0.0,
         punish_oppose = 0.0,
         hunt_rebound_oppose = 0.0,
@@ -899,6 +903,8 @@ hattr.huntUnit = function(bean)
     local toUnitAvoid = hattr.get(bean.toUnit, 'avoid')
     local fromUnitKnocking = hattr.get(bean.fromUnit, 'knocking')
     local fromUnitViolence = hattr.get(bean.fromUnit, 'violence')
+    local fromUnitKnockingOdds = hattr.get(bean.fromUnit, 'knocking_odds')
+    local fromUnitViolenceOdds = hattr.get(bean.fromUnit, 'violence_odds')
     local fromUnitAim = hattr.get(bean.fromUnit, 'aim')
     local fromUnitHuntAmplitude = hattr.get(bean.fromUnit, 'hunt_amplitude')
 
@@ -969,16 +975,16 @@ hattr.huntUnit = function(bean)
         toUnitAvoid = -100
         realDamageString = realDamageString .. "绝对"
     end
-    -- 计算物理暴击,几率50000满100%，伤害每10000点增加5%
-    if (hSys.inArray('physical', bean.huntType) == true and (fromUnitKnocking - toUnitKnockingOppose) > 0 and math.random(1, 1000) <= ((fromUnitKnocking - toUnitKnockingOppose) / 50)) then
-        realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * (fromUnitKnocking - toUnitKnockingOppose) * 0.0005
-        toUnitAvoid = -100 -- 触发暴击，无法回避
+    -- 计算物理暴击
+    if (hSys.inArray('physical', bean.huntType) == true and (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)) then
+        realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking
+        toUnitAvoid = -100 -- 触发暴击，回避减100%
         isKnocking = true
     end
-    -- 计算魔法暴击,几率75000满100%，伤害每10000点增加7%
-    if (hSys.inArray('magic', bean.huntType) == true and (fromUnitViolence - toUnitViolenceOppose) > 0 and math.random(1, 1000) <= ((fromUnitViolence - toUnitViolenceOppose) / 75)) then
-        realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * (fromUnitViolence - toUnitViolenceOppose) * 0.0007
-        toUnitAvoid = -100 -- 触发暴击，无法回避
+    -- 计算魔法暴击
+    if (hSys.inArray('magic', bean.huntType) == true and (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)) then
+        realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence
+        toUnitAvoid = -100 -- 触发暴击，回避减100%
         isViolence = true
     end
     -- 计算回避 X 命中
@@ -1178,8 +1184,8 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
                 damage = realDamage,
-                value = fromUnitKnocking / 500,
-                percent = fromUnitKnocking * 0.05,
+                value = fromUnitKnocking,
+                percent = fromUnitKnockingOdds,
             })
             --@触发被物理暴击事件
             hevent.triggerEvent({
@@ -1187,8 +1193,8 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.toUnit,
                 sourceUnit = bean.fromUnit,
                 damage = realDamage,
-                value = fromUnitKnocking / 500,
-                percent = fromUnitKnocking * 0.05,
+                value = fromUnitKnocking,
+                percent = fromUnitKnockingOdds,
             })
         end
         if (isViolence) then
@@ -1198,8 +1204,8 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
                 damage = realDamage,
-                value = fromUnitKnocking / 750,
-                percent = fromUnitKnocking * 0.07,
+                value = fromUnitViolence,
+                percent = fromUnitViolenceOdds,
             })
             --@触发被魔法暴击事件
             hevent.triggerEvent({
@@ -1207,8 +1213,8 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.toUnit,
                 sourceUnit = bean.fromUnit,
                 damage = realDamage,
-                value = fromUnitKnocking / 750,
-                percent = fromUnitKnocking * 0.07,
+                value = fromUnitViolence,
+                percent = fromUnitViolenceOdds,
             })
         end
         -- 暴击文本加持
@@ -1312,7 +1318,7 @@ hattr.huntUnit = function(bean)
             })
         end
         -- 技能吸血
-        local hemophagia_skill = hattr.get(bean.toUnit, 'hemophagia_skill') - hattr.get(bean.toUnit, 'hemophagia_oppose')
+        local hemophagia_skill = hattr.get(bean.toUnit, 'hemophagia_skill') - hattr.get(bean.toUnit, 'hemophagia_skill_oppose')
         if (bean.huntKind == "skill" and hemophagia_skill > 0) then
             hunit.addLife(bean.fromUnit, realDamage * hemophagia_skill * 0.01)
             heffect.toUnit("Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl", bean.fromUnit, "origin", 1.80)
