@@ -134,17 +134,94 @@ CONST_ATTR = {
 const_getItemDesc = function(attr)
     local str = ""
     for k, v in ipairs(attr) do
+        -- 附加单位
+        if (k == "attack_speed_space") then
+            v = v .. "击每秒"
+        end
+        if (hSys.inArray(k, { "life_back", "mana_back", })) then
+            v = v .. "每秒"
+        end
+        if (hSys.inArray(k, {
+            "resistance", "avoid", "aim",
+            "knocking_odds", "violence_odds", "hemophagia", "hemophagia_skill",
+            "split", "luck", "invincible",
+            "hunt_amplitude", "hunt_rebound", "cure"
+        })) then
+            v = v .. "%"
+        end
+        local s = string.find(k, "oppose")
+        local n = string.find(k, "natural")
+        if (s ~= nil or n ~= nil) then
+            v = v .. "%"
+        end
+        --
+        str = str .. CONST_ATTR[k]
         if (type(v) == "table") then
-
-            if (type(v) == "table") then
-
+            str = str .. "："
+            local temp = ""
+            if (k == "attack_hunt_type") then
+                for _, vv in ipairs(v) do
+                    if (temp == "") then
+                        temp = temp .. CONST_ATTR[vv]
+                    else
+                        temp = "," .. CONST_ATTR[vv]
+                    end
+                end
             else
+                for kk, vv in ipairs(v) do
+                    if (kk == "during") then
+                        vv = vv .. "秒"
+                    end
+                    if (kk == "attack_speed_space") then
+                        vv = vv .. "击每秒"
+                    end
+                    if (hSys.inArray(kk, { "life_back", "mana_back", })) then
+                        vv = vv .. "每秒"
+                    end
+                    if (hSys.inArray(kk, {
+                        "resistance", "avoid", "aim",
+                        "knocking_odds", "violence_odds", "hemophagia", "hemophagia_skill",
+                        "split", "luck", "invincible",
+                        "hunt_amplitude", "hunt_rebound", "cure",
+                        "odds", "reduce"
+                    })) then
+                        vv = vv .. "%"
+                    end
+                    if (temp == "") then
+                        temp = temp .. CONST_ATTR[kk] .. "(" .. vv .. ")"
+                    else
+                        temp = "," .. temp .. CONST_ATTR[kk] .. "(" .. vv .. ")"
+                    end
+                end
+            end
+            str = str .. temp
+        else
+            str = str .. v
+        end
+        str = str .. "|n"
+    end
+end
 
+const_getItemUbertip = function(attr)
+    local str = ""
+    for k, v in ipairs(attr) do
+        str = str .. CONST_ATTR[k]
+        if (type(v) == "table") then
+            str = str .. ":"
+            local temp = ""
+            if (k == "attack_hunt_type") then
+                for _, vv in ipairs(v) do
+                    if (temp == "") then
+                        temp = temp .. CONST_ATTR[vv]
+                    else
+                        temp = "," .. CONST_ATTR[vv]
+                    end
+                end
             end
         else
-
+            str = str .. v
         end
-        str = str .. CONST_ATTR[k] .. v .. "|n"
+        str = str .. ","
     end
 end
 
