@@ -5,11 +5,28 @@ CONST_ATTR = {
     mana = "魔法",
     move = "移动",
     defend = "护甲",
-    attack_hunt_type = "伤害类型",
+    attack_hunt_type = "攻击附魔",
+    physical = "物理",
+    magic = "魔法",
+    real = "真实",
+    absolute = "绝对",
+    fire = "火",
+    soil = "土",
+    water = "水",
+    ice = "冰",
+    wind = "风",
+    light = "光",
+    dark = "暗",
+    wood = "木",
+    thunder = "雷",
+    poison = "毒",
+    ghost = "鬼",
+    metal = "金",
+    dragon = "龙",
     attack_speed = "攻速",
     attack_speed_space = "攻击间隔",
-    attack_white = "白字攻击",
-    attack_green = "绿色攻击",
+    attack_white = "物理攻击",
+    attack_green = "魔法攻击",
     attack_range = "攻击范围",
     sight = "视野范围",
     str_green = "附加力量",
@@ -114,4 +131,20 @@ CONST_ATTR = {
     high = "高度",
 }
 
+const_getItemDesc = function(attr)
+    local str = ""
+    for k, v in ipairs(attr) do
+        if (type(v) == "table") then
+
+            if (type(v) == "table") then
+
+            else
+
+            end
+        else
+
+        end
+        str = str .. CONST_ATTR[k] .. v .. "|n"
+    end
+end
 

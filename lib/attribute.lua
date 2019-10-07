@@ -821,8 +821,8 @@ end
      * -bean.huntType伤害类型:
         physical 物理伤害则无视护甲<享受物理暴击加成，受护甲影响>
         magic 魔法<享受魔法暴击加成，受魔抗影响>
-        real 真实
-        absolute 绝对(无视无敌)
+        real 真实<无视回避>
+        absolute 绝对(无视回避、无视无敌)
         fire    火
         soil    土
         water   水
@@ -966,23 +966,23 @@ hattr.huntUnit = function(bean)
         })
     end
     -- 如果遇到真实伤害，无法回避
-    if (hSys.inArray('real', bean.huntType) == true) then
-        toUnitAvoid = -100
+    if (hSys.inArray("real", bean.huntType) == true) then
+        toUnitAvoid = -99999
         realDamageString = realDamageString .. "真实"
     end
-    -- 如果遇到绝对伤害，无法回避
-    if (hSys.inArray('absolute', bean.huntType) == true) then
-        toUnitAvoid = -100
+    -- 如果遇到绝对伤害，无法回避，无视无敌
+    if (hSys.inArray("absolute", bean.huntType) == true) then
+        toUnitAvoid = -99999
         realDamageString = realDamageString .. "绝对"
     end
     -- 计算物理暴击
-    if (hSys.inArray('physical', bean.huntType) == true and (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)) then
+    if (hSys.inArray("physical", bean.huntType) == true and (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)) then
         realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking
         toUnitAvoid = -100 -- 触发暴击，回避减100%
         isKnocking = true
     end
     -- 计算魔法暴击
-    if (hSys.inArray('magic', bean.huntType) == true and (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)) then
+    if (hSys.inArray("magic", bean.huntType) == true and (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)) then
         realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence
         toUnitAvoid = -100 -- 触发暴击，回避减100%
         isViolence = true
