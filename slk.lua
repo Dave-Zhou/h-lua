@@ -614,6 +614,7 @@ end
 
 -- #空冷却
 local qty = 60
+ITEM_COOLDOWN = {}
 ?>
 call SaveInteger(hash_hslk, StringHash("item_cooldown"), -1, <?=qty?>)
 <?
@@ -625,6 +626,7 @@ obj.Art = ""
 obj.TargetArt = ""
 obj.Targetattach = ""
 obj.DataC1 = 0
+ITEM_COOLDOWN[i] = obj:get_id()
 ?>
 call SaveInteger(hash_hslk, StringHash("item_cooldown"), <?=i?>, '<?=obj:get_id()?>')
 <?
