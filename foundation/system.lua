@@ -18,7 +18,7 @@ end
 --获取一个table的正确长度
 hSys.getTableLen = function(table)
     local len = 0
-    for k, v in pairs(table) do
+    for _, _ in pairs(table) do
         len = len + 1
     end
     return len
@@ -26,7 +26,7 @@ end
 --随机在数组内取一个
 hSys.randTable = function(arr)
     local keys = {}
-    for k, v in pairs(arr) do
+    for k, _ in pairs(arr) do
         table.insert(keys, k)
     end
     local val = arr[math.random(1, #keys)]
