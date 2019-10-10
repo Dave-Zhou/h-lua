@@ -107,9 +107,9 @@ CONST_ATTR = {
     natural_dragon_oppose = "自然龙抗",
     --
     attack_buff = "攻击增益",
-    attack_debuff = "攻击负面",
+    attack_debuff = "负面攻击",
     skill_buff = "技能增益",
-    skill_debuff = "技能负面",
+    skill_debuff = "负面技能",
     attack_effect = "攻击特效",
     skill_effect = "技能特效",
     --
@@ -123,7 +123,7 @@ CONST_ATTR = {
     crack_fly = "击飞",
     --
     odds = "几率",
-    val = "伤害",
+    val = "数值",
     during = "持续时间",
     qty = "数量",
     reduce = "衰减",
