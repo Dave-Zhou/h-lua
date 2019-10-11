@@ -408,6 +408,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
     if (type(val) == 'string') then
         -- string
         if (opr == '+') then
+            -- 添加
             table.insert(params[attr], val)
             if (dur > 0) then
                 htime.setTimeout(dur, nil, function(t, td)
@@ -417,6 +418,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end)
             end
         elseif (opr == '-') then
+            -- 减少
             if (hSys.inArray(val, params[attr])) then
                 hSys.rmArray(val, params[attr], 1)
                 if (dur > 0) then
@@ -428,8 +430,23 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
             end
         elseif (opr == '=') then
+            -- 设定
             local old = hSys.cloneTable(params[attr])
             params[attr] = val
+            if (dur > 0) then
+                htime.setTimeout(dur, nil, function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hattr.setHandle(params, whichUnit, attr, '=', old, 0)
+                end)
+            end
+        elseif (opr == '#') then
+            -- 高级混合计算，常见于几率等、持续时间
+            -- 两指比较，最大值 + (最小值 * 0.35)
+            local old = hSys.cloneTable(params[attr])
+            local max = math.max(old, val)
+            local min = math.min(old, val)
+            params[attr] = max + min * 0.35
             if (dur > 0) then
                 htime.setTimeout(dur, nil, function(t, td)
                     htime.delDialog(td)

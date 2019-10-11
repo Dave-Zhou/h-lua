@@ -134,9 +134,6 @@ CONST_ATTR = {
 const_getItemDesc = function(attr)
     local str = ""
     for k, v in pairs(attr) do
-        if (type(v) ~= "table" and v > 0) then
-            v = "+" .. v
-        end
         -- 附加单位
         if (k == "attack_speed_space") then
             v = v .. "击每秒"
@@ -176,9 +173,6 @@ const_getItemDesc = function(attr)
                     temp = temp .. CONST_ATTR[kk]
                     local temp2 = ""
                     for kkk, vvv in pairs(vv) do
-                        if (vvv > 0) then
-                            vvv = "+" .. vvv
-                        end
                         if (kkk == "during") then
                             vvv = vvv .. "秒"
                         end
@@ -206,9 +200,6 @@ end
 const_getItemUbertip = function(attr)
     local str = ""
     for k, v in pairs(attr) do
-        if (type(v) ~= "table" and v > 0) then
-            v = "+" .. v
-        end
         str = str .. CONST_ATTR[k] .. ":"
         if (type(v) == "table") then
             local temp = ""
